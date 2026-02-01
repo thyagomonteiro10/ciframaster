@@ -5,16 +5,17 @@ import { Song } from "../types";
 export const findChordsWithAI = async (query: string): Promise<Song | null> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
-  const prompt = `Pesquise na internet e gere a cifra COMPLETA e ATUALIZADA da música: "${query}". 
-  Regras:
-  1. Use o Google Search para encontrar a versão mais fiel e completa.
-  2. A cifra deve ter a LETRA INTEGRAL com acordes entre colchetes, ex: "[C] Letra".
-  3. Identifique o tom original e a dificuldade correta.
-  4. Retorne APENAS o JSON.`;
+  const prompt = `PESQUISE NA INTERNET e forneça a cifra COMPLETA da música: "${query}". 
+  REGRAS:
+  1. Forneça a LETRA INTEGRAL com acordes entre colchetes como [C], [G], etc.
+  2. Inclua INTRODUÇÕES com TABLATURAS se existirem na versão original.
+  3. Identifique o tom original e o gênero musical exato.
+  4. Use o Google Search para garantir que a cifra é a mais precisa disponível atualmente.
+  5. Retorne os dados estritamente em JSON.`;
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview", // Modelo Pro para melhor raciocínio e busca
+      model: "gemini-3-pro-preview",
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
@@ -24,11 +25,10 @@ export const findChordsWithAI = async (query: string): Promise<Song | null> => {
           properties: {
             title: { type: Type.STRING },
             artist: { type: Type.STRING },
-            content: { type: Type.STRING },
+            content: { type: Type.STRING, description: "Cifra e letra completa" },
             genre: { type: Type.STRING },
             difficulty: { type: Type.STRING, enum: ['Fácil', 'Médio', 'Difícil'] },
-            originalKey: { type: Type.STRING },
-            tuning: { type: Type.STRING }
+            originalKey: { type: Type.STRING }
           },
           required: ["title", "artist", "content", "genre", "difficulty"]
         }
@@ -36,20 +36,18 @@ export const findChordsWithAI = async (query: string): Promise<Song | null> => {
     });
 
     const result = JSON.parse(response.text);
-    
-    // Extrair fontes da pesquisa
     const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map((chunk: any) => ({
       uri: chunk.web?.uri,
       title: chunk.web?.title
     })).filter((s: any) => s.uri) || [];
 
     return {
-      id: Math.random().toString(36).substr(2, 9),
+      id: `web-${Math.random().toString(36).substr(2, 9)}`,
       ...result,
       sources
     };
   } catch (error) {
-    console.error("Erro na busca conectada:", error);
+    console.error("Erro na pesquisa de cifra online:", error);
     return null;
   }
 };
