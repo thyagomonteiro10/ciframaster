@@ -2,9 +2,10 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Song } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
-
 export const findChordsWithAI = async (query: string): Promise<Song | null> => {
+  // Inicialização dentro da função para garantir que o processo de build já tenha injetado a chave
+  const ai = new GoogleGenAI({ apiKey: (process.env.API_KEY as string) || '' });
+  
   const prompt = `Encontre a cifra da música: "${query}". 
   Retorne os detalhes em formato JSON. A cifra (content) deve ter os acordes entre colchetes, exemplo: "[C] Letra [G]".
   Seja preciso nos acordes.`;
