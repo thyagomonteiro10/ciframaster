@@ -6,6 +6,7 @@ export interface Song {
   content: string; // Format: "Letra com [C] acordes [G] entre colchetes"
   genre: string;
   difficulty: 'Fácil' | 'Médio' | 'Difícil';
+  sources?: { uri: string; title: string }[];
 }
 
 export interface ChordMapping {

@@ -3,22 +3,21 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { Song } from "../types";
 
 export const findChordsWithAI = async (query: string): Promise<Song | null> => {
-  // Initialize AI client with required API key parameter
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
-  const prompt = `Gere a cifra COMPLETA da música: "${query}". 
-  Regras cruciais:
-  1. A cifra (content) deve conter a LETRA INTEGRAL da música, do início ao fim.
-  2. Insira os acordes entre colchetes exatamente acima ou antes das sílabas onde a troca ocorre, exemplo: "[C] Letra [G]".
-  3. Inclua seções como [Intro], [Verso], [Refrão], [Ponte] e [Final].
-  4. Seja extremamente preciso na harmonia.
-  5. Se houver um solo, represente-o com tablaturas simples ou indicação de acordes.`;
+  const prompt = `Pesquise na internet e gere a cifra COMPLETA e ATUALIZADA da música: "${query}". 
+  Regras:
+  1. Use o Google Search para encontrar a versão mais fiel e completa.
+  2. A cifra deve ter a LETRA INTEGRAL com acordes entre colchetes, ex: "[C] Letra".
+  3. Identifique o tom original e a dificuldade correta.
+  4. Retorne APENAS o JSON.`;
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-3-pro-preview", // Modelo Pro para melhor raciocínio e busca
       contents: prompt,
       config: {
+        tools: [{ googleSearch: {} }],
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -36,14 +35,21 @@ export const findChordsWithAI = async (query: string): Promise<Song | null> => {
       }
     });
 
-    // Directly access text property from GenerateContentResponse
     const result = JSON.parse(response.text);
+    
+    // Extrair fontes da pesquisa
+    const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map((chunk: any) => ({
+      uri: chunk.web?.uri,
+      title: chunk.web?.title
+    })).filter((s: any) => s.uri) || [];
+
     return {
       id: Math.random().toString(36).substr(2, 9),
-      ...result
+      ...result,
+      sources
     };
   } catch (error) {
-    console.error("Erro ao buscar cifra completa com IA:", error);
+    console.error("Erro na busca conectada:", error);
     return null;
   }
 };
