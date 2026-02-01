@@ -101,8 +101,8 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
     <div className="fixed inset-0 md:inset-auto md:bottom-24 md:right-8 z-[100] flex flex-col w-full md:w-[380px] h-full md:h-[600px] bg-white md:rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
       <div className="bg-[#1c1c1c] p-5 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#38cc63] rounded-xl flex items-center justify-center">
-            <Guitar className="w-6 h-6 text-white" />
+          <div className="w-10 h-10 bg-[#1c1c1c] border border-gray-800 rounded-xl flex items-center justify-center">
+            <Guitar className="w-6 h-6 text-yellow-400" />
           </div>
           <div>
             <h3 className="text-white font-black text-sm tracking-tight">João Online</h3>

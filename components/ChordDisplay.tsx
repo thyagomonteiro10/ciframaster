@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import ChordDiagram from './ChordDiagram';
 
 interface ChordDisplayProps {
@@ -7,10 +7,10 @@ interface ChordDisplayProps {
   fontSize: number;
 }
 
-const ChordHover: React.FC<{ chord: string, children: React.ReactNode, fontSize: number }> = ({ chord, children, fontSize }) => {
+const ChordHover: React.FC<{ chord: string, children: React.ReactNode, fontSize: number }> = React.memo(({ chord, children, fontSize }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleToggle = () => setIsHovered(!isHovered);
+  const handleToggle = useCallback(() => setIsHovered(prev => !prev), []);
 
   return (
     <span 
@@ -30,14 +30,17 @@ const ChordHover: React.FC<{ chord: string, children: React.ReactNode, fontSize:
       )}
     </span>
   );
-};
+});
 
-const ChordDisplay: React.FC<ChordDisplayProps> = ({ content, fontSize }) => {
-  const lines = content.trim().split('\n');
+const ChordDisplay: React.FC<ChordDisplayProps> = React.memo(({ content, fontSize }) => {
+  const lines = useMemo(() => content.trim().split('\n'), [content]);
 
-  const renderLine = (line: string, idx: number) => {
-    // Detectar tabs
-    const isTab = /^[A-G]?[|]/.test(line.trim()) || line.includes('--') || line.includes('|-');
+  const renderLine = useCallback((line: string, idx: number) => {
+    // Cache de detecção
+    const trimmedLine = line.trim();
+    if (!trimmedLine && idx > 0 && lines[idx-1].trim() === "") return null;
+
+    const isTab = /^[A-G]?[|]/.test(trimmedLine) || line.includes('--') || line.includes('|-');
 
     if (isTab) {
       return (
@@ -52,9 +55,8 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ content, fontSize }) => {
       );
     }
 
-    // Detectar linhas só de acordes (sem colchetes)
-    const isOnlyChords = line.trim().length > 0 && !line.includes('[') && 
-                         /^[A-G][#b]?[m]?[0-9M]?(\s+[A-G][#b]?[m]?[0-9M]?)*$/.test(line.trim());
+    const isOnlyChords = trimmedLine.length > 0 && !line.includes('[') && 
+                         /^[A-G][#b]?[m]?[0-9M]?(\s+[A-G][#b]?[m]?[0-9M]?)*$/.test(trimmedLine);
 
     if (isOnlyChords) {
        const chords = line.split(/(\s+)/);
@@ -63,19 +65,18 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ content, fontSize }) => {
            <div className="h-8 flex items-end min-w-max" style={{ fontSize: `${fontSize + 1}px` }}>
               {chords.map((part, pIdx) => {
                 if (part.trim() === "") return <span key={pIdx} className="whitespace-pre">{part}</span>;
-                return <ChordHover key={pIdx} chord={part} fontSize={fontSize}>{part}</ChordHover>;
+                return <ChordHover key={pIdx} chord={part.trim()} fontSize={fontSize}>{part}</ChordHover>;
               })}
            </div>
          </div>
        );
     }
 
-    // Linhas normais com letra e acordes entre colchetes
     const parts = line.split(/(\[.*?\])/g);
-    const hasChords = parts.some(p => p.startsWith('[') && p.endsWith(']'));
+    const hasChords = parts.length > 1;
 
     if (!hasChords) {
-      const isBlank = line.trim() === "";
+      const isBlank = trimmedLine === "";
       return (
         <div key={idx} className={`${isBlank ? 'h-6' : 'mb-2'} text-[#555] font-mono whitespace-pre`} style={{ fontSize: `${fontSize}px` }}>
           {line || '\u00A0'}
@@ -114,13 +115,13 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ content, fontSize }) => {
         </div>
       </div>
     );
-  };
+  }, [fontSize, lines]);
 
   return (
     <div className="leading-tight pt-4 md:pt-8 border-t border-gray-100">
       {lines.map((line, idx) => renderLine(line, idx))}
     </div>
   );
-};
+});
 
 export default ChordDisplay;

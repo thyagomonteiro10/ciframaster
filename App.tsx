@@ -1,11 +1,11 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   Play, Pause, Grid, Printer, Music, Heart, X, Bot, Link as LinkIcon, 
   Globe, ChevronRight, Menu, Search, Video, Settings, ChevronDown, 
-  Maximize2, Type as FontIcon, Minus, Plus, Share2
+  Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users
 } from 'lucide-react';
-import { ExtendedSong, POPULAR_ARTISTS, TOP_SONGS } from './constants';
+import { ExtendedSong, POPULAR_ARTISTS, TOP_SONGS, MUSIC_ICONS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
 import { transposeContent } from './utils/musicUtils';
 import SearchInput from './components/SearchInput';
@@ -13,7 +13,7 @@ import ChordDisplay from './components/ChordDisplay';
 import ChordDiagram from './components/ChordDiagram';
 import JoaoAssistant from './components/JoaoAssistant';
 
-const GENRES = ['Sertanejo', 'Rock', 'Pop', 'Gospel', 'MPB', 'Forró', 'Pagode', 'Samba'];
+const GENRES = ['Sertanejo', 'Rock', 'Pop', 'Gospel', 'MPB', 'Forró', 'Pagode', 'Samba', 'Heavy Metal', 'Jazz'];
 const INSTRUMENTS = ['Violão', 'Guitarra', 'Teclado', 'Ukulele', 'Baixo'];
 
 const App: React.FC = () => {
@@ -23,11 +23,9 @@ const App: React.FC = () => {
   const [fontSize, setFontSize] = useState(15);
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   const [scrollSpeed, setScrollSpeed] = useState(1);
-  const [favorites, setFavorites] = useState<ExtendedSong[]>([]);
   const [isJoaoOpen, setIsJoaoOpen] = useState(false);
   const [selectedInstrument, setSelectedInstrument] = useState('Violão');
 
-  // Identifica acordes na cifra atual para o dicionário no final
   const songChords = useMemo(() => {
     if (!currentSong) return [];
     const chords = new Set<string>();
@@ -41,23 +39,22 @@ const App: React.FC = () => {
     return Array.from(chords);
   }, [currentSong]);
 
-  const handleSongSelect = (song: ExtendedSong) => {
+  const handleSongSelect = useCallback((song: ExtendedSong) => {
     setCurrentSong(song);
     setTransposition(0);
     setIsJoaoOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = useCallback(async (query: string) => {
     setIsLoading(true);
     const aiSong = await findChordsWithAI(query);
     if (aiSong) {
       handleSongSelect(aiSong as ExtendedSong);
     }
     setIsLoading(false);
-  };
+  }, [handleSongSelect]);
 
-  // Efeito de auto-scroll
   useEffect(() => {
     let interval: any;
     if (isAutoScrolling) {
@@ -68,10 +65,14 @@ const App: React.FC = () => {
     return () => clearInterval(interval);
   }, [isAutoScrolling, scrollSpeed]);
 
+  const transposedContent = useMemo(() => {
+    if (!currentSong) return '';
+    return transposeContent(currentSong.content, transposition);
+  }, [currentSong, transposition]);
+
   return (
     <div className="min-h-screen bg-[#f4f4f4] flex flex-col font-sans">
-      {/* Header Estilo Cifra Club, agora como Cifra Master */}
-      <header className="bg-[#1c1c1c] text-white sticky top-0 z-[60] h-14 md:h-16 flex items-center">
+      <header className="bg-[#1c1c1c] text-white sticky top-0 z-[60] h-14 md:h-16 flex items-center shadow-lg">
         <div className="max-w-[1280px] mx-auto w-full px-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => setCurrentSong(null)}>
             <div className="bg-[#38cc63] p-2 rounded-lg">
@@ -85,22 +86,26 @@ const App: React.FC = () => {
           </div>
 
           <div className="hidden lg:flex items-center gap-6 text-[11px] font-bold uppercase tracking-tight opacity-80">
-            {GENRES.slice(0, 4).map(g => (
+            {GENRES.slice(0, 5).map(g => (
               <button key={g} className="hover:text-[#38cc63] transition-colors">{g}</button>
             ))}
           </div>
 
           <div className="flex items-center gap-2">
-            <button className="p-2 hover:bg-white/10 rounded-full md:hidden"><Search className="w-5 h-5" /></button>
             <div className="w-8 h-8 rounded-full bg-gray-600 border border-white/20 hidden md:block overflow-hidden">
-               <img src="https://ui-avatars.com/api/?name=User&background=38cc63&color=fff" alt="User" />
+               <img 
+                 src="https://ui-avatars.com/api/?name=User&background=38cc63&color=fff" 
+                 alt="User" 
+                 width="32" 
+                 height="32" 
+                 loading="lazy" 
+               />
             </div>
           </div>
         </div>
       </header>
 
-      {/* Sub-header de Instrumentos */}
-      <div className="bg-white border-b border-gray-200 h-10 flex items-center overflow-x-auto no-scrollbar">
+      <div className="bg-white border-b border-gray-200 h-10 flex items-center overflow-x-auto no-scrollbar shadow-sm">
         <div className="max-w-[1280px] mx-auto w-full px-4 flex items-center gap-8 whitespace-nowrap">
           {INSTRUMENTS.map(inst => (
             <button 
@@ -115,15 +120,20 @@ const App: React.FC = () => {
       </div>
 
       <div className="flex flex-1 max-w-[1280px] mx-auto w-full px-4 pt-6 gap-6">
-        
-        {/* Lado Esquerdo */}
-        <aside className="hidden xl:block w-[180px] shrink-0">
-          <div className="bg-white p-4 rounded-lg border border-gray-200 mb-6">
-            <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-4 tracking-widest">Top Artistas</h4>
+        <aside className="hidden xl:block w-[200px] shrink-0">
+          <div className="bg-white p-5 rounded-xl border border-gray-200 mb-6 shadow-sm">
+            <h4 className="text-[10px] font-black text-gray-400 uppercase mb-5 tracking-[0.2em]">Top do Momento</h4>
             <div className="space-y-4">
-              {POPULAR_ARTISTS.slice(0, 8).map(artist => (
-                <div key={artist.name} onClick={() => handleSearch(artist.name)} className="flex items-center gap-2 cursor-pointer group">
-                  <img src={artist.imageUrl} className="w-6 h-6 rounded-full object-cover" />
+              {POPULAR_ARTISTS.map(artist => (
+                <div key={artist.name} onClick={() => handleSearch(artist.name)} className="flex items-center gap-3 cursor-pointer group">
+                  <img 
+                    src={`${artist.imageUrl}&w=32&h=32`} 
+                    alt={artist.name}
+                    className="w-8 h-8 rounded-full object-cover shadow-sm group-hover:ring-2 ring-[#38cc63] transition-all" 
+                    loading="lazy"
+                    width="32"
+                    height="32"
+                  />
                   <span className="text-xs font-bold text-gray-600 group-hover:text-[#38cc63] truncate">{artist.name}</span>
                 </div>
               ))}
@@ -131,90 +141,108 @@ const App: React.FC = () => {
           </div>
         </aside>
 
-        {/* Conteúdo Principal */}
-        <main className="flex-1 min-w-0 bg-white rounded-t-lg border border-gray-200 border-b-0 p-4 md:p-8">
+        <main className="flex-1 min-w-0 bg-white rounded-t-xl border border-gray-200 border-b-0 p-4 md:p-10 shadow-sm">
           {!currentSong ? (
-            <div className="py-6">
-              <h1 className="text-3xl font-black text-gray-900 mb-8">As cifras mais acessadas</h1>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
-                {TOP_SONGS.map((song, i) => (
+            <div className="py-2">
+              <div className="flex items-center justify-between mb-10 border-b border-gray-100 pb-6">
+                <h1 className="text-3xl font-black text-gray-900 tracking-tight">Cifras em Destaque</h1>
+                <div className="flex gap-2">
+                  <span className="px-3 py-1 bg-[#38cc63]/10 text-[10px] font-black rounded-full text-[#38cc63] uppercase">Top Brasil</span>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-4 mb-20">
+                {TOP_SONGS.map((song) => (
                   <div 
                     key={song.rank} 
                     onClick={() => handleSearch(`${song.title} ${song.artist}`)}
-                    className="flex items-center gap-4 py-3 border-b border-gray-100 cursor-pointer group hover:bg-gray-50 px-2 rounded-lg transition-colors"
+                    className="flex items-center gap-4 py-3 border-b border-gray-50 cursor-pointer group hover:bg-gray-50 px-3 rounded-lg transition-all"
                   >
-                    <span className="text-lg font-black text-gray-300 group-hover:text-[#38cc63] w-6">{song.rank}</span>
+                    <span className="text-xl font-black text-gray-200 group-hover:text-[#38cc63] w-6 transition-colors">{song.rank}</span>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-black text-gray-800 truncate">{song.title}</h4>
-                      <p className="text-xs text-gray-400 font-bold uppercase">{song.artist}</p>
+                      <h4 className="font-bold text-gray-800 truncate text-sm">{song.title}</h4>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">{song.artist}</p>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-16">
-                 <h2 className="text-2xl font-black text-gray-900 mb-8 flex items-center gap-2">
-                    <Video className="text-red-500 w-6 h-6" /> Videoaulas recomendadas
+              <div>
+                 <h2 className="text-2xl font-black text-gray-900 mb-8 flex items-center gap-3">
+                    <Star className="text-yellow-400 w-7 h-7 fill-yellow-400" /> Ícones da Música Mundial
                  </h2>
-                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                   {[1,2,3].map(v => (
-                     <div key={v} className="bg-gray-100 aspect-video rounded-xl relative overflow-hidden group cursor-pointer">
-                        <img src={`https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=400&h=225&fit=crop&q=${v}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                           <Play className="text-white w-12 h-12 fill-white" />
+                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+                   {MUSIC_ICONS.map((artist, idx) => (
+                     <div key={idx} onClick={() => handleSearch(artist.name)} className="group cursor-pointer">
+                        <div className="aspect-square bg-gray-100 rounded-2xl relative overflow-hidden shadow-md mb-3" style={{ contentVisibility: 'auto' }}>
+                            <img 
+                              src={`${artist.imageUrl}&w=200&h=200`} 
+                              alt={artist.name}
+                              className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500" 
+                              loading="lazy"
+                              width="200"
+                              height="200"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                               <span className="text-white text-[10px] font-black uppercase tracking-widest">Ver Cifras</span>
+                            </div>
                         </div>
+                        <h4 className="font-black text-gray-800 text-[11px] uppercase tracking-tighter group-hover:text-[#38cc63] transition-colors truncate">{artist.name}</h4>
                      </div>
                    ))}
                  </div>
               </div>
             </div>
           ) : (
-            <div className="w-full">
-              {/* Toolbar de Ferramentas */}
-              <div className="flex flex-wrap items-center gap-2 md:gap-4 mb-8 bg-gray-50 p-2 md:p-4 rounded-xl border border-gray-200">
-                <div className="flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden">
-                   <button onClick={() => setTransposition(t => t-1)} className="p-2 hover:bg-gray-50 border-r border-gray-200"><Minus className="w-4 h-4" /></button>
+            <div className="w-full animate-in fade-in duration-300">
+              <div className="flex flex-wrap items-center gap-2 md:gap-4 mb-10 bg-gray-50 p-3 md:p-5 rounded-2xl border border-gray-200">
+                <div className="flex items-center bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                   <button onClick={() => setTransposition(t => t-1)} className="p-2.5 hover:bg-gray-50 border-r border-gray-100"><Minus className="w-4 h-4" /></button>
                    <div className="px-4 text-[10px] font-black text-gray-600 uppercase">Tom</div>
-                   <button onClick={() => setTransposition(t => t+1)} className="p-2 hover:bg-gray-50 border-l border-gray-200"><Plus className="w-4 h-4" /></button>
+                   <button onClick={() => setTransposition(t => t+1)} className="p-2.5 hover:bg-gray-50 border-l border-gray-100"><Plus className="w-4 h-4" /></button>
                 </div>
 
-                <div className="flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden">
-                   <button onClick={() => setFontSize(s => Math.max(10, s-1))} className="p-2 hover:bg-gray-50 border-r border-gray-200"><Minus className="w-4 h-4" /></button>
+                <div className="flex items-center bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                   <button onClick={() => setFontSize(s => Math.max(10, s-1))} className="p-2.5 hover:bg-gray-50 border-r border-gray-100"><Minus className="w-4 h-4" /></button>
                    <div className="px-4"><FontIcon className="w-4 h-4 text-gray-400" /></div>
-                   <button onClick={() => setFontSize(s => Math.min(24, s+1))} className="p-2 hover:bg-gray-50 border-l border-gray-200"><Plus className="w-4 h-4" /></button>
+                   <button onClick={() => setFontSize(s => Math.min(24, s+1))} className="p-2.5 hover:bg-gray-50 border-l border-gray-100"><Plus className="w-4 h-4" /></button>
                 </div>
 
                 <button 
                   onClick={() => setIsAutoScrolling(!isAutoScrolling)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border font-black text-[11px] transition-all ${isAutoScrolling ? 'bg-[#38cc63] border-[#38cc63] text-white shadow-lg' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'}`}
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl border font-black text-[11px] transition-all shadow-sm ${isAutoScrolling ? 'bg-[#38cc63] border-[#38cc63] text-white shadow-lg' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'}`}
                 >
                   {isAutoScrolling ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                   ROLAGEM
                 </button>
 
-                <div className="hidden sm:flex items-center gap-4 ml-auto text-gray-400">
-                   <button className="hover:text-gray-600" title="Imprimir" onClick={() => window.print()}><Printer className="w-5 h-5" /></button>
-                   <button className="hover:text-gray-600" title="Compartilhar"><Share2 className="w-5 h-5" /></button>
-                   <button className="hover:text-[#38cc63]" title="Favoritar"><Heart className="w-5 h-5" /></button>
+                <div className="hidden sm:flex items-center gap-5 ml-auto text-gray-400">
+                   <button className="hover:text-gray-600 transition-colors" title="Imprimir" onClick={() => window.print()}><Printer className="w-5 h-5" /></button>
+                   <button className="hover:text-gray-600 transition-colors" title="Compartilhar"><Share2 className="w-5 h-5" /></button>
+                   <button className="hover:text-[#38cc63] transition-colors" title="Favoritar"><Heart className="w-5 h-5" /></button>
                 </div>
               </div>
 
-              <div className="mb-10">
-                <div className="flex items-center gap-2 mb-2 text-[#38cc63] font-black text-[10px] uppercase tracking-widest">
-                  <Music className="w-3 h-3" /> {currentSong.genre}
+              <div className="mb-12">
+                <div className="flex items-center gap-3 mb-4 text-[#38cc63] font-black text-[10px] uppercase tracking-[0.2em]">
+                  <Music className="w-4 h-4" /> {currentSong.genre} • {currentSong.tuning || 'Afinação Padrão'}
                 </div>
-                <h2 className="text-3xl md:text-5xl font-black text-gray-950 tracking-tight leading-none mb-2 uppercase">{currentSong.title}</h2>
-                <h3 className="text-xl md:text-2xl font-medium text-gray-400">{currentSong.artist}</h3>
+                <h2 className="text-4xl md:text-6xl font-black text-gray-950 tracking-tight leading-none mb-3 uppercase">{currentSong.title}</h2>
+                <h3 className="text-2xl md:text-3xl font-medium text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">{currentSong.artist}</h3>
               </div>
 
-              <ChordDisplay content={transposeContent(currentSong.content, transposition)} fontSize={fontSize} />
+              <ChordDisplay content={transposedContent} fontSize={fontSize} />
 
-              {/* Dicionário de Acordes */}
-              <div className="mt-20 pt-10 border-t border-gray-100">
-                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-10">Acordes utilizados</h4>
-                <div className="flex flex-wrap gap-x-12 gap-y-12 justify-center md:justify-start">
+              <div className="mt-24 pt-12 border-t border-gray-100">
+                <div className="flex items-center gap-4 mb-12">
+                   <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center text-white shadow-xl">
+                      <Grid className="w-6 h-6" />
+                   </div>
+                   <h4 className="text-2xl font-black text-gray-900 tracking-tight">Dicionário de Acordes</h4>
+                </div>
+                <div className="flex flex-wrap gap-x-12 gap-y-16 justify-center md:justify-start">
                   {songChords.map(chord => (
-                    <div key={chord} className="flex flex-col items-center">
+                    <div key={chord} className="transform hover:scale-110 transition-transform">
                       <ChordDiagram chord={chord} />
                     </div>
                   ))}
@@ -222,12 +250,12 @@ const App: React.FC = () => {
               </div>
 
               {currentSong.sources && (
-                <div className="mt-20 p-6 bg-gray-50 border border-gray-200 rounded-xl">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase mb-4">Fontes da busca inteligente</p>
-                  <div className="flex flex-col gap-2">
+                <div className="mt-24 p-8 bg-gray-50 border border-gray-200 rounded-2xl shadow-inner">
+                  <p className="text-[10px] font-black text-gray-400 uppercase mb-6 tracking-widest">Fontes Verificadas (IA Search)</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {currentSong.sources.map((s, i) => (
-                      <a key={i} href={s.uri} target="_blank" rel="noreferrer" className="text-xs font-bold text-[#38cc63] hover:underline flex items-center gap-2">
-                        <LinkIcon className="w-3 h-3" /> {s.title}
+                      <a key={i} href={s.uri} target="_blank" rel="noreferrer" className="bg-white p-4 rounded-xl border border-gray-100 text-xs font-bold text-[#38cc63] hover:shadow-md transition-all flex items-center gap-3">
+                        <LinkIcon className="w-4 h-4 opacity-50" /> <span className="truncate">{s.title}</span>
                       </a>
                     ))}
                   </div>
@@ -237,50 +265,59 @@ const App: React.FC = () => {
           )}
         </main>
 
-        {/* Lado Direito */}
         {currentSong && (
-          <aside className="hidden lg:block w-[240px] shrink-0">
-             <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6 sticky top-24">
-                <h4 className="text-[10px] font-black text-gray-400 uppercase mb-4 tracking-widest">Videoaula</h4>
-                <div className="aspect-video bg-gray-900 rounded-lg mb-4 flex items-center justify-center relative group cursor-pointer overflow-hidden">
-                   <img src={`https://img.youtube.com/vi/placeholder/0.jpg`} className="w-full h-full object-cover opacity-60" />
-                   <Play className="text-white w-8 h-8 absolute group-hover:scale-110 transition-transform" />
+          <aside className="hidden lg:block w-[260px] shrink-0">
+             <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 sticky top-24 shadow-sm">
+                <h4 className="text-[10px] font-black text-gray-400 uppercase mb-5 tracking-widest flex items-center gap-2">
+                   <Users className="w-3 h-3 text-[#38cc63]" /> Artistas Relacionados
+                </h4>
+                <div className="space-y-4 mb-8">
+                  {MUSIC_ICONS.slice(0, 4).map((artist, i) => (
+                    <div key={i} onClick={() => handleSearch(artist.name)} className="flex items-center gap-3 cursor-pointer group">
+                       <img 
+                         src={`${artist.imageUrl}&w=40&h=40`} 
+                         alt={artist.name}
+                         className="w-10 h-10 rounded-lg object-cover group-hover:ring-2 ring-[#38cc63] transition-all" 
+                         loading="lazy"
+                         width="40"
+                         height="40"
+                       />
+                       <span className="text-[11px] font-bold text-gray-600 group-hover:text-[#38cc63] truncate">{artist.name}</span>
+                    </div>
+                  ))}
                 </div>
                 
-                <h4 className="text-[10px] font-black text-gray-400 uppercase mt-8 mb-4 tracking-widest">Acordes rápidos</h4>
-                <div className="grid grid-cols-2 gap-4">
-                  {songChords.slice(0, 4).map(chord => (
-                    <div key={chord} className="transform scale-[0.6] -mx-8 -my-8">
+                <h4 className="text-[10px] font-black text-gray-400 uppercase mt-10 mb-6 tracking-widest">Acordes Rápidos</h4>
+                <div className="grid grid-cols-2 gap-x-2 gap-y-10">
+                  {songChords.slice(0, 6).map(chord => (
+                    <div key={chord} className="transform scale-[0.65] -mx-8 -my-8">
                        <ChordDiagram chord={chord} />
                     </div>
                   ))}
                 </div>
-                {songChords.length > 4 && (
-                   <button className="w-full text-center text-[10px] font-black text-[#38cc63] mt-2 uppercase hover:underline">Ver todos</button>
-                )}
              </div>
           </aside>
         )}
       </div>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 py-12 mt-20">
+      <footer className="bg-white border-t border-gray-200 py-16 mt-24">
         <div className="max-w-[1280px] mx-auto px-4 text-center">
-           <div className="flex items-center justify-center gap-2 mb-6 opacity-30">
-              <Music className="w-6 h-6 text-gray-900" />
-              <span className="font-black text-xl tracking-tighter uppercase">CIFRA<span className="text-[#38cc63]"> MASTER</span></span>
+           <div className="flex items-center justify-center gap-3 mb-8 opacity-40">
+              <Music className="w-8 h-8 text-gray-900" />
+              <span className="font-black text-2xl tracking-tighter uppercase">CIFRA<span className="text-[#38cc63]"> MASTER</span></span>
            </div>
-           <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Feito com inteligência artificial para músicos</p>
+           <p className="text-xs text-gray-400 font-bold uppercase tracking-[0.3em] max-w-md mx-auto leading-relaxed">A maior galeria de cifras inteligentes alimentada por Inteligência Artificial do Brasil.</p>
         </div>
       </footer>
 
       {!isJoaoOpen && (
         <button 
           onClick={() => setIsJoaoOpen(true)} 
-          className="fixed bottom-6 right-6 w-14 h-14 md:w-16 md:h-16 bg-[#38cc63] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all z-[80] group"
+          className="fixed bottom-8 right-8 w-16 h-16 md:w-20 md:h-20 bg-[#1c1c1c] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all z-[80] group border-4 border-white"
+          aria-label="Abrir assistente João"
         >
-          <Bot className="text-white w-7 h-7 md:w-8 md:h-8" />
-          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
+          <Guitar className="text-yellow-400 w-8 h-8 md:w-10 md:h-10 group-hover:rotate-12 transition-transform" />
+          <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-4 border-white animate-pulse"></div>
         </button>
       )}
 

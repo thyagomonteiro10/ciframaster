@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { CHORD_SHAPES, ChordShape } from '../constants';
+import { CHORD_SHAPES } from '../constants';
 
 interface ChordDiagramProps {
   chord: string;
 }
 
-const ChordDiagram: React.FC<ChordDiagramProps> = ({ chord }) => {
+const ChordDiagram: React.FC<ChordDiagramProps> = React.memo(({ chord }) => {
   const normalizedChord = chord.trim();
   const shape = CHORD_SHAPES[normalizedChord];
 
@@ -33,8 +33,8 @@ const ChordDiagram: React.FC<ChordDiagramProps> = ({ chord }) => {
   return (
     <div className="flex flex-col items-center group">
       <div className="text-[14px] font-black text-gray-700 mb-2 group-hover:text-[#38cc63] transition-colors">{chord}</div>
-      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        {/* Nut (Pestana de cima) */}
+      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="drop-shadow-sm">
+        {/* Nut */}
         {baseFret <= 1 && (
           <line x1={margin} y1={margin} x2={width - margin} y2={margin} stroke="#333" strokeWidth="3" />
         )}
@@ -76,6 +76,6 @@ const ChordDiagram: React.FC<ChordDiagramProps> = ({ chord }) => {
       </svg>
     </div>
   );
-};
+});
 
 export default ChordDiagram;

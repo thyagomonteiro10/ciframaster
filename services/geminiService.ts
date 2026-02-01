@@ -6,12 +6,13 @@ export const findChordsWithAI = async (query: string): Promise<Song | null> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const prompt = `PESQUISE NA INTERNET e forneça a cifra COMPLETA da música: "${query}". 
-  REGRAS:
-  1. Forneça a LETRA INTEGRAL com acordes entre colchetes como [C], [G], etc.
-  2. Inclua INTRODUÇÕES com TABLATURAS se existirem na versão original.
-  3. Identifique o tom original e o gênero musical exato.
-  4. Use o Google Search para garantir que a cifra é a mais precisa disponível atualmente.
-  5. Retorne os dados estritamente em JSON.`;
+  REGRAS DE FORMATAÇÃO (ESTILO CIFRA CLUB):
+  1. Forneça a LETRA INTEGRAL com acordes entre colchetes exatamente acima da sílaba correta, como [C], [G], etc.
+  2. DEVE incluir a INTRODUÇÃO detalhada com TABLATURA (ex: e|---2---3---|).
+  3. Inclua variações de dedilhado ou batida se disponíveis.
+  4. Identifique o tom original, a afinação (ex: Padrão) e a dificuldade.
+  5. Use o Google Search para garantir que a cifra é a versão "Verificada" mais popular.
+  6. Retorne os dados estritamente em JSON.`;
 
   try {
     const response = await ai.models.generateContent({
@@ -25,17 +26,19 @@ export const findChordsWithAI = async (query: string): Promise<Song | null> => {
           properties: {
             title: { type: Type.STRING },
             artist: { type: Type.STRING },
-            content: { type: Type.STRING, description: "Cifra e letra completa" },
+            content: { type: Type.STRING, description: "Cifra, letra, tablaturas e orientações de ritmo" },
             genre: { type: Type.STRING },
             difficulty: { type: Type.STRING, enum: ['Fácil', 'Médio', 'Difícil'] },
-            originalKey: { type: Type.STRING }
+            originalKey: { type: Type.STRING },
+            tuning: { type: Type.STRING }
           },
           required: ["title", "artist", "content", "genre", "difficulty"]
         }
       }
     });
 
-    const result = JSON.parse(response.text);
+    const text = response.text;
+    const result = JSON.parse(text);
     const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map((chunk: any) => ({
       uri: chunk.web?.uri,
       title: chunk.web?.title
