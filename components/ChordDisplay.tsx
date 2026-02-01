@@ -10,7 +10,6 @@ interface ChordDisplayProps {
 const ChordHover: React.FC<{ chord: string, children: React.ReactNode, fontSize: number }> = ({ chord, children, fontSize }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  // No mobile, exibimos o diagrama via clique para melhor UX
   const handleToggle = () => setIsHovered(!isHovered);
 
   return (
@@ -37,6 +36,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ content, fontSize }) => {
   const lines = content.trim().split('\n');
 
   const renderLine = (line: string, idx: number) => {
+    // Detectar tabs
     const isTab = /^[A-G]?[|]/.test(line.trim()) || line.includes('--') || line.includes('|-');
 
     if (isTab) {
@@ -52,6 +52,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ content, fontSize }) => {
       );
     }
 
+    // Detectar linhas só de acordes (sem colchetes)
     const isOnlyChords = line.trim().length > 0 && !line.includes('[') && 
                          /^[A-G][#b]?[m]?[0-9M]?(\s+[A-G][#b]?[m]?[0-9M]?)*$/.test(line.trim());
 
@@ -69,12 +70,15 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ content, fontSize }) => {
        );
     }
 
+    // Linhas normais com letra e acordes entre colchetes
     const parts = line.split(/(\[.*?\])/g);
     const hasChords = parts.some(p => p.startsWith('[') && p.endsWith(']'));
 
     if (!hasChords) {
+      // Se for uma linha vazia no código, renderiza um espaço para manter o ritmo visual das estrofes
+      const isBlank = line.trim() === "";
       return (
-        <div key={idx} className="mb-2 text-gray-800 font-mono whitespace-pre font-medium" style={{ fontSize: `${fontSize}px` }}>
+        <div key={idx} className={`${isBlank ? 'h-6' : 'mb-2'} text-gray-800 font-mono whitespace-pre font-medium`} style={{ fontSize: `${fontSize}px` }}>
           {line || '\u00A0'}
         </div>
       );
@@ -100,7 +104,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ content, fontSize }) => {
     });
 
     return (
-      <div key={idx} className="mb-4 group relative font-mono overflow-x-auto no-scrollbar">
+      <div key={idx} className="mb-6 group relative font-mono overflow-x-auto no-scrollbar">
         <div className="min-w-max">
           <div className="h-7 flex items-end whitespace-pre" style={{ fontSize: `${fontSize + 1}px` }}>
             {chordLineElements}
@@ -114,7 +118,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ content, fontSize }) => {
   };
 
   return (
-    <div className="leading-tight tracking-tight pt-4 md:pt-8 border-t border-gray-50">
+    <div className="leading-tight tracking-tight pt-4 md:pt-8 border-t border-gray-50 pb-20">
       {lines.map((line, idx) => renderLine(line, idx))}
     </div>
   );

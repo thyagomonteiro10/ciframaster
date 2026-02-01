@@ -51,7 +51,7 @@ export const CHORD_SHAPES: Record<string, ChordShape> = {
   'Bbm': { frets: ['x', 1, 3, 3, 2, 1], barre: 1 },
   'Bm': { frets: ['x', 2, 4, 4, 3, 2], barre: 2 },
 
-  // SÉTIMAS (DOMINANTES)
+  // SÉTIMAS
   'C7': { frets: ['x', 3, 2, 3, 1, 0] },
   'D7': { frets: ['x', 'x', 0, 2, 1, 2] },
   'E7': { frets: [0, 2, 0, 1, 0, 0] },
@@ -59,31 +59,7 @@ export const CHORD_SHAPES: Record<string, ChordShape> = {
   'G7': { frets: [3, 2, 0, 0, 0, 1] },
   'A7': { frets: ['x', 0, 2, 0, 2, 0] },
   'B7': { frets: ['x', 2, 1, 2, 0, 2] },
-
-  // SÉTIMAS MAIORES
-  'C7M': { frets: ['x', 3, 2, 0, 0, 0] },
-  'D7M': { frets: ['x', 'x', 0, 2, 2, 2] },
-  'E7M': { frets: [0, 2, 1, 1, 0, 0] },
-  'F7M': { frets: ['x', 3, 3, 2, 1, 0] },
-  'G7M': { frets: [3, 'x', 0, 0, 0, 2] },
-  'A7M': { frets: ['x', 0, 2, 1, 2, 0] },
-  'B7M': { frets: ['x', 2, 4, 3, 4, 2], barre: 2 },
-
-  // SÉTIMAS MENORES
-  'Cm7': { frets: ['x', 3, 5, 3, 4, 3], barre: 3, baseFret: 3 },
-  'Dm7': { frets: ['x', 'x', 0, 2, 1, 1] },
-  'Em7': { frets: [0, 2, 0, 0, 0, 0] },
-  'Fm7': { frets: [1, 3, 1, 1, 1, 1], barre: 1 },
-  'Gm7': { frets: [3, 5, 3, 3, 3, 3], barre: 3 },
-  'Am7': { frets: ['x', 0, 2, 0, 1, 0] },
   'Bm7': { frets: ['x', 2, 4, 2, 3, 2], barre: 2 },
-  'A#m7': { frets: ['x', 1, 3, 1, 2, 1], barre: 1 },
-  'Bbm7': { frets: ['x', 1, 3, 1, 2, 1], barre: 1 },
-
-  // OUTROS / BOSSA / JAZZ
-  'G13': { frets: [3, 'x', 3, 4, 5, 'x'] },
-  'Gb7M': { frets: [2, 'x', 3, 3, 2, 'x'] },
-  'F#7M': { frets: [2, 'x', 3, 3, 2, 'x'] },
 };
 
 export interface ExtendedSong extends Song {
@@ -102,20 +78,6 @@ export const TRENDING_SONGS: Partial<ExtendedSong>[] = [
   { rank: '03', title: 'Asa Branca', artist: 'Luiz Gonzaga', imageUrl: 'https://images.unsplash.com/photo-1526218626217-dc65a29bb444?w=50&h=50&fit=crop', verified: true },
   { rank: '04', title: 'Hallelujah', artist: 'Leonard Cohen', imageUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=50&h=50&fit=crop', verified: true },
   { rank: '05', title: 'Garota de Ipanema', artist: 'Tom Jobim', imageUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=50&h=50&fit=crop', verified: true },
-  { rank: '06', title: 'Ela é Demais', artist: 'Rick e Renner', imageUrl: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=50&h=50&fit=crop', verified: true },
-  { rank: '07', title: 'O Sol', artist: 'Vitor Kley', imageUrl: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=50&h=50&fit=crop', verified: true },
-  { rank: '08', title: 'Aos Pés da Cruz', artist: 'Kleber Lucas', imageUrl: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=50&h=50&fit=crop', verified: true },
-  { rank: '09', title: 'Trem Bala', artist: 'Ana Vilela', imageUrl: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=50&h=50&fit=crop', verified: true },
-];
-
-export const POPULAR_ARTISTS = [
-  { name: 'Legião Urbana', imageUrl: 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=120&h=120&fit=crop' },
-  { name: 'Tom Jobim', imageUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=120&h=120&fit=crop' },
-  { name: 'Rick e Renner', imageUrl: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=120&h=120&fit=crop' },
-  { name: 'Harpa Cristã', imageUrl: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=120&h=120&fit=crop' },
-  { name: 'Luiz Gonzaga', imageUrl: 'https://images.unsplash.com/photo-1526218626217-dc65a29bb444?w=120&h=120&fit=crop' },
-  { name: 'Gabriela Rocha', imageUrl: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=120&h=120&fit=crop' },
-  { name: 'Chitãozinho & Xororó', imageUrl: 'https://images.unsplash.com/photo-1459749411177-0421800673d6?w=120&h=120&fit=crop' },
 ];
 
 export const MOCK_SONGS: ExtendedSong[] = [
@@ -128,28 +90,28 @@ export const MOCK_SONGS: ExtendedSong[] = [
     tuning: 'E A D G B E',
     originalKey: 'C',
     intro: '[Intro] C Am Bm Em',
-    youtubeId: 'pS-WCHm963A',
     content: `
 [C] Todos os dias [Am] quando acordo
 [Bm] Não tenho mais o [Em] tempo que passou
 [C] Mas tenho muito [Am] tempo
 [Bm] Temos todo o tempo do [Em] mundo
-    `
-  },
-  {
-    id: '10',
-    title: 'Que Pais é Este',
-    artist: 'Legião Urbana',
-    genre: 'Rock',
-    difficulty: 'Fácil',
-    tuning: 'E A D G B E',
-    originalKey: 'Em',
-    intro: '[Intro] Em C D',
-    content: `
-[Em] Nas favelas, no se[C]nado
-Sujeira pra todo [D] lado
-Ninguém res[Em]peita a constitui[C]ção
-Mas todos de[D]bocham da nação
+
+[C] Todos os dias [Am] antes de dormir
+[Bm] Lembro e esqueço [Em] como foi o dia
+[C] Sempre em [Am] frente
+[Bm] Não temos tempo a per[Em]der
+
+[C] Nosso suor sa[Am]grado
+[Bm] É bem mais belo [Em] que esse sangue amargo
+[C] E tão se[Am]rio e [Bm] tão cruel [Em]
+[C] Sou um ani[Am]mal [Bm] sentimental [Em]
+[C] Me perco a cada [Am] passo
+[Bm] Me encontro em seu [Em] abraço
+
+[C] Não me diga que [Am] tudo foi em vão
+[Bm] Que o amor é uma [Em] ilusão
+[C] Mas o [Am] tempo [Bm] passa sem pa[Em]rar
+[C] E o deses[Am]pero [Bm] toma o seu lu[Em]gar
     `
   },
   {
@@ -166,51 +128,21 @@ Mas todos de[D]bocham da nação
 É porque eu te [A] amo [B7]
 [E] Quando eu digo que não quero mais te [G#m] ver
 É porque eu te [A] quero [B7]
-    `
-  },
-  {
-    id: '4',
-    title: 'Ela é Demais',
-    artist: 'Rick e Renner',
-    genre: 'Sertanejo',
-    difficulty: 'Fácil',
-    tuning: 'E A D G B E',
-    originalKey: 'G',
-    intro: '[Intro] G Em C D',
-    content: `
-[G] Uma deusa, uma [Em] louca, uma feiti[C]ceira
-[D] Ela é de[G]mais [D]
-    `
-  },
-  {
-    id: '8',
-    title: 'Aos Pés da Cruz',
-    artist: 'Kleber Lucas',
-    genre: 'Gospel',
-    difficulty: 'Fácil',
-    tuning: 'E A D G B E',
-    originalKey: 'A',
-    intro: '[Intro] A E D',
-    content: `
-[A] O meu coração [E] se alegra
-[D] Ao estar em Tua [A] presença
-[A] Pois encontro paz [E] e vida
-[D] Aos pés da Tua [A] cruz
-    `
-  },
-  {
-    id: '2',
-    title: 'Garota de Ipanema',
-    artist: 'Tom Jobim',
-    genre: 'MPB',
-    difficulty: 'Difícil',
-    tuning: 'E A D G B E',
-    originalKey: 'F',
-    intro: '[Intro] F7M G13 Gm7 Gb7M',
-    content: `
-[F7M] Olha que coisa mais linda
-Mais cheia de [G13] graça
-É ela me[Gm7]nina que vem e que [Gb7M] passa
+
+[A] Se eu digo que o amor já se aca[B7]bou
+É porque ele apenas [E] começou
+[A] Se eu finjo que não sinto [B7] nada
+É porque eu sinto [E] tudo [B7]
+
+[E] Chega de mentiras
+[G#m] De negar o meu desejo
+[A] Eu te quero mais que tudo
+[B7] Eu preciso do seu beijo
+
+[E] Eu entrego a minha vida
+[G#m] Pra você fazer o que quiser
+[A] Só não diga que não quer
+[B7] O meu amor, a minha [E] fé
     `
   },
   {
@@ -225,6 +157,24 @@ Mais cheia de [G13] graça
     content: `
 [G] Quando olhei a terra ar[C]dendo
 Qual fo[D]gueira de São Jo[G]ão
+[G] Eu perguntei a [C] Deus do céu, uai
+[D] Por que tamanha judi[G]ação
+
+[G] Que brasa, que for[C]nalha
+[D] Nem um pé de plan[G]tação
+[G] Por falta d'água per[C]di meu gado
+[D] Morreu de sede meu [G] alazão
+
+[G] Até mesmo a asa [C] branca
+[D] Bateu asas do ser[G]tão
+[G] Então eu disse, adeus [C] Rosinha
+[D] Guarda contigo meu cora[G]ção
     `
   }
+];
+
+export const POPULAR_ARTISTS = [
+  { name: 'Legião Urbana', imageUrl: 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=120&h=120&fit=crop' },
+  { name: 'Tom Jobim', imageUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=120&h=120&fit=crop' },
+  { name: 'Rick e Renner', imageUrl: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=120&h=120&fit=crop' },
 ];

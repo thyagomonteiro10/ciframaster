@@ -1,6 +1,6 @@
 
-import React, { useState, useRef, useEffect } from 'react';
 import { Send, X, Sparkles, Music, Guitar, MessageCircle, Bot } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { ExtendedSong } from '../constants';
 
@@ -31,7 +31,7 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
   }, [messages, isTyping]);
 
   const askJoao = async (query: string) => {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+    const ai = new GoogleGenAI({ apiKey: (process.env.API_KEY as string) || '' });
     
     setIsTyping(true);
     setMessages(prev => [...prev, { role: 'user', text: query }]);
@@ -44,8 +44,7 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
         config: {
           systemInstruction: `Você é o João, o mascote palheta do site CifraMaster AI. 
           Sua personalidade é de um músico experiente, amigável e usa gírias leves de músico brasileiro ("fala mestre", "bora pro ensaio", "toca muito").
-          Se o usuário pedir uma música ou cifra, você deve fornecer o JSON da música.
-          Se for apenas conversa, responda amigavelmente.
+          Regra de Ouro: Se o usuário pedir uma música, você DEVE gerar a cifra COMPLETA (letra e acordes do início ao fim). Nunca resuma.
           Sempre que encontrar uma música, inclua o campo "songData" no JSON de resposta.`,
           responseMimeType: "application/json",
           responseSchema: {
@@ -57,10 +56,11 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
                 properties: {
                   title: { type: Type.STRING },
                   artist: { type: Type.STRING },
-                  content: { type: Type.STRING, description: "Cifra com acordes em colchetes [C]" },
+                  content: { type: Type.STRING, description: "Cifra COMPLETA com acordes em colchetes [C]" },
                   genre: { type: Type.STRING },
                   difficulty: { type: Type.STRING, enum: ['Fácil', 'Médio', 'Difícil'] },
-                  originalKey: { type: Type.STRING }
+                  originalKey: { type: Type.STRING },
+                  tuning: { type: Type.STRING }
                 }
               }
             },
@@ -94,7 +94,6 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
 
   return (
     <div className="fixed inset-0 md:inset-auto md:bottom-24 md:right-8 z-[100] flex flex-col w-full md:w-[400px] h-full md:h-[600px] bg-white md:rounded-[2.5rem] shadow-2xl overflow-hidden border border-purple-100 animate-in slide-in-from-bottom-8 duration-300">
-      {/* Header do João */}
       <div className="bg-purple-900 p-6 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -105,7 +104,7 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
           </div>
           <div>
             <h3 className="text-white font-black text-xl tracking-tight">João AI</h3>
-            <p className="text-purple-300 text-[10px] font-bold uppercase tracking-widest">Seu parceiro de cifra</p>
+            <p className="text-purple-300 text-[10px] font-bold uppercase tracking-widest">Cifras Completas</p>
           </div>
         </div>
         <button onClick={onClose} className="p-2 text-purple-200 hover:text-white transition-colors">
@@ -113,7 +112,6 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
         </button>
       </div>
 
-      {/* Área de Chat */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50/50">
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -135,7 +133,7 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
                     onClick={() => onSongFound(msg.songData!)}
                     className="text-[10px] font-black text-purple-600 underline"
                   >
-                    Ver Cifra
+                    Abrir Cifra Completa
                   </button>
                 </div>
               )}
@@ -153,7 +151,6 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
         )}
       </div>
 
-      {/* Input de Chat */}
       <div className="p-6 bg-white border-t border-gray-100 shrink-0">
         <form 
           onSubmit={(e) => { e.preventDefault(); if (input.trim()) askJoao(input); }}
@@ -163,7 +160,7 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Manda a letra, mestre..."
+            placeholder="Manda o nome da música, mestre..."
             className="w-full pl-6 pr-14 py-4 bg-gray-100 rounded-full text-sm font-bold outline-none focus:ring-2 focus:ring-purple-200 focus:bg-white transition-all border border-transparent"
           />
           <button 
@@ -174,17 +171,6 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
             <Send className="w-4 h-4" />
           </button>
         </form>
-        <div className="flex gap-2 mt-4 overflow-x-auto no-scrollbar">
-          {['Rock', 'Sertanejo', 'Cifra Fácil'].map(tag => (
-            <button 
-              key={tag}
-              onClick={() => askJoao(`Me sugere um ${tag}`)}
-              className="px-4 py-1.5 bg-purple-50 text-purple-700 text-[10px] font-black rounded-full whitespace-nowrap border border-purple-100"
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   );
