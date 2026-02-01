@@ -3,7 +3,8 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { Song } from "../types";
 
 export const findChordsWithAI = async (query: string): Promise<Song | null> => {
-  const ai = new GoogleGenAI({ apiKey: (process.env.API_KEY as string) || '' });
+  // Initialize AI client with required API key parameter
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const prompt = `Gere a cifra COMPLETA da música: "${query}". 
   Regras cruciais:
@@ -35,6 +36,7 @@ export const findChordsWithAI = async (query: string): Promise<Song | null> => {
       }
     });
 
+    // Directly access text property from GenerateContentResponse
     const result = JSON.parse(response.text);
     return {
       id: Math.random().toString(36).substr(2, 9),

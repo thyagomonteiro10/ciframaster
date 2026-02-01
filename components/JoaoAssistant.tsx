@@ -31,7 +31,8 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
   }, [messages, isTyping]);
 
   const askJoao = async (query: string) => {
-    const ai = new GoogleGenAI({ apiKey: (process.env.API_KEY as string) || '' });
+    // Initialize AI client with proper API key usage from process.env.API_KEY
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     setIsTyping(true);
     setMessages(prev => [...prev, { role: 'user', text: query }]);
@@ -69,6 +70,7 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
         }
       });
 
+      // Use the response.text property directly without calling it
       const data = JSON.parse(response.text);
       
       setMessages(prev => [...prev, { 
