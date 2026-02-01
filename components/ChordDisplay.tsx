@@ -14,18 +14,18 @@ const ChordHover: React.FC<{ chord: string, children: React.ReactNode, fontSize:
 
   return (
     <span 
-      className="relative inline-block group cursor-pointer md:cursor-help"
+      className="relative inline-block group cursor-pointer"
       onMouseEnter={() => window.innerWidth > 768 && setIsHovered(true)}
       onMouseLeave={() => window.innerWidth > 768 && setIsHovered(false)}
       onClick={handleToggle}
     >
-      <span className="text-purple-600 font-black font-mono transition-colors group-hover:bg-purple-100 rounded px-0.5">
+      <span className="text-[#38cc63] font-bold font-mono transition-colors hover:bg-[#38cc63]/10 rounded px-0.5">
         {children}
       </span>
       {isHovered && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-[100] animate-in fade-in zoom-in duration-200">
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 z-[100] animate-in fade-in zoom-in duration-200">
            <ChordDiagram chord={chord} />
-           <div className="w-3 h-3 bg-white border-r border-b border-purple-100 rotate-45 absolute -bottom-1.5 left-1/2 -translate-x-1/2"></div>
+           <div className="w-3 h-3 bg-white border-r border-b border-gray-100 rotate-45 absolute -bottom-1.5 left-1/2 -translate-x-1/2"></div>
         </div>
       )}
     </span>
@@ -45,7 +45,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ content, fontSize }) => {
           <div className="text-gray-400 font-mono whitespace-pre select-none min-w-max" style={{ fontSize: `${fontSize - 2}px` }}>
             {line.split(/([0-9]+|h|p|\/|\\)/g).map((part, pIdx) => {
               const isDigit = /^[0-9]+$/.test(part);
-              return <span key={pIdx} className={isDigit ? "text-purple-900 font-black" : ""}>{part}</span>;
+              return <span key={pIdx} className={isDigit ? "text-[#38cc63] font-bold" : ""}>{part}</span>;
             })}
           </div>
         </div>
@@ -60,7 +60,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ content, fontSize }) => {
        const chords = line.split(/(\s+)/);
        return (
          <div key={idx} className="overflow-x-auto no-scrollbar">
-           <div className="h-8 flex items-end min-w-max" style={{ fontSize: `${fontSize + 2}px` }}>
+           <div className="h-8 flex items-end min-w-max" style={{ fontSize: `${fontSize + 1}px` }}>
               {chords.map((part, pIdx) => {
                 if (part.trim() === "") return <span key={pIdx} className="whitespace-pre">{part}</span>;
                 return <ChordHover key={pIdx} chord={part} fontSize={fontSize}>{part}</ChordHover>;
@@ -75,10 +75,9 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ content, fontSize }) => {
     const hasChords = parts.some(p => p.startsWith('[') && p.endsWith(']'));
 
     if (!hasChords) {
-      // Se for uma linha vazia no código, renderiza um espaço para manter o ritmo visual das estrofes
       const isBlank = line.trim() === "";
       return (
-        <div key={idx} className={`${isBlank ? 'h-6' : 'mb-2'} text-gray-800 font-mono whitespace-pre font-medium`} style={{ fontSize: `${fontSize}px` }}>
+        <div key={idx} className={`${isBlank ? 'h-6' : 'mb-2'} text-[#555] font-mono whitespace-pre`} style={{ fontSize: `${fontSize}px` }}>
           {line || '\u00A0'}
         </div>
       );
@@ -104,12 +103,12 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ content, fontSize }) => {
     });
 
     return (
-      <div key={idx} className="mb-6 group relative font-mono overflow-x-auto no-scrollbar">
+      <div key={idx} className="mb-4 group relative font-mono overflow-x-auto no-scrollbar">
         <div className="min-w-max">
-          <div className="h-7 flex items-end whitespace-pre" style={{ fontSize: `${fontSize + 1}px` }}>
+          <div className="h-6 flex items-end whitespace-pre" style={{ fontSize: `${fontSize}px` }}>
             {chordLineElements}
           </div>
-          <div className="text-gray-800 whitespace-pre font-medium" style={{ fontSize: `${fontSize}px` }}>
+          <div className="text-[#555] whitespace-pre" style={{ fontSize: `${fontSize}px` }}>
             {lyricsLine || '\u00A0'}
           </div>
         </div>
@@ -118,7 +117,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ content, fontSize }) => {
   };
 
   return (
-    <div className="leading-tight tracking-tight pt-4 md:pt-8 border-t border-gray-50 pb-20">
+    <div className="leading-tight pt-4 md:pt-8 border-t border-gray-100">
       {lines.map((line, idx) => renderLine(line, idx))}
     </div>
   );

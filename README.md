@@ -1,5 +1,5 @@
 
-# 🎸 CifraMaster AI
+# 🎸 Cifra Master
 
 Uma plataforma moderna de cifras musicais potencializada por Inteligência Artificial (Google Gemini).
 

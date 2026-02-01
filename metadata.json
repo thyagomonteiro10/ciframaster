@@ -1,5 +1,5 @@
 {
-  "name": "CifraMaster AI",
+  "name": "Cifra Master",
   "description": "Um portal moderno de cifras de músicas com inteligência artificial para transposição, autoscroll e geração de acordes em tempo real.",
   "requestFramePermissions": [
     "microphone"
