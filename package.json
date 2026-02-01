@@ -6,7 +6,7 @@
   "description": "Plataforma de cifras inteligente com IA",
   "scripts": {
     "start": "serve .",
-    "build": "echo 'Static build - no transformation needed'"
+    "build": "rm -rf dist && mkdir -p dist && cp -r index.html index.tsx components services utils constants.ts types.ts metadata.json dist/ 2>/dev/null || true"
   },
   "dependencies": {
     "react": "^19.2.4",
