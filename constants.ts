@@ -170,6 +170,7 @@ E|---0-2-4----------------------------------------------|
 
 [Solo Intro]
 [Tab - Violão 1]
+Parte 01 de 02
 E|------------------------------------------------------|
 B|-12b14-12b14r12-10-12-----10b12-10b12r10-9-10---------|
 G|----------------------11------------------------------|
@@ -182,10 +183,25 @@ E|-------------------7-----5----------------------------|
 B|-9b10-9b10r9-7-7/9---9\\7---7\\5--2b3r2-0---------------|
 G|----------------------------------------2-------------|
 D|------------------------------------------------------|
+A|------------------------------------------------------|
+E|------------------------------------------------------|
 
 [Tab - Violão 2]
+Parte 01 de 02
+E|------------------------------------------------------|
+B|-15b17-15b17r15-14-15-----14b15-14b15r14-12-14--------|
+G|----------------------14------------------------------|
+D|------------------------------------------------------|
+A|------------------------------------------------------|
+E|------------------------------------------------------|
+
+Parte 02 de 02
 E|--------------------------10-------9------------------|
 B|-12b14-12b14r12-10--10/12----12\\10---10\\9--5b7r5-3-2--|
+G|------------------------------------------------------|
+D|------------------------------------------------------|
+A|------------------------------------------------------|
+E|------------------------------------------------------|
 
 [Primeira Parte]
 
@@ -211,6 +227,14 @@ Eu vou pedir a Deus
     [E]                  [A] (passagem 2)
 Que ilumine os passos seus
 
+[Tab - Passagem 2]
+E|------------------------------------------------------|
+B|------------------------------------------------------|
+G|------------------------------------------------------|
+D|------------------------------------------------------|
+A|-0-0-2-4----------------------------------------------|
+E|------------------------------------------------------|
+
 [Refrão]
 
            [D]
@@ -222,7 +246,40 @@ Mas ela sabe que depois que cresce
               [D]
 O filho vira passarinho 
          [A] (passagem 2)
-E quer voar`
+E quer voar
+
+           [D]
+Eu bem queria continuar ali
+                              [A]
+Mas o destino quis me contrariar
+                           [E]
+E o olhar de minha mãe na porta
+              [D]
+Eu deixei chorando
+           [A]
+A me abençoar
+
+( [Bm] [E] [A] [E] [A] ) (passagem 1)
+
+[Segunda Parte]
+
+   [A]
+A minha mãe naquele dia
+                           [D]
+Me falou do mundo como ele é
+   [E]
+Parece que ela conhecia
+                              [A]
+Cada pedra que eu iria por o pé
+
+E sempre ao lado do meu pai
+              [A7]               [D]
+Da pequena cidade ela jamais saiu
+Ela me disse assim:
+     [A]
+Meu filho, vá com Deus
+    [E]                     [A] (passagem 2)
+Que esse mundo inteiro é seu`
   },
   {
     id: 'zeze-cada-volta',
@@ -231,7 +288,9 @@ E quer voar`
     genre: 'Sertanejo',
     difficulty: 'Médio',
     imageUrl: ZEZE_IMG,
-    content: `[Intro] [F#] [E] [B/D#] [E] [G#m] [F#11] [E] [F#11] [B/D#] [E] [B/D#] [E]
+    content: `[Intro] [F#] [E] [B/D#] [E]
+        [G#m] [F#11] [E] [F#11]
+        [B/D#] [E] [B/D#] [E]
 
 [Primeira Parte]
 
@@ -248,6 +307,23 @@ Sem pensar em mim
        [E]
 Pra recomeçar
       [F#]         [F#4] [F#]
+Já sabendo o fim
+
+[Segunda Parte]
+
+    [B]        [B4]
+Mas é paixão
+  [B]
+E essas coisas de paixão
+            [G°]
+Não tem explicação
+   [E°]
+É simplesmente se entregar
+         [G#m]     [G#m7/F#]
+Deixar acontecer
+   [E]
+E sempre acabo me envolvendo
+       [F#] [F#4] [F#] [F#4]
 
 [Refrão]
 
@@ -258,7 +334,43 @@ Eu insisto em te encontrar
 [B]                [E]
   Como se eu partisse
        [F#]
-Já pensando em voltar`
+Já pensando em voltar
+[B]             [E]
+  Como se no fundo eu não
+    [F#]
+Pudesse existir
+           [B] [E] [F#] [F#11]
+Sem ter você
+
+[B]                  [E]
+  Toda vez que eu volto
+       [F#]
+Eu te vejo sempre igual
+[B]               [E]
+  Como se a saudade fosse
+   [F#]
+A coisa mais banal
+[B]                [E]
+  E eu chegando sempre
+         [F#]
+Como um louco pra dizer
+           [B]
+Que amo você
+          [B]
+   Amo você
+
+[Terceira Parte]
+
+[G#m]                   [D#m]
+    Que me leve pela vida ao coração
+[E]       [F#]            [B] [F#/A#]
+  Como versos pra canção
+        [G#m]            [D#m]
+Volto pra você, volto pelo amor
+       [C#]            [B/D#]        [Db/F]
+Não importa se é um sonho pelo avesso
+      [C#]             [F#] [F#4] [F#] [F#7(4/9)]
+Cada volta é um recomeço`
   },
   {
     id: 'zeze-sera-que',
@@ -267,13 +379,15 @@ Já pensando em voltar`
     genre: 'Sertanejo',
     difficulty: 'Médio',
     imageUrl: ZEZE_IMG,
-    content: `[Intro] [C] [G/B] [Am7] [F9] [C] [G/B] [F9] [C]
+    content: `[Intro] [C] [G/B] [Am7] [F9]
+        [C] [G/B] [F9] [C]
 
 [Primeira Parte]
 
  [C]            [F9]             [C] [F9]
 Diga logo o que te trouxe aqui
  [C]              [F9]           [G] 
+Fala que eu tô louco para saber
 
 ( [Am7] [A#°] [G/B] )
 
@@ -282,15 +396,32 @@ O que fez você mudar tão de repente
           [E7]            [Am]
 O que te fez pensar na gente
       [D7]          [G] [G4] [G]
+Por que voltou aqui?
 
-[Tab - Interlúdio]
-E|------------------------------------------|
-B|-------6/8-6/8~\\-----------5-8/10~\\-------|
-G|-----5-------------------5----------------|
+[Segunda Parte]
 
-E|------------------------------------------|
-B|-6/8\\6-5---5/6\\5--------------------------|
-G|-----------------7---5\\4------------------|
+ [C]          [F9]             [C] [F9] 
+Fala que você não me esqueceu
+       [C]           [F9]         [G] 
+Que a solidão não doeu só em mim
+
+( [Am7] [A#°] [G/B] )
+
+       [F]          [G]            [C]
+O que fez você mudar seu pensamento
+         [E7]           [Am]
+O que tocou seu sentimento
+      [D7]          [G] [G4] [G]
+Por que voltou aqui?
+
+[Pré-Refrão]
+
+        [F]           [G/F]         [C]
+Eu não posso acreditar nessa mudança
+        [E7]        [Am]
+Onde a fera vira santa
+    [F]      [G]       [C] [F] [C]
+E quer voltar pra mim
 
 [Refrão]
 
@@ -301,7 +432,29 @@ Que te machucou por dentro
                      [C]                     
 Que te fez por um momento 
                  [G]
-Entender de solidão?`
+Entender de solidão?
+
+Será que foi saudade
+                          [F]
+Que te fez que quebrar a cara?
+                    [C]           
+Sou doença que não sara 
+        [G]          [C] [F] 
+
+[Tab - Interlúdio]
+Parte 1 de 2
+   [C]           [G/B]  [Am7]          [F] 
+E|------------------------------------------|
+B|-------6/8-6/8~\\-----------5-8/10~\\-------|
+G|-----5-------------------5----------------|
+D|---5-----------------5/7------------------|
+
+Parte 2 de 2
+         [C]          [G]       [F]     
+E|------------------------------------------|
+B|-6/8\\6-5---5/6\\5--------------------------|
+G|-----------------7---5\\4------------------|
+D|--------------------------7---------------|`
   },
   {
     id: 'zeze-flores',
@@ -310,12 +463,21 @@ Entender de solidão?`
     genre: 'Sertanejo',
     difficulty: 'Fácil',
     imageUrl: ZEZE_IMG,
-    content: `[Intro] [Am] [C] [G] [D] (x2)
+    content: `[Intro] [Am] [C] [G] [D]
+        [Am] [C] [G] [D]
 
 [Tab - Intro]
+Parte 1 de 2
+         [Am]        [C]      [G]      [D]
 E|---------------------------------------------|
 B|---8p6-8~----8p6-8~--11\\6~--11\\6~------------|
 G|-5---------5---------------------------------|
+
+Parte 2 de 2
+         [Am]            [C]      [G]         [D]
+E|---------------------------------------------|
+B|---8p6-8p6-8~----8p6-8~--11\\6~--10h11p10-----|
+G|-5-------------5-----------------------------|
 
 [Primeira Parte]
 
@@ -327,6 +489,26 @@ Quero seu amor agora
 Seu carinho pela vida afora
              [C]          [G]           [D] 
 Antes que o fim pare entre nós dois
+
+                 [Am]
+Quero sua companhia
+[C]                   [G]         [D]
+  Caminhar na mesma   direção
+                      [Am]
+É certo que um certo dia
+                [C]           [G]       [D]
+A vida nos separe em alguma estação
+
+[Pré-Refrão]
+
+                 [Am] [C]
+Quero flores em vida
+                   [G] [D]
+Seu sorriso a me iluminar
+                     [Am]
+As lágrimas de despedida
+                 [C] [G] [D] 
+Não estarei por perto pra enxugar
 
 [Refrão]
 
@@ -345,6 +527,27 @@ Colhidas no jardim do amor`
     difficulty: 'Difícil',
     imageUrl: ZEZE_IMG,
     content: `[Intro] [G] [D11/F#] [D/F#] [D9/F#] [D/F#]
+        [G] [D/F#] [Em] [D/F#]
+
+[Tab - Intro]
+Parte 1 de 4
+   [G]
+E|-------3--------3--------3--------3------|
+B|-------3--------3--------3--------3------|
+G|-----0--------0--------0--------0--------|
+D|---0--------0--------0--------0----------|
+
+Parte 2 de 4
+   [D11/F#] [D/F#]      [D9/F#]     [D/F#]
+E|-------3-------2---------0---------------|
+B|-------3-------3---------3---------3-----|
+G|-----2-------2---------2---------2-------|
+D|---0-------0---------0---------0---------|
+
+[Solo]
+E|--------7---8p7--5-----------------------|
+B|-----8------8----7--3--------------------|
+G|--7--------------------------------------|
 
 [Primeira Parte]
 
@@ -356,6 +559,12 @@ Uma vida inteira
     Que com você o meu inverno 
        [D/F#]    [G] [D/F#]
 Vira primavera
+[Em]            [D4(6)]             [C]
+   Vive me jurando estar apaixonada
+            [G7M/B]                [Am]
+Prometeu o mundo e nunca me deu nada
+[Am/G]                  [D/F#]
+     Você não cumpre nada
 
 [Refrão]
 
@@ -377,6 +586,17 @@ Vou acreditando`
     imageUrl: ZEZE_IMG,
     content: `[Intro] [Am] [G] [E]
 
+[Tab - Intro]
+    [Am]
+E|----------------------------------------|
+B|--------0--1-------------0--1--0--------|
+G|--2--2---------2---2--2-----------2-----| (x2)
+
+    [G]
+E|----------------------------------------|
+B|----------------------------------------|
+G|--0--0--2--4---0---0--0--2--4--2--0-----|
+
 [Primeira Parte]
 
 [Am]
@@ -386,6 +606,14 @@ E uma chama no corpo me acender
                              [E]
 Vou fazer um pedido e te chamar
 Pro começo do sonho acontecer
+
+[Am]
+   Quando os dedos tocarem lá no céu
+                            [G]
+O universo vai todo estremecer
+                                [E]
+E as estrelas rodando em carrossel
+Testemunhas do amor, eu e você
 
 [Refrão]
 
@@ -403,7 +631,18 @@ Pro começo do sonho acontecer
     genre: 'Sertanejo',
     difficulty: 'Médio',
     imageUrl: ZEZE_IMG,
-    content: `[Intro] [D] [E] [A]
+    content: `[Intro]
+Parte 1 de 5
+             [D]          [E]
+E|-------5-4-2------------------------------|
+B|---------------3------5-------5-----------|
+G|---4/6---4---2------------4-------4-------|
+D|-----------0------4/6---6---6---6---6-----|
+
+Parte 2 de 5
+               [D]       [E]
+E|----9--9-7-7-5-----4-4h5p4------4---------|
+B|---10-10-9-9-7---7-5-5------5-------5-----|
 
 [Primeira Parte]
 
@@ -424,7 +663,15 @@ E longe um do outro
 A vida é toda errada
                   [A]
 O homem não se importa 
-                   [F#]`
+                   [F#]
+Com a roupa amarrotada
+                [Bm]
+E a mulher em crise 
+                [E]
+Quantas vezes chora
+                 [D]               [E]
+A dor de ter perdido um grande amor 
+     [A]         [F] [Bb]`
   },
   {
     id: 'zeze-pra-nao-pensar',
@@ -449,12 +696,25 @@ E a solidão machucar
   Pra não pensar em você
                     [C#m7/E]
 
+[Pré-Refrão]
+
+[D]
+  Vou enganar a paixão
+[A/C#]             [A] 
+     Mentir pro meu coração
+[Bm]            [E]          [A]
+   Que já deixei de te amar
+
 [Refrão]
 
 [D]                     [Bm]
-   Mas eu me engano, me desespero
+   But eu me engano, me desespero
 [F#m]
-    Porque te amo, porque te quero`
+    Porque te amo, porque te quero
+[Em]                               
+   E a minha vida 
+[A]                   [D]
+  É só pensar em você`
   },
   {
     id: 'zeze-pra-mudar',

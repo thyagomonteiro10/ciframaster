@@ -343,101 +343,100 @@ const App: React.FC = () => {
         </header>
       )}
 
-      {/* Auth Modal */}
+      {/* Auth Modal - COMPACT VERSION */}
       {isAuthModalOpen && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
-           <div className="relative w-full max-w-md bg-white rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-[2px] animate-in fade-in duration-300">
+           <div className="relative w-full max-w-sm bg-white rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
               <button 
                 onClick={() => setIsAuthModalOpen(false)}
-                className="absolute top-6 right-6 p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-all text-gray-500"
+                className="absolute top-4 right-4 p-1.5 bg-gray-100 hover:bg-gray-200 rounded-full transition-all text-gray-500"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
               
-              <div className="p-8 pt-12">
-                 <div className="flex justify-center mb-8">
-                    <div className="w-20 h-20 bg-[#38cc63] rounded-3xl flex items-center justify-center shadow-2xl shadow-[#38cc63]/30">
-                       <Guitar className="w-10 h-10 text-white" />
+              <div className="p-6 pt-8">
+                 <div className="flex justify-center mb-6">
+                    <div className="w-14 h-14 bg-[#38cc63] rounded-2xl flex items-center justify-center shadow-xl shadow-[#38cc63]/20">
+                       <Guitar className="w-7 h-7 text-white" />
                     </div>
                  </div>
                  
-                 <h3 className="text-3xl font-black text-gray-950 text-center uppercase tracking-tight mb-2">
+                 <h3 className="text-2xl font-black text-gray-950 text-center uppercase tracking-tight mb-1">
                    {isRegisterMode ? 'Criar Conta' : 'Acesse seu Palco'}
                  </h3>
-                 <p className="text-gray-500 text-center text-sm mb-10">
-                   Sincronize seus favoritos em todos os dispositivos.
+                 <p className="text-gray-400 text-center text-xs mb-8">
+                   Sincronize seus favoritos em qualquer lugar.
                  </p>
 
-                 <form onSubmit={handleLogin} className="space-y-4">
+                 <form onSubmit={handleLogin} className="space-y-3">
                     {isRegisterMode && (
                       <div className="relative">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input 
                           type="text" 
                           placeholder="Nome Completo" 
                           required
-                          className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent focus:border-[#38cc63] rounded-2xl outline-none transition-all font-bold"
+                          className="w-full pl-10 pr-4 py-3 bg-gray-50 border-2 border-transparent focus:border-[#38cc63] rounded-xl outline-none transition-all font-bold text-sm"
                         />
                       </div>
                     )}
                     <div className="relative">
-                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                        <input 
                          type="email" 
                          placeholder="E-mail" 
                          required
-                         className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent focus:border-[#38cc63] rounded-2xl outline-none transition-all font-bold"
+                         className="w-full pl-10 pr-4 py-3 bg-gray-50 border-2 border-transparent focus:border-[#38cc63] rounded-xl outline-none transition-all font-bold text-sm"
                        />
                     </div>
                     <div className="relative">
-                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                        <input 
                          type="password" 
                          placeholder="Senha" 
                          required
-                         className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent focus:border-[#38cc63] rounded-2xl outline-none transition-all font-bold"
+                         className="w-full pl-10 pr-4 py-3 bg-gray-50 border-2 border-transparent focus:border-[#38cc63] rounded-xl outline-none transition-all font-bold text-sm"
                        />
                     </div>
                     
                     <button 
                       type="submit"
-                      className="w-full py-5 bg-[#38cc63] hover:bg-[#2da34f] text-white rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-xl shadow-[#38cc63]/20 hover:scale-[1.02] active:scale-95"
+                      className="w-full py-4 bg-[#38cc63] hover:bg-[#2da34f] text-white rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-[#38cc63]/10 hover:scale-[1.01] active:scale-95"
                     >
                        {isRegisterMode ? 'Registrar Agora' : 'Entrar no Sistema'}
                     </button>
                  </form>
 
-                 <div className="mt-8 flex flex-col items-center gap-4">
+                 <div className="mt-6 flex flex-col items-center gap-4">
                     <button 
                       onClick={() => setIsRegisterMode(!isRegisterMode)}
-                      className="text-[10px] font-black uppercase text-gray-400 tracking-widest hover:text-[#38cc63] transition-colors"
+                      className="text-[9px] font-black uppercase text-gray-400 tracking-widest hover:text-[#38cc63] transition-colors"
                     >
                       {isRegisterMode ? 'Já tem conta? Entrar' : 'Novo por aqui? Criar conta'}
                     </button>
                     
-                    <div className="flex items-center gap-4 w-full">
+                    <div className="flex items-center gap-3 w-full">
                        <div className="flex-1 h-px bg-gray-100"></div>
-                       <span className="text-[10px] font-bold text-gray-300 uppercase">Ou continue com</span>
+                       <span className="text-[9px] font-bold text-gray-300 uppercase">Ou</span>
                        <div className="flex-1 h-px bg-gray-100"></div>
                     </div>
 
-                    <div className="flex gap-4 w-full">
-                       <button className="flex-1 py-4 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95">
-                          <img src="https://www.google.com/favicon.ico" className="w-4 h-4 grayscale" alt="Google" />
-                          <span className="text-xs font-bold text-gray-600">Google</span>
+                    <div className="flex gap-3 w-full">
+                       <button className="flex-1 py-3 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95">
+                          <img src="https://www.google.com/favicon.ico" className="w-3.5 h-3.5 grayscale" alt="Google" />
+                          <span className="text-[10px] font-bold text-gray-500">Google</span>
                        </button>
-                       <button className="flex-1 py-4 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95">
-                          <Monitor className="w-4 h-4 text-black" />
-                          <span className="text-xs font-bold text-gray-600">Apple</span>
+                       <button className="flex-1 py-3 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95">
+                          <Monitor className="w-3.5 h-3.5 text-black" />
+                          <span className="text-[10px] font-bold text-gray-500">Apple</span>
                        </button>
                     </div>
 
-                    {/* Voltar para Home Button no Entrar */}
                     <button 
                       onClick={goHome}
-                      className="mt-6 flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                      className="mt-2 flex items-center gap-2 px-4 py-2 text-gray-400 hover:text-gray-600 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all"
                     >
-                      <Home className="w-3.5 h-3.5" /> Voltar para o Início
+                      <Home className="w-3 h-3" /> Início
                     </button>
                  </div>
               </div>
