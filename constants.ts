@@ -25,11 +25,17 @@ export const INSTRUMENT_CHORDS: Record<string, Record<string, ChordShape>> = {
     'A': { frets: ['x', 0, 2, 2, 2, 0], fingers: [0, 0, 1, 2, 3, 0], keys: [9, 1, 4] },
     'B': { frets: ['x', 2, 4, 4, 4, 2], barre: 2, keys: [11, 3, 6] },
     'A7': { frets: ['x', 0, 2, 0, 2, 0], fingers: [0, 0, 1, 0, 2, 0], keys: [9, 1, 4, 7] },
+    'B7': { frets: ['x', 2, 1, 2, 0, 2], fingers: [0, 2, 1, 3, 0, 4], keys: [11, 3, 6, 9] },
     'Bm': { frets: ['x', 2, 4, 4, 3, 2], barre: 2, keys: [11, 2, 6] },
     'Am': { frets: ['x', 0, 2, 2, 1, 0], keys: [9, 0, 4] },
+    'Dm': { frets: ['x', 'x', 0, 2, 3, 1], fingers: [0, 0, 0, 2, 3, 1], keys: [2, 5, 9] },
+    'Bb': { frets: ['x', 1, 3, 3, 3, 1], barre: 1, keys: [10, 2, 5] },
     'F#': { frets: [2, 4, 4, 3, 2, 2], barre: 2, keys: [6, 10, 1] },
     'G#m': { frets: [4, 6, 6, 4, 4, 4], barre: 4, keys: [8, 11, 3] },
     'F#m': { frets: [2, 4, 4, 2, 2, 2], barre: 2, keys: [6, 9, 1] },
+    'E7': { frets: [0, 2, 0, 1, 0, 0], keys: [4, 8, 11, 2] },
+    'E/G#': { frets: [4, 'x', 2, 4, 5, 'x'], baseFret: 4, keys: [8, 11, 4] },
+    'A/C#': { frets: ['x', 4, 2, 2, 2, 'x'], baseFret: 2, keys: [1, 4, 9] },
   },
   'Ukulele': {
     'C': { frets: [0, 0, 0, 3], keys: [0, 4, 7] },
@@ -41,20 +47,8 @@ export const INSTRUMENT_CHORDS: Record<string, Record<string, ChordShape>> = {
     'B': { frets: [4, 3, 2, 2], barre: 2, keys: [11, 3, 6] },
     'Am': { frets: [2, 0, 0, 0], keys: [9, 0, 4] },
     'Bm': { frets: [4, 2, 2, 2], barre: 2, keys: [11, 2, 6] },
-  },
-  'Teclado': {
-    'C': { frets: [], keys: [0, 4, 7] },
-    'Cm': { frets: [], keys: [0, 3, 7] },
-    'D': { frets: [], keys: [2, 6, 9] },
-    'Dm': { frets: [], keys: [2, 5, 9] },
-    'E': { frets: [], keys: [4, 8, 11] },
-    'Em': { frets: [], keys: [4, 7, 11] },
-    'F': { frets: [], keys: [5, 9, 0] },
-    'G': { frets: [], keys: [7, 11, 2] },
-    'A': { frets: [], keys: [9, 1, 4] },
-    'Am': { frets: [], keys: [9, 0, 4] },
-    'B': { frets: [], keys: [11, 3, 6] },
-    'Bm': { frets: [], keys: [11, 2, 6] },
+    'Dm': { frets: [2, 2, 1, 0], keys: [2, 5, 9] },
+    'Bb': { frets: [3, 2, 1, 1], barre: 1, keys: [10, 2, 5] },
   }
 };
 
@@ -71,6 +65,152 @@ export interface ExtendedSong extends Song {
 }
 
 const ZEZE_IMG = 'https://images.unsplash.com/photo-1521417531039-75e91486cc40?w=400&h=400&fit=crop';
+const RICK_RENNER_IMG = 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=400&h=400&fit=crop';
+
+export const RICK_RENNER_SONGS: ExtendedSong[] = [
+  {
+    id: 'rick-demais',
+    title: 'Ela É Demais',
+    artist: 'Rick & Renner',
+    genre: 'Sertanejo',
+    difficulty: 'Fácil',
+    imageUrl: RICK_RENNER_IMG,
+    verified: true,
+    content: `Tom: [F]
+
+[Intro]
+[F] [Dm] [Bb] [C] [F]
+
+[Solo da Introdução]
+e|-----------------------------------------6-6--6h5----------------------
+b|----------------------6h5-5/6-6h5-----------------8-6------------------
+g|----------------5-5-5-------------6-6h7----------------7-5-------------
+d|-----2-3-5--5/7--------------------------------------------7-5-3---3---
+a|-3-5-------------------------------------------------------------5-----
+E|-----------------------------------------------------------------------
+
+e|-------------8/10-8-7-7/8--12--13-13--10-10-10--8-8-8--6-6-6-5h6p5--------|
+b|---------6-8-------------------------------------------------------6-6/8--|
+g|-----5-7------------------------------------------------------------------|
+d|-5/7----------------------------------------------------------------------|
+a|--------------------------------------------------------------------------|
+E|--------------------------------------------------------------------------|
+
+[Primeira Parte]
+
+[F]              [Dm]
+Ela tem um jeito lindo de me olhar nos olhos
+[Bb]
+Me despertando sonhos
+[C]      [Bb] [C]
+Loucuras de amor
+[F]              [Dm]
+Ela tem um jeito doce de tocar meu corpo
+[Bb]
+Que me deixa louco
+[C]      [Bb] [C]
+Um louco sonhador
+
+[Pré-Refrão]
+
+[F]      [Dm]     [Bb]
+Ela sabe me prender como ninguém
+[C]       [F]
+Tem seus mistérios
+[Dm]      [Bb]
+Sabe se fazer como ninguém
+[C]      [Bb] [C]
+Meu caso sério
+
+[Refrão]
+
+[F]      [Dm]     [Bb]
+Uma Deusa, uma louca, uma feiticeira
+[C]      [F]
+ Ela é demais
+[F]      [Dm]     [Bb]
+ Quando beija a minha boca e se entrega inteira
+ [C]      [F]
+ Meu Deus ela é demais
+
+[Solo]
+
+[Segunda Parte]
+
+[F]              [Dm]
+Ela tem o brilho forte brilha feito estrela
+[Bb]     [C]      [Bb] [C]
+Ah eu adoro vê-la fazendo aquele amor
+[F]              [Dm]
+Que me enlouquece me embriaga me envolve inteiro
+[Bb]
+Que me faz prisioneiro
+[C]      [Bb] [C]
+Um louco sonhador
+
+[Pré-Refrão]
+
+[F]      [Dm]     [Bb]
+Ela sabe me prender como ninguém
+[C]       [F]
+Tem seus mistérios
+[Dm]      [Bb]
+Sabe se fazer como ninguém
+[C]      [Bb] [C]
+Meu caso sério
+
+[Refrão]
+
+[F]      [Dm]     [Bb]
+Uma Deusa, uma louca, uma feiticeira
+[C]      [F]
+Ela é demais
+[F]      [Dm]     [Bb]
+Quando beija a minha boca e se entrega inteira
+[C]      [F]
+Meu Deus ela é demais`
+  },
+  {
+    id: 'rick-bares',
+    title: 'Nos Bares Da Cidade',
+    artist: 'Rick & Renner',
+    genre: 'Sertanejo',
+    difficulty: 'Médio',
+    imageUrl: RICK_RENNER_IMG,
+    content: `[Intro] [E] [B7] [A] [B7] [E]
+
+[Primeira Parte]
+
+[E]
+Garçom, olhe pelo espelho
+                [B7]
+Estou num estado deplorável
+[A]
+Sei que o meu rosto está vermelho
+                  [E]
+E o meu pranto é inevitável
+
+[E]
+Ela me deixou e foi embora
+                   [B7]
+Com outro alguém que nem conhece
+[A]
+Por isso eu estou aqui agora
+                      [E]  (passagem 2)
+Bebendo o que a gente merece
+
+[Refrão]
+
+          [A]
+E nos bares da cidade
+                [E]
+Eu vou curtir a solidão
+           [B7]
+Bebendo e chorando
+             [E]
+A morte da minha paixão`
+  }
+];
 
 export const JULIANY_SOUZA_SONGS: ExtendedSong[] = [
   {
@@ -251,7 +391,7 @@ E quer voar
            [D]
 Eu bem queria continuar ali
                               [A]
-Mas o destino quis me contrariar
+But o destino quis me contrariar
                            [E]
 E o olhar de minha mãe na porta
               [D]
@@ -279,7 +419,7 @@ Ela me disse assim:
      [A]
 Meu filho, vá com Deus
     [E]                     [A] (passagem 2)
-Que esse mundo inteiro é seu`
+Que esse world inteiro é seu`
   },
   {
     id: 'zeze-cada-volta',
@@ -371,472 +511,5 @@ Volto pra você, volto pelo amor
 Não importa se é um sonho pelo avesso
       [C#]             [F#] [F#4] [F#] [F#7(4/9)]
 Cada volta é um recomeço`
-  },
-  {
-    id: 'zeze-sera-que',
-    title: 'Será Que Foi Saudade?',
-    artist: 'Zezé Di Camargo & Luciano',
-    genre: 'Sertanejo',
-    difficulty: 'Médio',
-    imageUrl: ZEZE_IMG,
-    content: `[Intro] [C] [G/B] [Am7] [F9]
-        [C] [G/B] [F9] [C]
-
-[Primeira Parte]
-
- [C]            [F9]             [C] [F9]
-Diga logo o que te trouxe aqui
- [C]              [F9]           [G] 
-Fala que eu tô louco para saber
-
-( [Am7] [A#°] [G/B] )
-
-       [F9]         [G]            [C]
-O que fez você mudar tão de repente
-          [E7]            [Am]
-O que te fez pensar na gente
-      [D7]          [G] [G4] [G]
-Por que voltou aqui?
-
-[Segunda Parte]
-
- [C]          [F9]             [C] [F9] 
-Fala que você não me esqueceu
-       [C]           [F9]         [G] 
-Que a solidão não doeu só em mim
-
-( [Am7] [A#°] [G/B] )
-
-       [F]          [G]            [C]
-O que fez você mudar seu pensamento
-         [E7]           [Am]
-O que tocou seu sentimento
-      [D7]          [G] [G4] [G]
-Por que voltou aqui?
-
-[Pré-Refrão]
-
-        [F]           [G/F]         [C]
-Eu não posso acreditar nessa mudança
-        [E7]        [Am]
-Onde a fera vira santa
-    [F]      [G]       [C] [F] [C]
-E quer voltar pra mim
-
-[Refrão]
-
-                 [G]
-Será que foi saudade
-                     [F]
-Que te machucou por dentro
-                     [C]                     
-Que te fez por um momento 
-                 [G]
-Entender de solidão?
-
-Será que foi saudade
-                          [F]
-Que te fez que quebrar a cara?
-                    [C]           
-Sou doença que não sara 
-        [G]          [C] [F] 
-
-[Tab - Interlúdio]
-Parte 1 de 2
-   [C]           [G/B]  [Am7]          [F] 
-E|------------------------------------------|
-B|-------6/8-6/8~\\-----------5-8/10~\\-------|
-G|-----5-------------------5----------------|
-D|---5-----------------5/7------------------|
-
-Parte 2 de 2
-         [C]          [G]       [F]     
-E|------------------------------------------|
-B|-6/8\\6-5---5/6\\5--------------------------|
-G|-----------------7---5\\4------------------|
-D|--------------------------7---------------|`
-  },
-  {
-    id: 'zeze-flores',
-    title: 'Flores Em Vida',
-    artist: 'Zezé Di Camargo & Luciano',
-    genre: 'Sertanejo',
-    difficulty: 'Fácil',
-    imageUrl: ZEZE_IMG,
-    content: `[Intro] [Am] [C] [G] [D]
-        [Am] [C] [G] [D]
-
-[Tab - Intro]
-Parte 1 de 2
-         [Am]        [C]      [G]      [D]
-E|---------------------------------------------|
-B|---8p6-8~----8p6-8~--11\\6~--11\\6~------------|
-G|-5---------5---------------------------------|
-
-Parte 2 de 2
-         [Am]            [C]      [G]         [D]
-E|---------------------------------------------|
-B|---8p6-8p6-8~----8p6-8~--11\\6~--10h11p10-----|
-G|-5-------------5-----------------------------|
-
-[Primeira Parte]
-
-                 [Am]
-Quero seu amor agora
-[C]                  [G] [D]
-  Não a saudade depois
-                        [Am]
-Seu carinho pela vida afora
-             [C]          [G]           [D] 
-Antes que o fim pare entre nós dois
-
-                 [Am]
-Quero sua companhia
-[C]                   [G]         [D]
-  Caminhar na mesma   direção
-                      [Am]
-É certo que um certo dia
-                [C]           [G]       [D]
-A vida nos separe em alguma estação
-
-[Pré-Refrão]
-
-                 [Am] [C]
-Quero flores em vida
-                   [G] [D]
-Seu sorriso a me iluminar
-                     [Am]
-As lágrimas de despedida
-                 [C] [G] [D] 
-Não estarei por perto pra enxugar
-
-[Refrão]
-
-[Am]        [C]       [G]
-Eu quero viver a vida
-        [D]        [Am]
-Quero flores em vida
-    [C]           [G]          [D]
-Colhidas no jardim do amor`
-  },
-  {
-    id: 'zeze-mentes',
-    title: 'Mentes Tão Bem',
-    artist: 'Zezé Di Camargo & Luciano',
-    genre: 'Sertanejo',
-    difficulty: 'Difícil',
-    imageUrl: ZEZE_IMG,
-    content: `[Intro] [G] [D11/F#] [D/F#] [D9/F#] [D/F#]
-        [G] [D/F#] [Em] [D/F#]
-
-[Tab - Intro]
-Parte 1 de 4
-   [G]
-E|-------3--------3--------3--------3------|
-B|-------3--------3--------3--------3------|
-G|-----0--------0--------0--------0--------|
-D|---0--------0--------0--------0----------|
-
-Parte 2 de 4
-   [D11/F#] [D/F#]      [D9/F#]     [D/F#]
-E|-------3-------2---------0---------------|
-B|-------3-------3---------3---------3-----|
-G|-----2-------2---------2---------2-------|
-D|---0-------0---------0---------0---------|
-
-[Solo]
-E|--------7---8p7--5-----------------------|
-B|-----8------8----7--3--------------------|
-G|--7--------------------------------------|
-
-[Primeira Parte]
-
-[C]                     [D9/F#]
-  Me promete amor sincero 
-     [D/F#]   [G]    [D/F#]
-Uma vida inteira
-[C/E]            [C]          [D5(9)]
-    Que com você o meu inverno 
-       [D/F#]    [G] [D/F#]
-Vira primavera
-[Em]            [D4(6)]             [C]
-   Vive me jurando estar apaixonada
-            [G7M/B]                [Am]
-Prometeu o mundo e nunca me deu nada
-[Am/G]                  [D/F#]
-     Você não cumpre nada
-
-[Refrão]
-
- [C]          [D5(9)] 
-Mentes tão bem
-[D/F#]                [G] [D6(11)/F#]
-     Que parece verdade
-               [Em7]
-O que você me fala
-       [D5(9)]
-Vou acreditando`
-  },
-  {
-    id: 'zeze-sonho-de-amor',
-    title: 'Sonho de Amor',
-    artist: 'Zezé Di Camargo & Luciano',
-    genre: 'Sertanejo',
-    difficulty: 'Fácil',
-    imageUrl: ZEZE_IMG,
-    content: `[Intro] [Am] [G] [E]
-
-[Tab - Intro]
-    [Am]
-E|----------------------------------------|
-B|--------0--1-------------0--1--0--------|
-G|--2--2---------2---2--2-----------2-----| (x2)
-
-    [G]
-E|----------------------------------------|
-B|----------------------------------------|
-G|--0--0--2--4---0---0--0--2--4--2--0-----|
-
-[Primeira Parte]
-
-[Am]
-   Se uma estrela cadente o céu cruzar
-                             [G]
-E uma chama no corpo me acender
-                             [E]
-Vou fazer um pedido e te chamar
-Pro começo do sonho acontecer
-
-[Am]
-   Quando os dedos tocarem lá no céu
-                            [G]
-O universo vai todo estremecer
-                                [E]
-E as estrelas rodando em carrossel
-Testemunhas do amor, eu e você
-
-[Refrão]
-
-[F]     [G]            [C]              [Am]
-  As noites sabem como eu te esperei
-[F]      [G]             [C] [Am]
-  Não conto pra ninguém
-[F]    [G]           [C]            [Am]
-  A lua sabe que eu me apaixonei`
-  },
-  {
-    id: 'zeze-dois-coracoes',
-    title: 'Dois Corações e Uma História',
-    artist: 'Zezé Di Camargo & Luciano',
-    genre: 'Sertanejo',
-    difficulty: 'Médio',
-    imageUrl: ZEZE_IMG,
-    content: `[Intro]
-Parte 1 de 5
-             [D]          [E]
-E|-------5-4-2------------------------------|
-B|---------------3------5-------5-----------|
-G|---4/6---4---2------------4-------4-------|
-D|-----------0------4/6---6---6---6---6-----|
-
-Parte 2 de 5
-               [D]       [E]
-E|----9--9-7-7-5-----4-4h5p4------4---------|
-B|---10-10-9-9-7---7-5-5------5-------5-----|
-
-[Primeira Parte]
-
-               [Bm]
-No meio da conversa
-                 [E]
-De um caso terminando
-                     [A] [A7M]
-Um fala e o outro escuta 
-            [A6]         [F#m]
-E os olhos vão chorando
-
-[Refrão]
-
-              [D]
-E longe um do outro
-                 [E]
-A vida é toda errada
-                  [A]
-O homem não se importa 
-                   [F#]
-Com a roupa amarrotada
-                [Bm]
-E a mulher em crise 
-                [E]
-Quantas vezes chora
-                 [D]               [E]
-A dor de ter perdido um grande amor 
-     [A]         [F] [Bb]`
-  },
-  {
-    id: 'zeze-pra-nao-pensar',
-    title: 'Pra Não Pensar Em Você',
-    artist: 'Zezé Di Camargo & Luciano',
-    genre: 'Sertanejo',
-    difficulty: 'Médio',
-    imageUrl: ZEZE_IMG,
-    content: `[Intro] [A9] [C#m7/E] [A9] [C#m7/E]
-
-[Tab - Intro]
-E|-17----19--21--------10/9-----------------|
-B|---------------17---------12/10--9/---2---|
-
-[Primeira Parte]
-
-[A]
-  Quando a saudade doer
-                  [C#m7/E]
-E a solidão machucar
-[A]
-  Pra não pensar em você
-                    [C#m7/E]
-
-[Pré-Refrão]
-
-[D]
-  Vou enganar a paixão
-[A/C#]             [A] 
-     Mentir pro meu coração
-[Bm]            [E]          [A]
-   Que já deixei de te amar
-
-[Refrão]
-
-[D]                     [Bm]
-   But eu me engano, me desespero
-[F#m]
-    Porque te amo, porque te quero
-[Em]                               
-   E a minha vida 
-[A]                   [D]
-  É só pensar em você`
-  },
-  {
-    id: 'zeze-pra-mudar',
-    title: 'Pra Mudar Minha Vida',
-    artist: 'Zezé Di Camargo & Luciano',
-    genre: 'Sertanejo',
-    difficulty: 'Fácil',
-    imageUrl: ZEZE_IMG,
-    content: `[Intro] [F#m] [A] [E]
-
-[Tab - Intro]
-E|------------------------------------------|
-B|------------------------------------------|
-G|-------4----------------------------------|
-D|-2-4/6---6\\4-2-4--4-6-7-------------------|
-
-[Primeira Parte]
-
-Queria tanto te dizer
-                 [E] [E4]
-Que eu já não te amo 
-     [E]                     
-Que seu amor em minha vida
-               [B7]
-Foi mais um engano
-
-[Refrão]
-
-                            [A] [B]
-Você chegou me deixou sem saída
-                 
-Me fez te querer
-                       [E]`
-  },
-  {
-    id: 'zeze-dou-a-vida',
-    title: 'Dou a Vida Por Um Beijo',
-    artist: 'Zezé Di Camargo & Luciano',
-    genre: 'Sertanejo',
-    difficulty: 'Fácil',
-    imageUrl: ZEZE_IMG,
-    content: `[Intro] [G] [Am7] [C] [G]
-
-[Tab - Intro]
-E|-10-8-7---------------------------------------------|
-B|--------10-8-10-8-7---7-----------------------------|
-G|--------------------9----9\\7--5---------------------|
-
-[Primeira Parte]
-
-[Am7]                      [G]
-    Difícil demais, te amar assim
-[Am7]                        [G]
-    Minha timidez tem que ter um fim
-
-[Refrão]
-
-[G]       [D/F#] [Em]        [C]         [G]
-  Eu te amo,     eu preciso te dizer
-      [D/F#]      [Am7] 
-Todo dia, toda noite 
-   [G/B] [C]    [D/F#] [G]`
-  },
-  {
-    id: 'zeze-voce-vai-ver',
-    title: 'Você Vai Ver',
-    artist: 'Zezé Di Camargo & Luciano',
-    genre: 'Sertanejo',
-    difficulty: 'Médio',
-    imageUrl: ZEZE_IMG,
-    content: `[Intro] [C] [Dm] [A7] [Bb2] [F] [C] [F] [C7]
-
-[Tab - Solo Final]
-E|-8-6-5-----------------------------------------------|
-B|-------8-6-5-----------------------------------------|
-G|-------------7-5-------------------------------------|
-D|-----------------8-7-5-------------------------------|
-A|-----------------------8-7-5-------------------------|
-E|-----------------------------8-6-5-------------------|
-
-[Primeira Parte]
-
-[F]                  [C]           [Dm] [Dm/C]
-  Você pode encontrar muitos amores
-[Bb2]                     [F/A]             
-    Mas ninguém vai te dar 
-             [Gm] [Gm7]
-
-[Refrão]
-
-          [F]             [C]          [Dm]
-Eu vou ficar, guardado no seu coração
-           [F7]       [Bb2]
-Na noite fria, solidão`
-  },
-  {
-    id: 'zeze-e-o-amor',
-    title: 'É o Amor',
-    artist: 'Zezé Di Camargo & Luciano',
-    genre: 'Sertanejo',
-    difficulty: 'Médio',
-    tuning: 'Padrão',
-    originalKey: 'B',
-    verified: true,
-    imageUrl: ZEZE_IMG,
-    content: `[Intro] [E] [B] [F#7] [B] [F#7]
-
-[Primeira Parte]
-
-[B] Eu não vou negar que sou louco por você
-Tô maluco pra te ver, eu não vou ne[F#7]gar
-Eu [C#m]não vou negar, sem vo[C#m/B]cê tudo é sau[F#7]dade
-Você traz feli[C#m7]cidade
-[F#] Eu não vou ne[B]gar [C#m] [F#]
-[B] Eu não vou negar, você é meu doce mel
-Meu pedacinho de [B7]céu, eu não vou ne[E]gar
-
-[Refrão]
-
-É o a[E]mor, que mexe com a minha cabeça 
-E me deixa as[B]sim
-Que faz eu pensar em você 
-E esque[F#7]cer de mim`
   }
 ];

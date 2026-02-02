@@ -7,7 +7,7 @@ import {
   ArrowUpDown, Type, PlusCircle, Timer, Activity, Folder, ExternalLink, Info, Download, PlayCircle,
   Keyboard, Monitor, Youtube, Sparkles, Zap, AlertCircle, Eye, User, LogIn, Mail, Lock, LogOut, Home
 } from 'lucide-react';
-import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS } from './constants';
+import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS, RICK_RENNER_SONGS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
 import { transposeContent } from './utils/musicUtils';
 import SearchInput from './components/SearchInput';
@@ -130,6 +130,10 @@ const App: React.FC = () => {
        handleSongSelect(JULIANY_SOUZA_SONGS[0]);
        return;
     }
+    if (q.includes('rick') || q.includes('demais')) {
+       handleSongSelect(RICK_RENNER_SONGS[0]);
+       return;
+    }
     setIsLoading(true);
     const aiSong = await findChordsWithAI(query);
     if (aiSong) {
@@ -184,7 +188,7 @@ const App: React.FC = () => {
   }, [currentSong, transposedContent, transposition]);
 
   const groupedContent = useMemo(() => {
-    const allSongs = [...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS];
+    const allSongs = [...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS, ...RICK_RENNER_SONGS];
     const map: Record<string, Record<string, ExtendedSong[]>> = {};
     allSongs.forEach(song => {
       if (!map[song.genre]) map[song.genre] = {};
@@ -343,7 +347,7 @@ const App: React.FC = () => {
         </header>
       )}
 
-      {/* Auth Modal - COMPACT VERSION */}
+      {/* Auth Modal */}
       {isAuthModalOpen && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-[2px] animate-in fade-in duration-300">
            <div className="relative w-full max-w-sm bg-white rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
@@ -465,8 +469,9 @@ const App: React.FC = () => {
               <h1 className="text-5xl font-black text-gray-900 tracking-tighter uppercase mb-12">{selectedGenre}</h1>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Object.keys(groupedContent[selectedGenre!] || {}).map((artist) => (
-                  <button key={artist} onClick={() => { setSelectedArtist(artist); setCurrentSong(null); }} className="group flex flex-col bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-[#38cc63] p-5 text-left">
+                  <button key={artist} onClick={() => { setSelectedArtist(artist); setCurrentSong(null); }} className="group flex flex-col bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-[#38cc63] p-5 text-left transition-all hover:shadow-lg">
                      <h3 className="font-black text-gray-900 uppercase tracking-tight group-hover:text-[#38cc63]">{artist}</h3>
+                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">{groupedContent[selectedGenre!][artist].length} músicas</p>
                   </button>
                 ))}
               </div>
@@ -480,9 +485,18 @@ const App: React.FC = () => {
               <h1 className="text-4xl font-black text-gray-900 tracking-tighter uppercase mb-12">{selectedArtist}</h1>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {(groupedContent[selectedGenre!]?.[selectedArtist!] || []).map((song) => (
-                  <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-5 bg-white border border-gray-100 rounded-2xl hover:border-[#38cc63] cursor-pointer">
+                  <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-5 bg-white border border-gray-100 rounded-2xl hover:border-[#38cc63] cursor-pointer transition-all">
                     <h4 className="font-bold text-gray-800 text-lg group-hover:text-[#38cc63]">{song.title}</h4>
-                    <Play className="w-4 h-4 text-[#38cc63]" />
+                    <div className="flex items-center gap-3">
+                       <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${
+                         song.difficulty === 'Fácil' ? 'bg-green-100 text-green-600' :
+                         song.difficulty === 'Médio' ? 'bg-yellow-100 text-yellow-600' :
+                         'bg-red-100 text-red-600'
+                       }`}>
+                         {song.difficulty}
+                       </span>
+                       <Play className="w-4 h-4 text-[#38cc63]" />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -576,6 +590,11 @@ const App: React.FC = () => {
                    {!isViewMode && (
                      <div className="flex items-center gap-2 mb-4">
                        <span className="text-[10px] font-black text-[#38cc63] uppercase tracking-widest bg-[#38cc63]/10 px-2 py-0.5 rounded">Tom: {currentSong.originalKey || 'A'}</span>
+                       {currentSong.verified && (
+                         <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded border border-blue-100 flex items-center gap-1">
+                           <CheckCircle2 className="w-3 h-3" /> Verificada
+                         </span>
+                       )}
                      </div>
                    )}
                    <div className="flex items-center justify-between gap-4">
