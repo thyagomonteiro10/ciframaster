@@ -5,7 +5,7 @@ import {
   Globe, ChevronRight, Menu, Search, Video, Settings, ChevronDown, 
   Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users, Flame, Disc, ArrowLeft, CheckCircle2,
   ArrowUpDown, Type, PlusCircle, Timer, Activity, Folder, ExternalLink, Info, Download, PlayCircle,
-  Keyboard, Monitor, Youtube, Sparkles, Zap, AlertCircle, Eye
+  Keyboard, Monitor, Youtube, Sparkles, Zap, AlertCircle, Eye, User, LogIn, Mail, Lock, LogOut, Home
 } from 'lucide-react';
 import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
@@ -42,13 +42,32 @@ const App: React.FC = () => {
   const [favorites, setFavorites] = useState<ExtendedSong[]>([]);
   const [isFavFolderOpen, setIsFavFolderOpen] = useState(true);
   const [isViewMode, setIsViewMode] = useState(false);
+  
+  // Auth States
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{ name: string; email: string } | null>(null);
 
-  // Load favorites from local storage on mount
+  // Helper to go back home
+  const goHome = useCallback(() => {
+    setCurrentSong(null);
+    setSelectedGenre(null);
+    setSelectedArtist(null);
+    setIsViewMode(false);
+    setIsAuthModalOpen(false);
+    setIsJoaoOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  // Load user and favorites from local storage on mount
   useEffect(() => {
-    const saved = localStorage.getItem('cifra_master_favorites');
-    if (saved) {
+    const savedUser = localStorage.getItem('cifra_master_user');
+    if (savedUser) setCurrentUser(JSON.parse(savedUser));
+
+    const savedFavs = localStorage.getItem('cifra_master_favorites');
+    if (savedFavs) {
       try {
-        setFavorites(JSON.parse(saved));
+        setFavorites(JSON.parse(savedFavs));
       } catch (e) {
         console.error("Erro ao carregar favoritos", e);
       }
@@ -61,6 +80,10 @@ const App: React.FC = () => {
   }, [favorites]);
 
   const toggleFavorite = useCallback((song: ExtendedSong) => {
+    if (!currentUser) {
+      setIsAuthModalOpen(true);
+      return;
+    }
     setFavorites(prev => {
       const isFav = prev.some(f => f.id === song.id);
       if (isFav) {
@@ -69,38 +92,25 @@ const App: React.FC = () => {
         return [...prev, song];
       }
     });
-  }, []);
+  }, [currentUser]);
 
   const isCurrentFavorite = useMemo(() => {
     if (!currentSong) return false;
     return favorites.some(f => f.id === currentSong.id);
   }, [favorites, currentSong]);
 
-  const groupedContent = useMemo(() => {
-    const allSongs = [...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS];
-    const map: Record<string, Record<string, ExtendedSong[]>> = {};
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const user = { name: 'Mestre da Música', email: 'musico@ciframaster.com' };
+    setCurrentUser(user);
+    localStorage.setItem('cifra_master_user', JSON.stringify(user));
+    setIsAuthModalOpen(false);
+  };
 
-    allSongs.forEach(song => {
-      if (!map[song.genre]) map[song.genre] = {};
-      if (!map[song.genre][song.artist]) map[song.genre][song.artist] = [];
-      map[song.genre][song.artist].push(song);
-    });
-
-    return map;
-  }, []);
-
-  const songChords = useMemo(() => {
-    if (!currentSong) return [];
-    const chords = new Set<string>();
-    const matches = currentSong.content.match(/\[(.*?)\]/g);
-    if (matches) {
-      matches.forEach(m => {
-        const chord = m.slice(1, -1).trim();
-        if (chord) chords.add(chord);
-      });
-    }
-    return Array.from(chords);
-  }, [currentSong]);
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('cifra_master_user');
+  };
 
   const handleSongSelect = useCallback((song: ExtendedSong) => {
     setCurrentSong(song);
@@ -130,19 +140,6 @@ const App: React.FC = () => {
     setIsLoading(false);
   }, [handleSongSelect]);
 
-  const handleGenreClick = (genre: string) => {
-    setSelectedGenre(genre);
-    setSelectedArtist(null);
-    setCurrentSong(null);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleArtistClick = (artist: string) => {
-    setSelectedArtist(artist);
-    setCurrentSong(null);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   const handleBack = () => {
     if (currentSong) {
       setCurrentSong(null);
@@ -169,31 +166,49 @@ const App: React.FC = () => {
     return transposeContent(currentSong.content, transposition);
   }, [currentSong, transposition]);
 
-  // Download functionality
   const handleDownload = useCallback(() => {
     if (!currentSong) return;
-
     const timestamp = new Date().toLocaleDateString('pt-BR');
     const header = `--------------------------------------------------\nCIFRA MASTER - Seu portal de música\nGerado em: ${timestamp}\n--------------------------------------------------\n\nMúsica: ${currentSong.title}\nArtista: ${currentSong.artist}\nTom Original: ${currentSong.originalKey || 'N/A'}\nTransposição Atual: ${transposition > 0 ? '+' : ''}${transposition} semitonia(s)\n\n--------------------------------------------------\n\n`;
     const footer = `\n\n--------------------------------------------------\nBaixe mais cifras em: Cifra Master AI\n--------------------------------------------------`;
-    
     const fullText = header + transposedContent + footer;
     const blob = new Blob([fullText], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
-    
     const link = document.createElement('a');
     link.href = url;
     link.download = `${currentSong.artist} - ${currentSong.title}.txt`;
     document.body.appendChild(link);
     link.click();
-    
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   }, [currentSong, transposedContent, transposition]);
 
+  const groupedContent = useMemo(() => {
+    const allSongs = [...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS];
+    const map: Record<string, Record<string, ExtendedSong[]>> = {};
+    allSongs.forEach(song => {
+      if (!map[song.genre]) map[song.genre] = {};
+      if (!map[song.genre][song.artist]) map[song.genre][song.artist] = [];
+      map[song.genre][song.artist].push(song);
+    });
+    return map;
+  }, []);
+
+  const songChords = useMemo(() => {
+    if (!currentSong) return [];
+    const chords = new Set<string>();
+    const matches = currentSong.content.match(/\[(.*?)\]/g);
+    if (matches) {
+      matches.forEach(m => {
+        const chord = m.slice(1, -1).trim();
+        if (chord) chords.add(chord);
+      });
+    }
+    return Array.from(chords);
+  }, [currentSong]);
+
   const renderHome = () => (
     <div className="py-2">
-      {/* Pasta de Favoritos Otimizada */}
       {favorites.length > 0 && (
         <div className="mb-8 animate-in fade-in slide-in-from-left-4 duration-500">
            <button 
@@ -206,7 +221,10 @@ const App: React.FC = () => {
                  </div>
                  <div className="text-left">
                     <h2 className="text-lg font-black text-white tracking-tight uppercase">Meus Favoritos</h2>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{favorites.length} música{favorites.length !== 1 ? 's' : ''} salva{favorites.length !== 1 ? 's' : ''}</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                      {favorites.length} música{favorites.length !== 1 ? 's' : ''} 
+                      {currentUser ? ' Sincronizadas' : ' (Entre para salvar na nuvem)'}
+                    </p>
                  </div>
               </div>
               <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${isFavFolderOpen ? 'rotate-180' : ''}`} />
@@ -250,7 +268,7 @@ const App: React.FC = () => {
         {GENRES.map((genre) => (
           <button 
             key={genre}
-            onClick={() => handleGenreClick(genre)}
+            onClick={() => { setSelectedGenre(genre); setSelectedArtist(null); setCurrentSong(null); }}
             className="group relative h-24 md:h-32 rounded-2xl overflow-hidden bg-gray-900 shadow-lg hover:shadow-[#38cc63]/20 transition-all border-2 border-transparent hover:border-[#38cc63]"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-[#38cc63]/20 to-black opacity-60 group-hover:opacity-40 transition-opacity"></div>
@@ -265,47 +283,6 @@ const App: React.FC = () => {
       </div>
     </div>
   );
-
-  const renderArtistsView = () => {
-    const artists = groupedContent[selectedGenre!] || {};
-    const artistNames = Object.keys(artists);
-
-    return (
-      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <button onClick={handleBack} className="flex items-center gap-2 text-[10px] font-black text-[#38cc63] uppercase tracking-[0.2em] mb-8">
-          <ArrowLeft className="w-4 h-4" /> Voltar aos Gêneros
-        </button>
-        <h1 className="text-5xl font-black text-gray-900 tracking-tighter uppercase mb-12">{selectedGenre}</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {artistNames.map((artist) => (
-            <button key={artist} onClick={() => handleArtistClick(artist)} className="group flex flex-col bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-[#38cc63] p-5 text-left">
-               <h3 className="font-black text-gray-900 uppercase tracking-tight group-hover:text-[#38cc63]">{artist}</h3>
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  const renderSongsView = () => {
-    const songs = groupedContent[selectedGenre!]?.[selectedArtist!] || [];
-    return (
-      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <button onClick={handleBack} className="flex items-center gap-2 text-[10px] font-black text-[#38cc63] uppercase tracking-[0.2em] mb-8">
-          <ArrowLeft className="w-4 h-4" /> Voltar para {selectedGenre}
-        </button>
-        <h1 className="text-4xl font-black text-gray-900 tracking-tighter uppercase mb-12">{selectedArtist}</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {songs.map((song) => (
-            <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-5 bg-white border border-gray-100 rounded-2xl hover:border-[#38cc63] cursor-pointer">
-              <h4 className="font-bold text-gray-800 text-lg group-hover:text-[#38cc63]">{song.title}</h4>
-              <Play className="w-4 h-4 text-[#38cc63]" />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
 
   const SidebarButton = ({ icon: Icon, label, onClick, children, active, primary }: any) => (
     <button 
@@ -331,13 +308,141 @@ const App: React.FC = () => {
       {!isViewMode && (
         <header className="bg-[#1c1c1c] text-white sticky top-0 z-[60] h-16 flex items-center shadow-lg">
           <div className="max-w-[1280px] mx-auto w-full px-4 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4 cursor-pointer" onClick={() => { setCurrentSong(null); setSelectedGenre(null); setSelectedArtist(null); }}>
+            <div className="flex items-center gap-4 cursor-pointer" onClick={goHome}>
               <div className="bg-[#38cc63] p-2 rounded-lg"><Music className="text-white w-5 h-5" /></div>
               <span className="font-black text-2xl tracking-tight uppercase">CIFRA<span className="text-[#38cc63]"> MASTER</span></span>
             </div>
-            <div className="flex-1 max-w-2xl"><SearchInput onSearch={handleSearch} isLoading={isLoading} /></div>
+            
+            <div className="flex-1 max-w-xl mx-4"><SearchInput onSearch={handleSearch} isLoading={isLoading} /></div>
+            
+            <div className="flex items-center gap-2">
+              {currentUser ? (
+                <div className="flex items-center gap-3 pl-3 border-l border-white/10 group">
+                  <div className="text-right hidden sm:block">
+                    <p className="text-[10px] font-black uppercase text-gray-400 tracking-tighter">Bem-vindo,</p>
+                    <p className="text-xs font-bold text-white truncate max-w-[120px]">{currentUser.name}</p>
+                  </div>
+                  <button 
+                    onClick={handleLogout}
+                    className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-red-500 transition-all group"
+                    title="Sair"
+                  >
+                    <LogOut className="w-5 h-5 group-hover:scale-90 transition-transform" />
+                  </button>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className="flex items-center gap-2 px-5 py-2 bg-[#38cc63] hover:bg-[#2da34f] text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-lg shadow-[#38cc63]/20"
+                >
+                  <User className="w-4 h-4" /> Entrar
+                </button>
+              )}
+            </div>
           </div>
         </header>
+      )}
+
+      {/* Auth Modal */}
+      {isAuthModalOpen && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+           <div className="relative w-full max-w-md bg-white rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+              <button 
+                onClick={() => setIsAuthModalOpen(false)}
+                className="absolute top-6 right-6 p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-all text-gray-500"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              
+              <div className="p-8 pt-12">
+                 <div className="flex justify-center mb-8">
+                    <div className="w-20 h-20 bg-[#38cc63] rounded-3xl flex items-center justify-center shadow-2xl shadow-[#38cc63]/30">
+                       <Guitar className="w-10 h-10 text-white" />
+                    </div>
+                 </div>
+                 
+                 <h3 className="text-3xl font-black text-gray-950 text-center uppercase tracking-tight mb-2">
+                   {isRegisterMode ? 'Criar Conta' : 'Acesse seu Palco'}
+                 </h3>
+                 <p className="text-gray-500 text-center text-sm mb-10">
+                   Sincronize seus favoritos em todos os dispositivos.
+                 </p>
+
+                 <form onSubmit={handleLogin} className="space-y-4">
+                    {isRegisterMode && (
+                      <div className="relative">
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <input 
+                          type="text" 
+                          placeholder="Nome Completo" 
+                          required
+                          className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent focus:border-[#38cc63] rounded-2xl outline-none transition-all font-bold"
+                        />
+                      </div>
+                    )}
+                    <div className="relative">
+                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                       <input 
+                         type="email" 
+                         placeholder="E-mail" 
+                         required
+                         className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent focus:border-[#38cc63] rounded-2xl outline-none transition-all font-bold"
+                       />
+                    </div>
+                    <div className="relative">
+                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                       <input 
+                         type="password" 
+                         placeholder="Senha" 
+                         required
+                         className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent focus:border-[#38cc63] rounded-2xl outline-none transition-all font-bold"
+                       />
+                    </div>
+                    
+                    <button 
+                      type="submit"
+                      className="w-full py-5 bg-[#38cc63] hover:bg-[#2da34f] text-white rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-xl shadow-[#38cc63]/20 hover:scale-[1.02] active:scale-95"
+                    >
+                       {isRegisterMode ? 'Registrar Agora' : 'Entrar no Sistema'}
+                    </button>
+                 </form>
+
+                 <div className="mt-8 flex flex-col items-center gap-4">
+                    <button 
+                      onClick={() => setIsRegisterMode(!isRegisterMode)}
+                      className="text-[10px] font-black uppercase text-gray-400 tracking-widest hover:text-[#38cc63] transition-colors"
+                    >
+                      {isRegisterMode ? 'Já tem conta? Entrar' : 'Novo por aqui? Criar conta'}
+                    </button>
+                    
+                    <div className="flex items-center gap-4 w-full">
+                       <div className="flex-1 h-px bg-gray-100"></div>
+                       <span className="text-[10px] font-bold text-gray-300 uppercase">Ou continue com</span>
+                       <div className="flex-1 h-px bg-gray-100"></div>
+                    </div>
+
+                    <div className="flex gap-4 w-full">
+                       <button className="flex-1 py-4 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95">
+                          <img src="https://www.google.com/favicon.ico" className="w-4 h-4 grayscale" alt="Google" />
+                          <span className="text-xs font-bold text-gray-600">Google</span>
+                       </button>
+                       <button className="flex-1 py-4 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95">
+                          <Monitor className="w-4 h-4 text-black" />
+                          <span className="text-xs font-bold text-gray-600">Apple</span>
+                       </button>
+                    </div>
+
+                    {/* Voltar para Home Button no Entrar */}
+                    <button 
+                      onClick={goHome}
+                      className="mt-6 flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                    >
+                      <Home className="w-3.5 h-3.5" /> Voltar para o Início
+                    </button>
+                 </div>
+              </div>
+           </div>
+        </div>
       )}
 
       {/* Exit View Mode Button */}
@@ -353,8 +458,37 @@ const App: React.FC = () => {
       <div className={`flex-1 max-w-[1280px] mx-auto w-full pt-6 flex gap-6 mb-20 relative transition-all duration-500 ${isViewMode ? 'px-0 pt-0 max-w-none mb-0' : 'px-4'}`}>
         <main className={`flex-1 min-w-0 bg-white shadow-sm relative transition-all duration-300 ${isViewMode ? 'rounded-none border-none p-6 md:p-20' : 'rounded-xl border border-gray-200 p-4 md:p-10'} ${currentSong && !isViewMode ? 'flex flex-col md:flex-row gap-10' : ''} ${showChordsInSidebar && !isViewMode ? 'md:mr-[280px]' : ''}`}>
           {!currentSong && !selectedGenre && renderHome()}
-          {selectedGenre && !selectedArtist && !currentSong && renderArtistsView()}
-          {selectedArtist && !currentSong && renderSongsView()}
+          {selectedGenre && !selectedArtist && !currentSong && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <button onClick={handleBack} className="flex items-center gap-2 text-[10px] font-black text-[#38cc63] uppercase tracking-[0.2em] mb-8">
+                <ArrowLeft className="w-4 h-4" /> Voltar aos Gêneros
+              </button>
+              <h1 className="text-5xl font-black text-gray-900 tracking-tighter uppercase mb-12">{selectedGenre}</h1>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Object.keys(groupedContent[selectedGenre!] || {}).map((artist) => (
+                  <button key={artist} onClick={() => { setSelectedArtist(artist); setCurrentSong(null); }} className="group flex flex-col bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-[#38cc63] p-5 text-left">
+                     <h3 className="font-black text-gray-900 uppercase tracking-tight group-hover:text-[#38cc63]">{artist}</h3>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {selectedArtist && !currentSong && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <button onClick={handleBack} className="flex items-center gap-2 text-[10px] font-black text-[#38cc63] uppercase tracking-[0.2em] mb-8">
+                <ArrowLeft className="w-4 h-4" /> Voltar para {selectedGenre}
+              </button>
+              <h1 className="text-4xl font-black text-gray-900 tracking-tighter uppercase mb-12">{selectedArtist}</h1>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {(groupedContent[selectedGenre!]?.[selectedArtist!] || []).map((song) => (
+                  <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-5 bg-white border border-gray-100 rounded-2xl hover:border-[#38cc63] cursor-pointer">
+                    <h4 className="font-bold text-gray-800 text-lg group-hover:text-[#38cc63]">{song.title}</h4>
+                    <Play className="w-4 h-4 text-[#38cc63]" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           
           {currentSong && (
             <>
@@ -488,7 +622,6 @@ const App: React.FC = () => {
           )}
         </main>
 
-        {/* Floating Chord Panel (Drawer) - Hidden in View Mode */}
         {currentSong && !isViewMode && (
           <div className={`fixed top-20 right-4 bottom-20 w-[260px] bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 transition-all duration-500 transform ${showChordsInSidebar ? 'translate-x-0 opacity-100' : 'translate-x-[120%] opacity-0 pointer-events-none'}`}>
              <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50 rounded-t-2xl">
@@ -519,13 +652,9 @@ const App: React.FC = () => {
         )}
       </div>
 
-      {/* Floating Action Buttons Group */}
       <div className={`fixed bottom-8 right-8 flex flex-col items-center gap-4 z-[80] transition-opacity duration-300 ${isViewMode && !isAutoScrolling ? 'opacity-40 hover:opacity-100' : 'opacity-100'}`}>
-        
-        {/* Floating Auto-scroll Control (Visible only when a song is active) */}
         {currentSong && (
           <div className="flex flex-col items-center gap-2 animate-in slide-in-from-bottom-5 duration-300">
-             {/* Speed Selector (Visible when auto-scrolling is on) */}
              {isAutoScrolling && (
                <div className="flex flex-col gap-1.5 mb-2 bg-[#1c1c1c] p-2 rounded-2xl shadow-2xl border border-white/10 animate-in zoom-in-95 origin-bottom">
                  {[2, 1.5, 1, 0.5].map((speed) => (
@@ -543,8 +672,6 @@ const App: React.FC = () => {
                  ))}
                </div>
              )}
-             
-             {/* Main Auto-scroll Toggle */}
              <button 
                onClick={() => setIsAutoScrolling(!isAutoScrolling)}
                className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-all border-4 border-white ${
@@ -555,7 +682,9 @@ const App: React.FC = () => {
                title="Auto Rolagem"
              >
                <div className="relative">
-                 <ArrowUpDown className={`w-7 h-7 ${isAutoScrolling ? 'animate-bounce' : ''}`} />
+                 <span className={`transition-all ${isAutoScrolling ? 'animate-bounce' : ''}`}>
+                    <ArrowUpDown className="w-7 h-7" />
+                 </span>
                  {isAutoScrolling && (
                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-white rounded-full animate-ping"></div>
                  )}
@@ -564,7 +693,6 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* João Assistant Button - Hidden in view mode to focus on lyrics, unless auto-scrolling is off */}
         {(!isViewMode || !isAutoScrolling) && !isJoaoOpen && (
           <button 
             onClick={() => setIsJoaoOpen(true)} 
@@ -577,7 +705,12 @@ const App: React.FC = () => {
         )}
       </div>
 
-      <JoaoAssistant isOpen={isJoaoOpen} onClose={() => setIsJoaoOpen(false)} onSongFound={handleSongSelect} />
+      <JoaoAssistant 
+        isOpen={isJoaoOpen} 
+        onClose={() => setIsJoaoOpen(false)} 
+        onSongFound={handleSongSelect} 
+        onGoHome={goHome} 
+      />
       <Tuner isOpen={isTunerOpen} onClose={() => setIsTunerOpen(false)} />
       <Metronome isOpen={isMetronomeOpen} onClose={() => setIsMetronomeOpen(false)} />
     </div>

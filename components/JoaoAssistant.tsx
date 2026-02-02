@@ -1,5 +1,5 @@
 
-import { Send, X, Music, Guitar, CheckCircle2, Loader2, Sparkles, Zap, AlertCircle, Search } from 'lucide-react';
+import { Send, X, Music, Guitar, CheckCircle2, Loader2, Sparkles, Zap, AlertCircle, Search, Home } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS } from '../constants';
@@ -16,9 +16,10 @@ interface JoaoAssistantProps {
   onSongFound: (song: ExtendedSong) => void;
   isOpen: boolean;
   onClose: () => void;
+  onGoHome?: () => void;
 }
 
-const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onClose }) => {
+const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onClose, onGoHome }) => {
   const [messages, setMessages] = useState<Message[]>([
     { role: 'joao', text: 'Fala, mestre! Sou o João. Qual som vamos tirar hoje? Pode mandar o nome de qualquer música que eu me viro pra achar a cifra pra você!' }
   ]);
@@ -40,7 +41,6 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
     if (q.length < 2) return undefined;
     
     const allLocal = [...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS];
-    // Tenta match exato primeiro, depois parcial
     return allLocal.find(song => 
       song.title.toLowerCase() === q || 
       `${song.artist} ${song.title}`.toLowerCase().includes(q) ||
@@ -56,7 +56,6 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
     setIsTyping(true);
     setTypingStatus('Consultando meu caderno de cifras...');
 
-    // 1. TENTA LOCAL PRIMEIRO (INSTANTÂNEO)
     const localMatch = findLocalSong(query);
     if (localMatch) {
       setTimeout(() => {
@@ -73,7 +72,6 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
       return;
     }
 
-    // 2. BUSCA COM IA E GOOGLE SEARCH (GLOBAL)
     setTypingStatus('Buscando na internet (Google Search)...');
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
@@ -147,7 +145,6 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
           status: 'found'
         }]);
         
-        // Redirecionamento imediato após sucesso da IA
         setTimeout(() => onSongFound(newSong), 1000);
       } else {
         setMessages(prev => [...prev, { 
@@ -190,13 +187,24 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
             </h3>
             <div className="flex items-center gap-2">
                <span className="w-2 h-2 bg-[#38cc63] rounded-full animate-pulse"></span>
-               <p className="text-[#38cc63] text-[10px] font-bold uppercase tracking-widest">Online e pronto para o show</p>
+               <p className="text-[#38cc63] text-[10px] font-bold uppercase tracking-widest">Online</p>
             </div>
           </div>
         </div>
-        <button onClick={onClose} className="p-2.5 text-gray-500 hover:text-white hover:bg-white/10 rounded-2xl transition-all">
-          <X className="w-6 h-6" />
-        </button>
+        <div className="flex items-center gap-1">
+          {onGoHome && (
+            <button 
+              onClick={onGoHome} 
+              title="Voltar para o Início"
+              className="p-2.5 text-gray-500 hover:text-[#38cc63] hover:bg-white/10 rounded-2xl transition-all"
+            >
+              <Home className="w-5 h-5" />
+            </button>
+          )}
+          <button onClick={onClose} className="p-2.5 text-gray-500 hover:text-white hover:bg-white/10 rounded-2xl transition-all">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
       </div>
 
       {/* Chat Area with Smooth Scroll */}
@@ -231,7 +239,6 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
                         <span className="flex items-center gap-1.5 text-[10px] font-black bg-[#38cc63] text-white px-2.5 py-1 rounded-full uppercase">
                           <Zap className="w-3 h-3 fill-white" /> Abrindo
                         </span>
-                        {msg.isLocal && <span className="text-[8px] font-bold text-[#38cc63] uppercase">Repositório Local</span>}
                       </div>
                     </div>
                   </div>
