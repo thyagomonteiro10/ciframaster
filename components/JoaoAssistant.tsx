@@ -1,5 +1,5 @@
 
-import { Send, X, Music, Guitar, Link as LinkIcon, Bot, Globe, CheckCircle2 } from 'lucide-react';
+import { Send, X, Music, Guitar, Link as LinkIcon, Bot, Globe, CheckCircle2, Users } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS } from '../constants';
@@ -37,7 +37,6 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
     if (q.length < 2) return undefined;
     
     const allLocal = [...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS];
-    // Tenta match exato ou parcial no título ou artista
     return allLocal.find(song => 
       song.title.toLowerCase().includes(q) || 
       song.artist.toLowerCase().includes(q)
@@ -49,22 +48,22 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
     setInput('');
     setIsTyping(true);
 
-    // 1. Verificar se a música já existe localmente
     const localMatch = findLocalSong(query);
     if (localMatch) {
       setTimeout(() => {
         setMessages(prev => [...prev, { 
           role: 'joao', 
-          text: `Mestre, essa eu já conheço de cor! Encontrei no nosso banco de dados verificado. Dá uma olhada:`, 
+          text: `Mestre, essa eu já conheço de cor! Redirecionando você para a cifra de ${localMatch.title}...`, 
           songData: localMatch,
           isLocal: true
         }]);
         setIsTyping(false);
-      }, 600); // Delay curto para parecer que ele pensou
+        // Redirecionamento automático rápido
+        setTimeout(() => onSongFound(localMatch), 800);
+      }, 600);
       return;
     }
 
-    // 2. Se não encontrou localmente, usa a IA
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     try {
       const response = await ai.models.generateContent({
@@ -112,10 +111,15 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
 
       setMessages(prev => [...prev, { 
         role: 'joao', 
-        text: data.message, 
+        text: newSong ? `${data.message} Encontrei! Redirecionando você agora...` : data.message, 
         songData: newSong,
         sources
       }]);
+
+      if (newSong) {
+        // Redirecionamento automático rápido após a resposta da IA
+        setTimeout(() => onSongFound(newSong), 1200);
+      }
     } catch (error) {
       setMessages(prev => [...prev, { role: 'joao', text: 'Eita, mestre, perdi o sinal. Tenta perguntar de novo?' }]);
     } finally {
@@ -135,7 +139,7 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
           <div>
             <h3 className="text-white font-black text-sm tracking-tight">João Online</h3>
             <div className="flex items-center gap-1.5">
-               <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+               <div className="w-1.5 h-1.5 bg-[#38cc63] rounded-full animate-pulse"></div>
                <p className="text-[#38cc63] text-[9px] font-bold uppercase tracking-widest">Pronto para buscar</p>
             </div>
           </div>
@@ -160,19 +164,8 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
                       <Music className={`w-3 h-3 shrink-0 ${msg.isLocal ? 'text-[#38cc63]' : 'text-gray-400'}`} />
                       <span className="text-[10px] font-black uppercase truncate text-gray-600">{msg.songData.title}</span>
                     </div>
-                    {msg.isLocal && <CheckCircle2 className="w-3 h-3 text-[#38cc63]" title="Cifra Premium" />}
                   </div>
                   <div className="text-[9px] text-gray-400 font-bold uppercase mb-1">{msg.songData.artist}</div>
-                  <button 
-                    onClick={() => onSongFound(msg.songData!)} 
-                    className={`w-full text-[9px] font-black px-3 py-2 rounded-lg transition-all ${
-                      msg.isLocal 
-                        ? 'bg-[#38cc63] text-white hover:bg-green-600 shadow-md shadow-[#38cc63]/20' 
-                        : 'bg-[#38cc63]/10 text-[#38cc63] hover:bg-[#38cc63]/20'
-                    }`}
-                  >
-                    {msg.isLocal ? 'ABRIR CIFRA PREMIUM' : 'ABRIR CIFRA'}
-                  </button>
                 </div>
               )}
             </div>
@@ -195,7 +188,7 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
           <input 
             type="text" value={input} onChange={(e) => setInput(e.target.value)}
             placeholder="Qual cifra você quer hoje?"
-            className="w-full pl-4 pr-12 py-3 bg-gray-100 rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-[#38cc63]/20"
+            className="w-full pl-4 pr-12 py-3 bg-gray-100 rounded-xl text-sm font-bold text-black outline-none focus:ring-2 focus:ring-[#38cc63]/20"
           />
           <button type="submit" disabled={isTyping} className="absolute right-1.5 top-1.5 w-9 h-9 bg-[#1c1c1c] rounded-lg flex items-center justify-center text-white hover:bg-black transition-colors">
             <Send className="w-4 h-4" />

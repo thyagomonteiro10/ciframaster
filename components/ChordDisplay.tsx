@@ -36,11 +36,10 @@ const ChordInteraction: React.FC<{ chord: string, children: React.ReactNode, fon
       {isOpen && (
         <div 
           className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 z-[999] animate-in fade-in zoom-in-95 duration-200 origin-bottom pointer-events-auto"
-          onClick={(e) => e.stopPropagation()} // Impede que o clique no diagrama feche ele mesmo
+          onClick={(e) => e.stopPropagation()}
         >
            <div className="relative">
              <ChordDiagram chord={chord} instrument={instrument} />
-             {/* Seta indicadora */}
              <div className="w-3 h-3 bg-white absolute -bottom-1.5 left-1/2 -translate-x-1/2 rotate-45 border-r border-b border-gray-100 shadow-[2px_2px_2px_-1px_rgba(0,0,0,0.05)]"></div>
            </div>
         </div>
@@ -77,7 +76,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = React.memo(({ content, fontSiz
     if (isOnlyChords) {
        const chords = line.split(/(\s+)/);
        return (
-         <div key={idx} className="overflow-x-auto no-scrollbar">
+         <div key={idx} className="overflow-visible mb-2">
            <div className="h-10 flex items-end min-w-max" style={{ fontSize: `${fontSize + 1}px` }}>
               {chords.map((part, pIdx) => {
                 if (part.trim() === "") return <span key={pIdx} className="whitespace-pre">{part}</span>;
@@ -120,7 +119,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = React.memo(({ content, fontSiz
     });
 
     return (
-      <div key={idx} className="mb-4 group relative font-mono overflow-x-auto no-scrollbar">
+      <div key={idx} className="mb-4 group relative font-mono overflow-visible">
         <div className="min-w-max">
           <div className="h-8 flex items-end whitespace-pre" style={{ fontSize: `${fontSize}px` }}>
             {chordLineElements}

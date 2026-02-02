@@ -4,7 +4,8 @@ import {
   Play, Pause, Grid, Printer, Music, Heart, X, Bot, Link as LinkIcon, 
   Globe, ChevronRight, Menu, Search, Video, Settings, ChevronDown, 
   Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users, Flame, Disc, ArrowLeft, CheckCircle2, Bookmark,
-  Scissors, ArrowUpDown, Type, Eye, PlusCircle, Timer, Book, Edit, Activity, Folder, ExternalLink, Info, Download, PlayCircle
+  Scissors, ArrowUpDown, Type, Eye, PlusCircle, Timer, Book, Edit, Activity, Folder, ExternalLink, Info, Download, PlayCircle,
+  Keyboard, Monitor
 } from 'lucide-react';
 import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
@@ -15,7 +16,12 @@ import ChordDiagram from './components/ChordDiagram';
 import JoaoAssistant from './components/JoaoAssistant';
 
 const GENRES = ['Sertanejo', 'Rock', 'Pop', 'Reggae', 'Gospel', 'Forró', 'MPB', 'Samba', 'Sofrência'];
-const INSTRUMENTS = ['Violão', 'Guitarra', 'Teclado', 'Ukulele', 'Baixo'];
+const INSTRUMENTS = [
+  { id: 'Violão', icon: Guitar, label: 'Violão' },
+  { id: 'Guitarra', icon: Monitor, label: 'Guitarra' },
+  { id: 'Teclado', icon: Keyboard, label: 'Teclado' },
+  { id: 'Ukulele', icon: Music, label: 'Ukulele' }
+];
 
 const App: React.FC = () => {
   const [currentSong, setCurrentSong] = useState<ExtendedSong | null>(null);
@@ -75,7 +81,7 @@ const App: React.FC = () => {
     if (aiSong) {
       handleSongSelect(aiSong as ExtendedSong);
     } else {
-      alert("Desculpe, mestre! Não conseguimos encontrar essa cifra na internet agora. Tente novamente com o nome do artista.");
+      alert("Desculpe, mestre! Não conseguimos encontrar essa cifra agora. Tente novamente.");
     }
     setIsLoading(false);
   }, [handleSongSelect]);
@@ -192,18 +198,18 @@ const App: React.FC = () => {
     );
   };
 
-  const SidebarButton = ({ icon: Icon, label, onClick, children, active, orange }: any) => (
+  const SidebarButton = ({ icon: Icon, label, onClick, children, active, primary }: any) => (
     <button 
       onClick={onClick}
       className={`flex items-center justify-between w-full px-4 py-2.5 rounded-xl border transition-all group ${
-        orange 
-          ? 'bg-[#ff7a00] border-[#ff7a00] text-white' 
+        primary 
+          ? 'bg-[#38cc63] border-[#38cc63] text-white' 
           : 'bg-white border-gray-200 hover:border-gray-400'
       }`}
     >
       <div className="flex items-center gap-3">
-        <Icon className={`w-4 h-4 ${orange ? 'text-white' : active ? 'text-[#38cc63]' : 'text-gray-400'}`} />
-        <span className={`text-[11px] font-bold uppercase tracking-tight ${orange ? 'text-white' : 'text-gray-600'}`}>{label}</span>
+        <Icon className={`w-4 h-4 ${primary ? 'text-white' : active ? 'text-[#38cc63]' : 'text-gray-400'}`} />
+        <span className={`text-[11px] font-bold uppercase tracking-tight ${primary ? 'text-white' : 'text-gray-600'}`}>{label}</span>
       </div>
       {children}
     </button>
@@ -229,12 +235,11 @@ const App: React.FC = () => {
           
           {currentSong && (
             <>
-              {/* BARRA LATERAL ESTILO CIFRA CLUB */}
               <aside className="w-full md:w-[200px] shrink-0 flex flex-col gap-2">
                 <button 
-                  className="w-full bg-[#ff7a00] text-white py-3 rounded-xl font-black text-[12px] uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#e66e00] transition-colors mb-2 shadow-lg shadow-[#ff7a00]/20"
+                  className="w-full bg-[#38cc63] text-white py-3 rounded-xl font-black text-[12px] uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#2da34f] transition-colors mb-2 shadow-lg shadow-[#38cc63]/20"
                 >
-                  <PlayCircle className="w-4 h-4" /> Videoaula
+                   <Users className="w-4 h-4" /> {currentSong.artist}
                 </button>
 
                 <SidebarButton icon={Scissors} label="Simplificar cifra" onClick={() => {}} />
@@ -243,7 +248,6 @@ const App: React.FC = () => {
                   <div className={`w-2.5 h-2.5 rounded-full ${isAutoScrolling ? 'bg-[#38cc63] shadow-[0_0_8px_#38cc63]' : 'bg-gray-200'}`}></div>
                 </SidebarButton>
 
-                {/* Controle de Texto */}
                 <div className="flex items-center justify-between w-full px-3 py-2 bg-white border border-gray-200 rounded-xl">
                   <div className="flex items-center gap-2 text-gray-400">
                     <Type className="w-4 h-4" />
@@ -255,7 +259,6 @@ const App: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Controle de Tom */}
                 <div className="flex items-center justify-between w-full px-3 py-2 bg-white border border-gray-200 rounded-xl">
                   <div className="flex items-center gap-2 text-gray-400">
                     <Music className="w-4 h-4" />
@@ -281,17 +284,33 @@ const App: React.FC = () => {
                 <SidebarButton icon={Printer} label="Imprimir" onClick={() => window.print()} />
                 <SidebarButton icon={Download} label="Baixar cifra" onClick={() => {}} />
 
-                <div className="mt-4 p-4 bg-[#ff7a00] rounded-xl text-center shadow-lg shadow-[#ff7a00]/20 cursor-pointer hover:scale-[1.02] transition-transform">
+                <div className="mt-4 p-4 bg-[#38cc63] rounded-xl text-center shadow-lg shadow-[#38cc63]/20 cursor-pointer hover:scale-[1.02] transition-transform">
                    <div className="text-white font-black text-[12px] uppercase tracking-tighter">Cifra Master PRO</div>
                    <div className="text-white/80 text-[9px] font-bold mt-1 uppercase">Toque como um profissional</div>
                 </div>
               </aside>
 
-              {/* CONTEÚDO DA MÚSICA */}
               <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-8 bg-gray-50 p-2 rounded-2xl border border-gray-100 overflow-x-auto no-scrollbar">
+                  {INSTRUMENTS.map((inst) => (
+                    <button
+                      key={inst.id}
+                      onClick={() => setSelectedInstrument(inst.id)}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all whitespace-nowrap ${
+                        selectedInstrument === inst.id 
+                          ? 'bg-[#38cc63] text-white shadow-lg shadow-[#38cc63]/20' 
+                          : 'bg-white text-gray-400 border border-gray-200 hover:border-gray-300 hover:text-gray-600'
+                      }`}
+                    >
+                      <inst.icon className="w-4 h-4" />
+                      {inst.label}
+                    </button>
+                  ))}
+                </div>
+
                 <div className="mb-10">
                    <div className="flex items-center gap-2 mb-4">
-                     <span className="text-[10px] font-black text-[#ff7a00] uppercase tracking-widest bg-[#ff7a00]/10 px-2 py-0.5 rounded">Tom: {currentSong.originalKey || 'A'}</span>
+                     <span className="text-[10px] font-black text-[#38cc63] uppercase tracking-widest bg-[#38cc63]/10 px-2 py-0.5 rounded">Tom: {currentSong.originalKey || 'A'}</span>
                    </div>
                    <h2 className="text-4xl md:text-5xl font-black text-gray-950 tracking-tight leading-none mb-2 uppercase">{currentSong.title}</h2>
                    <h3 className="text-xl font-medium text-gray-400">{currentSong.artist}</h3>
@@ -301,7 +320,7 @@ const App: React.FC = () => {
 
                 <div className="mt-20 pt-10 border-t border-gray-100">
                   <h4 className="text-xl font-black text-gray-900 mb-8 uppercase tracking-tight flex items-center gap-3">
-                    <Grid className="w-6 h-6 text-[#38cc63]" /> Acordes Utilizados
+                    <Grid className="w-6 h-6 text-[#38cc63]" /> Acordes Utilizados ({selectedInstrument})
                   </h4>
                   <div className="flex flex-wrap gap-8">
                     {songChords.map(chord => (
@@ -320,7 +339,7 @@ const App: React.FC = () => {
           onClick={() => setIsJoaoOpen(true)} 
           className="fixed bottom-8 right-8 w-16 h-16 bg-[#1c1c1c] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all z-[80] group border-4 border-white"
         >
-          <Bot className="text-[#38cc63] w-8 h-8" />
+          <Guitar className="text-yellow-400 w-8 h-8" />
           <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#38cc63] rounded-full border-4 border-white"></div>
         </button>
       )}
