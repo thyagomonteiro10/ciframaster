@@ -5,7 +5,7 @@ import {
   Globe, ChevronRight, Menu, Search, Video, Settings, ChevronDown, 
   Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users, Flame, Disc, ArrowLeft, CheckCircle2,
   ArrowUpDown, Type, PlusCircle, Timer, Activity, Folder, ExternalLink, Info, Download, PlayCircle,
-  Keyboard, Monitor, Youtube, Sparkles, Zap, AlertCircle, Eye, User, LogIn, Mail, Lock, LogOut, Home
+  Keyboard, Monitor, Youtube, Sparkles, Zap, AlertCircle, Eye, User, LogIn, Mail, Lock, LogOut, Home, ChevronUp
 } from 'lucide-react';
 import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS, RICK_RENNER_SONGS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
@@ -56,6 +56,10 @@ const App: React.FC = () => {
     setIsViewMode(false);
     setIsAuthModalOpen(false);
     setIsJoaoOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const scrollToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
@@ -350,7 +354,7 @@ const App: React.FC = () => {
       {/* Auth Modal */}
       {isAuthModalOpen && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-[2px] animate-in fade-in duration-300">
-           <div className="relative w-full max-w-sm bg-white rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+           <div className="relative w-full max-sm bg-white rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
               <button 
                 onClick={() => setIsAuthModalOpen(false)}
                 className="absolute top-4 right-4 p-1.5 bg-gray-100 hover:bg-gray-200 rounded-full transition-all text-gray-500"
@@ -670,16 +674,24 @@ const App: React.FC = () => {
         )}
       </div>
 
-      <div className={`fixed bottom-8 right-8 flex flex-col items-center gap-4 z-[80] transition-opacity duration-300 ${isViewMode && !isAutoScrolling ? 'opacity-40 hover:opacity-100' : 'opacity-100'}`}>
+      <div className={`fixed bottom-6 right-6 flex flex-col items-center gap-3 z-[80] transition-opacity duration-300 ${isViewMode && !isAutoScrolling ? 'opacity-40 hover:opacity-100' : 'opacity-100'}`}>
         {currentSong && (
           <div className="flex flex-col items-center gap-2 animate-in slide-in-from-bottom-5 duration-300">
+             <button 
+               onClick={scrollToTop}
+               className="w-11 h-11 bg-[#1c1c1c] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all group border-4 border-white mb-1"
+               title="Voltar ao Início"
+             >
+               <ChevronUp className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
+             </button>
+
              {isAutoScrolling && (
-               <div className="flex flex-col gap-1.5 mb-2 bg-[#1c1c1c] p-2 rounded-2xl shadow-2xl border border-white/10 animate-in zoom-in-95 origin-bottom">
+               <div className="flex flex-col gap-1.5 mb-2 bg-[#1c1c1c] p-1.5 rounded-2xl shadow-2xl border border-white/10 animate-in zoom-in-95 origin-bottom">
                  {[2, 1.5, 1, 0.5].map((speed) => (
                    <button
                      key={speed}
                      onClick={() => setScrollSpeed(speed)}
-                     className={`w-10 h-10 rounded-xl text-[10px] font-black flex items-center justify-center transition-all ${
+                     className={`w-9 h-9 rounded-xl text-[10px] font-black flex items-center justify-center transition-all ${
                        scrollSpeed === speed 
                          ? 'bg-[#38cc63] text-white shadow-lg shadow-[#38cc63]/20' 
                          : 'text-gray-400 hover:text-white hover:bg-white/5'
@@ -692,7 +704,7 @@ const App: React.FC = () => {
              )}
              <button 
                onClick={() => setIsAutoScrolling(!isAutoScrolling)}
-               className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-all border-4 border-white ${
+               className={`w-13 h-13 rounded-full flex items-center justify-center shadow-2xl transition-all border-4 border-white ${
                  isAutoScrolling 
                   ? 'bg-[#38cc63] text-white shadow-[#38cc63]/40 scale-110' 
                   : 'bg-[#1c1c1c] text-white hover:bg-gray-800'
@@ -701,10 +713,10 @@ const App: React.FC = () => {
              >
                <div className="relative">
                  <span className={`transition-all ${isAutoScrolling ? 'animate-bounce' : ''}`}>
-                    <ArrowUpDown className="w-7 h-7" />
+                    <ArrowUpDown className="w-6 h-6" />
                  </span>
                  {isAutoScrolling && (
-                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-white rounded-full animate-ping"></div>
+                   <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-white rounded-full animate-ping"></div>
                  )}
                </div>
              </button>
@@ -714,11 +726,11 @@ const App: React.FC = () => {
         {(!isViewMode || !isAutoScrolling) && !isJoaoOpen && (
           <button 
             onClick={() => setIsJoaoOpen(true)} 
-            className="w-16 h-16 bg-[#1c1c1c] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all group border-4 border-white"
+            className="w-13 h-13 bg-[#1c1c1c] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all group border-4 border-white"
             title="Assistente João"
           >
-            <Guitar className="text-yellow-400 w-8 h-8" />
-            <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#38cc63] rounded-full border-4 border-white"></div>
+            <Guitar className="text-yellow-400 w-7 h-7" />
+            <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#38cc63] rounded-full border-[3px] border-white"></div>
           </button>
         )}
       </div>
