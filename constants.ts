@@ -27,6 +27,9 @@ export const INSTRUMENT_CHORDS: Record<string, Record<string, ChordShape>> = {
     'A7': { frets: ['x', 0, 2, 0, 2, 0], fingers: [0, 0, 1, 0, 2, 0], keys: [9, 1, 4, 7] },
     'Bm': { frets: ['x', 2, 4, 4, 3, 2], barre: 2, keys: [11, 2, 6] },
     'Am': { frets: ['x', 0, 2, 2, 1, 0], keys: [9, 0, 4] },
+    'F#': { frets: [2, 4, 4, 3, 2, 2], barre: 2, keys: [6, 10, 1] },
+    'G#m': { frets: [4, 6, 6, 4, 4, 4], barre: 4, keys: [8, 11, 3] },
+    'F#m': { frets: [2, 4, 4, 2, 2, 2], barre: 2, keys: [6, 9, 1] },
   },
   'Ukulele': {
     'C': { frets: [0, 0, 0, 3], keys: [0, 4, 7] },
@@ -57,15 +60,6 @@ export const INSTRUMENT_CHORDS: Record<string, Record<string, ChordShape>> = {
 
 // Aliases para facilitar busca
 INSTRUMENT_CHORDS['Guitarra'] = INSTRUMENT_CHORDS['Violão'];
-INSTRUMENT_CHORDS['Baixo'] = {
-  'C': { frets: ['x', 3, 'x', 'x'], keys: [0] },
-  'D': { frets: ['x', 5, 'x', 'x'], keys: [2] },
-  'E': { frets: [0, 'x', 'x', 'x'], keys: [4] },
-  'F': { frets: [1, 'x', 'x', 'x'], keys: [5] },
-  'G': { frets: [3, 'x', 'x', 'x'], keys: [7] },
-  'A': { frets: [5, 'x', 'x', 'x'], keys: [9] },
-  'B': { frets: [7, 'x', 'x', 'x'], keys: [11] },
-};
 
 export interface ExtendedSong extends Song {
   tuning?: string;
@@ -75,6 +69,8 @@ export interface ExtendedSong extends Song {
   verified?: boolean;
   capo?: number;
 }
+
+const ZEZE_IMG = 'https://images.unsplash.com/photo-1521417531039-75e91486cc40?w=400&h=400&fit=crop';
 
 export const JULIANY_SOUZA_SONGS: ExtendedSong[] = [
   {
@@ -155,89 +151,13 @@ E os meus pecados levou
 
 export const ZEZE_SONGS: ExtendedSong[] = [
   {
-    id: 'zeze-1',
-    title: 'É o Amor',
-    artist: 'Zezé Di Camargo & Luciano',
-    genre: 'Sertanejo',
-    difficulty: 'Médio',
-    tuning: 'Padrão',
-    originalKey: 'B',
-    verified: true,
-    imageUrl: 'https://images.unsplash.com/photo-1521417531039-75e91486cc40?w=400&h=400&fit=crop',
-    content: `[Intro] [E] [B] [F#7] [B] [F#7]
-
-[Primeira Parte]
-
-[B] Eu não vou negar que sou louco por você
-Tô maluco pra te ver, eu não vou ne[F#7]gar
-Eu [C#m]não vou negar, sem vo[C#m/B]cê tudo é sau[F#7]dade
-Você traz feli[C#m7]cidade
-[F#] Eu não vou ne[B]gar [C#m] [F#]
-[B] Eu não vou negar, você é meu doce mel
-Meu pedacinho de [B7]céu, eu não vou ne[E]gar
-
-[Pré-Refrão]
-
-Você é minha doce amada
-Minha ale[B]gria, meu conto de fada
-Minha fanta[C#m7]sia
-A paz que eu pre[F#7]ciso pra sobrevi[B]ver [B7]
-Eu [E]sou o seu apaixonado, de alma transpa[B]rente
-Um louco alucinado meio inconse[C#m7]quente
-Um caso compli[F#7]cado de se enten[B]der
-
-[Refrão]
-
-É o a[E]mor, que mexe com a minha cabeça 
-E me deixa as[B]sim
-Que faz eu pensar em você 
-E esque[F#7]cer de mim
-Que [C#m7]faz eu esquecer que a [F#7]vida 
-É feita pra vi[B]ver [B7]
-É o a[E]mor
-Que veio como um tiro certo no meu cora[B]ção
-Que derrubou a base forte da minha pai[F#7]xão
-Que [C#m7]fez eu entender que a [F#7]vida é nada sem vo[B]cê [C#m] [F#]
-
-[Ponte]
-
-[B] Eu não vou negar, você é meu doce mel
-Meu pedacinho de [D#°]céu, eu não vou ne[E]gar
-
-[Pré-Refrão]
-
-Você é minha doce amada
-Minha ale[B]gria, meu conto de fada
-Minha fanta[C#m7]sia
-A paz que eu pre[F#7]ciso pra sobrevi[B]ver [B7]
-Eu [E]sou o seu apaixonado, de alma transpa[B]rente
-Um louco alucinado meio inconse[C#m7]quente
-Um caso compli[F#7]cado de se enten[B]der [B7]
-
-[Refrão]
-
-É o a[E]mor, que mexe com a minha cabeça 
-E me deixa as[B]sim
-Que faz eu pensar em você 
-E esque[F#7]cer de mim
-Que [C#m7]faz eu esquecer que a [F#7]vida 
-É feita pra vi[B]ver [B7]
-É o a[E]mor
-Que veio como um tiro certo no meu cora[B]ção
-Que derrubou a base forte da minha pai[F#7]xão
-Que [C#m7]fez eu entender 
-Que a [F#7]vida é nada sem vo[B]cê`
-  },
-  {
-    id: 'zeze-2',
-    title: 'No Dia em que Eu Saí de Casa',
+    id: 'zeze-no-dia',
+    title: 'No Dia Em Que Eu Saí De Casa',
     artist: 'Zezé Di Camargo & Luciano',
     genre: 'Sertanejo',
     difficulty: 'Fácil',
-    tuning: 'Padrão',
-    originalKey: 'A',
+    imageUrl: ZEZE_IMG,
     verified: true,
-    imageUrl: 'https://images.unsplash.com/photo-1521417531039-75e91486cc40?w=400&h=400&fit=crop',
     content: `[Intro] [Bm] [E] [A] [E] [A] (passagem 1)
 
 [Tab - Passagem 1]
@@ -248,17 +168,26 @@ D|------------------------------------------------------|
 A|-0----------------------------------------------------|
 E|---0-2-4----------------------------------------------|
 
+[Solo Intro]
+[Tab - Violão 1]
+E|------------------------------------------------------|
+B|-12b14-12b14r12-10-12-----10b12-10b12r10-9-10---------|
+G|----------------------11------------------------------|
+D|------------------------------------------------------|
+
+[Tab - Violão 2]
+E|--------------------------10-------9------------------|
+B|-12b14-12b14r12-10--10/12----12\10---10\9--5b7r5-3-2--|
+
 [Primeira Parte]
 
     [A]
 No dia em que eu saí de casa
-
 Minha mãe me disse
             [D]
 Filho, vem cá
     [E]
 Passou a mão em meus cabelos
-
 Olhou em meus olhos
            [A]
 Começou falar
@@ -268,7 +197,6 @@ Por onde você for eu sigo
 Com meu pensamento
                  [D]
 Sempre onde estiver
-
 Em minhas orações
     [A]
 Eu vou pedir a Deus
@@ -286,69 +214,324 @@ Mas ela sabe que depois que cresce
               [D]
 O filho vira passarinho 
          [A] (passagem 2)
-E quer voar
+E quer voar`
+  },
+  {
+    id: 'zeze-cada-volta',
+    title: 'Cada Volta É Um Recomeço',
+    artist: 'Zezé Di Camargo & Luciano',
+    genre: 'Sertanejo',
+    difficulty: 'Médio',
+    imageUrl: ZEZE_IMG,
+    content: `[Intro] [F#] [E] [B/D#] [E] [G#m] [F#11] [E] [F#11] [B/D#] [E] [B/D#] [E]
 
-           [D]
-Eu bem queria continuar ali
-                              [A]
-But o destino quis me contrariar
-                           [E]
-E o olhar de minha mãe na porta
-              
-Eu deixei chorando
-           [A]
-A me abençoar
+[Primeira Parte]
 
-([Bm] [E] [A] [E] [A]) (passagem 1)
-
-[Segunda Parte]
-
-   [A]
-A minha mãe naquele dia
-                           [D]
-Me falou do mundo como ele é
-   [E]
-Parece que ela conhecia
-                              [A]
-Cada pedra que eu iria por o pé
-
-E sempre ao lado do meu pai
-              [A7]               [D]
-Da pequena cidade ela jamais saiu
-
-Ela me disse assim:
-     [A]
-Meu filho, vá com Deus
-    [E]                     [A] (passagem 2)
-Que esse mundo inteiro é seu
+     [B]       [B4]
+Mais uma vez
+     [B]
+Meu coração esquece tudo
+       [G°]
+Que você me fez
+    [E°]
+Eu volto pra esse amor insano
+        [G#m]      [G#m7/F#]
+Sem pensar em mim
+       [E]
+Pra recomeçar
+      [F#]         [F#4] [F#]
 
 [Refrão]
 
-           [D]
-Eu sei que ela nunca compreendeu
-                            [A]
-Os meus motivos de sair de lá
-                              [E]
-Mas ela sabe que depois que cresce
-              [D]
-O filho vira passarinho 
-         [A] (passagem 2)
-E quer voar
-
-           [D]
-Eu bem queria continuar ali
-                              [A]
-Mas o destino quis me contrariar
-                           [E]
-E o olhar de minha mãe na porta
-                             [A]
-Eu deixei chorando a me abençoar
-
-                           [E]
-E o olhar de minha mãe na porta
-                              [A]  
-Eu deixei chorando a me abençoar
-
-[Final] [E] [A] [D/A] [E] [A]`
+[B]              [E]
+  Nesses desencontros
+      [F#]
+Eu insisto em te encontrar
+[B]                [E]
+  Como se eu partisse
+       [F#]
+Já pensando em voltar`
   },
+  {
+    id: 'zeze-sera-que',
+    title: 'Será Que Foi Saudade?',
+    artist: 'Zezé Di Camargo & Luciano',
+    genre: 'Sertanejo',
+    difficulty: 'Médio',
+    imageUrl: ZEZE_IMG,
+    content: `[Intro] [C] [G/B] [Am7] [F9] [C] [G/B] [F9] [C]
+
+[Primeira Parte]
+
+ [C]            [F9]             [C] [F9]
+Diga logo o que te trouxe aqui
+ [C]              [F9]           [G] 
+
+( [Am7] [A#°] [G/B] )
+
+       [F9]         [G]            [C]
+O que fez você mudar tão de repente
+          [E7]            [Am]
+O que te fez pensar na gente
+      [D7]          [G] [G4] [G]
+
+[Refrão]
+
+                 [G]
+Será que foi saudade
+                     [F]
+Que te machucou por dentro
+                     [C]                     
+Que te fez por um momento 
+                 [G]
+Entender de solidão?`
+  },
+  {
+    id: 'zeze-flores',
+    title: 'Flores Em Vida',
+    artist: 'Zezé Di Camargo & Luciano',
+    genre: 'Sertanejo',
+    difficulty: 'Fácil',
+    imageUrl: ZEZE_IMG,
+    content: `[Intro] [Am] [C] [G] [D] (x2)
+
+[Primeira Parte]
+
+                 [Am]
+Quero seu amor agora
+[C]                  [G] [D]
+  Não a saudade depois
+                        [Am]
+Seu carinho pela vida afora
+             [C]          [G]           [D] 
+Antes que o fim pare entre nós dois
+
+[Refrão]
+
+[Am]        [C]       [G]
+Eu quero viver a vida
+        [D]        [Am]
+Quero flores em vida
+    [C]           [G]          [D]
+Colhidas no jardim do amor`
+  },
+  {
+    id: 'zeze-mentes',
+    title: 'Mentes Tão Bem',
+    artist: 'Zezé Di Camargo & Luciano',
+    genre: 'Sertanejo',
+    difficulty: 'Difícil',
+    imageUrl: ZEZE_IMG,
+    content: `[Intro] [G] [D11/F#] [D/F#] [D9/F#] [D/F#]
+
+[Primeira Parte]
+
+[C]                     [D9/F#]
+  Me promete amor sincero 
+     [D/F#]   [G]    [D/F#]
+Uma vida inteira
+[C/E]            [C]          [D5(9)]
+    Que com você o meu inverno 
+       [D/F#]    [G] [D/F#]
+Vira primavera
+
+[Refrão]
+
+ [C]          [D5(9)] 
+Mentes tão bem
+[D/F#]                [G] [D6(11)/F#]
+     Que parece verdade
+               [Em7]
+O que você me fala
+       [D5(9)]
+Vou acreditando`
+  },
+  {
+    id: 'zeze-sonho-de-amor',
+    title: 'Sonho de Amor',
+    artist: 'Zezé Di Camargo & Luciano',
+    genre: 'Sertanejo',
+    difficulty: 'Fácil',
+    imageUrl: ZEZE_IMG,
+    content: `[Intro] [Am] [G] [E]
+
+[Primeira Parte]
+
+[Am]
+   Se uma estrela cadente o céu cruzar
+                             [G]
+E uma chama no corpo me acender
+                             [E]
+Vou fazer um pedido e te chamar
+Pro começo do sonho acontecer
+
+[Refrão]
+
+[F]     [G]            [C]              [Am]
+  As noites sabem como eu te esperei
+[F]      [G]             [C] [Am]
+  Não conto pra ninguém
+[F]    [G]           [C]            [Am]
+  A lua sabe que eu me apaixonei`
+  },
+  {
+    id: 'zeze-dois-coracoes',
+    title: 'Dois Corações e Uma História',
+    artist: 'Zezé Di Camargo & Luciano',
+    genre: 'Sertanejo',
+    difficulty: 'Médio',
+    imageUrl: ZEZE_IMG,
+    content: `[Intro] [D] [E] [A]
+
+[Primeira Parte]
+
+               [Bm]
+No meio da conversa
+                 [E]
+De um caso terminando
+                     [A] [A7M]
+Um fala e o outro escuta 
+            [A6]         [F#m]
+E os olhos vão chorando
+
+[Refrão]
+
+              [D]
+E longe um do outro
+                 [E]
+A vida é toda errada
+                  [A]
+O homem não se importa 
+                   [F#]`
+  },
+  {
+    id: 'zeze-pra-nao-pensar',
+    title: 'Pra Não Pensar Em Você',
+    artist: 'Zezé Di Camargo & Luciano',
+    genre: 'Sertanejo',
+    difficulty: 'Médio',
+    imageUrl: ZEZE_IMG,
+    content: `[Intro] [A9] [C#m7/E] [A9] [C#m7/E]
+
+[Primeira Parte]
+
+[A]
+  Quando a saudade doer
+                  [C#m7/E]
+E a solidão machucar
+[A]
+  Pra não pensar em você
+                    [C#m7/E]
+
+[Refrão]
+
+[D]                     [Bm]
+   Mas eu me engano, me desespero
+[F#m]
+    Porque te amo, porque te quero`
+  },
+  {
+    id: 'zeze-pra-mudar',
+    title: 'Pra Mudar Minha Vida',
+    artist: 'Zezé Di Camargo & Luciano',
+    genre: 'Sertanejo',
+    difficulty: 'Fácil',
+    imageUrl: ZEZE_IMG,
+    content: `[Intro] [F#m] [A] [E]
+
+[Primeira Parte]
+
+Queria tanto te dizer
+                 [E] [E4]
+Que eu já não te amo 
+     [E]                     
+Que seu amor em minha vida
+               [B7]
+Foi mais um engano
+
+[Refrão]
+
+                            [A] [B]
+Você chegou me deixou sem saída
+                 
+Me fez te querer
+                       [E]`
+  },
+  {
+    id: 'zeze-dou-a-vida',
+    title: 'Dou a Vida Por Um Beijo',
+    artist: 'Zezé Di Camargo & Luciano',
+    genre: 'Sertanejo',
+    difficulty: 'Fácil',
+    imageUrl: ZEZE_IMG,
+    content: `[Intro] [G] [Am7] [C] [G]
+
+[Primeira Parte]
+
+[Am7]                      [G]
+    Difícil demais, te amar assim
+[Am7]                        [G]
+    Minha timidez tem que ter um fim
+
+[Refrão]
+
+[G]       [D/F#] [Em]        [C]         [G]
+  Eu te amo,     eu preciso te dizer
+      [D/F#]      [Am7] 
+Todo dia, toda noite 
+   [G/B] [C]    [D/F#] [G]`
+  },
+  {
+    id: 'zeze-voce-vai-ver',
+    title: 'Você Vai Ver',
+    artist: 'Zezé Di Camargo & Luciano',
+    genre: 'Sertanejo',
+    difficulty: 'Médio',
+    imageUrl: ZEZE_IMG,
+    content: `[Intro] [C] [Dm] [A7] [Bb2] [F] [C] [F] [C7]
+
+[Primeira Parte]
+
+[F]                  [C]           [Dm] [Dm/C]
+  Você pode encontrar muitos amores
+[Bb2]                     [F/A]             
+    Mas ninguém vai te dar 
+             [Gm] [Gm7]
+
+[Refrão]
+
+          [F]             [C]          [Dm]
+Eu vou ficar, guardado no seu coração
+           [F7]       [Bb2]
+Na noite fria, solidão`
+  },
+  {
+    id: 'zeze-e-o-amor',
+    title: 'É o Amor',
+    artist: 'Zezé Di Camargo & Luciano',
+    genre: 'Sertanejo',
+    difficulty: 'Médio',
+    tuning: 'Padrão',
+    originalKey: 'B',
+    verified: true,
+    imageUrl: ZEZE_IMG,
+    content: `[Intro] [E] [B] [F#7] [B] [F#7]
+
+[Primeira Parte]
+
+[B] Eu não vou negar que sou louco por você
+Tô maluco pra te ver, eu não vou ne[F#7]gar
+Eu [C#m]não vou negar, sem vo[C#m/B]cê tudo é sau[F#7]dade
+Você traz feli[C#m7]cidade
+[F#] Eu não vou ne[B]gar [C#m] [F#]
+[B] Eu não vou negar, você é meu doce mel
+Meu pedacinho de [B7]céu, eu não vou ne[E]gar
+
+[Refrão]
+
+É o a[E]mor, que mexe com a minha cabeça 
+E me deixa as[B]sim
+Que faz eu pensar em você 
+E esque[F#7]cer de mim`
+  }
 ];
