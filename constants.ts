@@ -37,6 +37,11 @@ export const CHORD_SHAPES: Record<string, ChordShape> = {
   'Em': { frets: [0, 2, 2, 0, 0, 0] },
   'Am': { frets: ['x', 0, 2, 2, 1, 0] },
   'Bm': { frets: ['x', 2, 4, 4, 3, 2], barre: 2 },
+  // COMPLEXOS
+  'G#m7': { frets: [4, 6, 4, 4, 4, 4], barre: 4, baseFret: 4 },
+  'C#m7': { frets: ['x', 4, 6, 4, 5, 4], barre: 4, baseFret: 4 },
+  'F#m7': { frets: [2, 4, 2, 2, 2, 2], barre: 2, baseFret: 2 },
+  'B7': { frets: ['x', 2, 1, 2, 0, 2] },
 };
 
 export interface ExtendedSong extends Song {
@@ -45,8 +50,88 @@ export interface ExtendedSong extends Song {
   intro?: string;
   imageUrl?: string;
   verified?: boolean;
-  rank?: string;
 }
+
+export const ZEZE_SONGS: ExtendedSong[] = [
+  {
+    id: 'zeze-1',
+    title: 'É o Amor',
+    artist: 'Zezé Di Camargo & Luciano',
+    genre: 'Sertanejo',
+    difficulty: 'Médio',
+    tuning: 'Padrão',
+    originalKey: 'G',
+    verified: true,
+    content: `[Intro]
+e|-------3-------3-------3-------3---|
+B|-----3---3---3---3---3---3---3---3-|
+G|---0-------0-------0-------0-------|
+D|-----------------------------------|
+A|-----------------------------------|
+E|-3---------------------------------|
+
+[G] Eu não vou negar que sou louco por vo[D]cê
+Tô mo[Am]rendo de saudades, sem sa[C]ber o que fa[G]zer
+Eu não vou negar que eu [D]sou o seu a[Em]migo
+Mas eu [Am]quero ser bem mais do que um a[C]migo pra vo[D]cê
+
+[G] Eu não vou negar que a vida é sem gra[D]ça
+Sem o [Am]brilho dos seus olhos, sem o [C]gosto do seu [G]beijo
+Eu não vou negar que eu [D]sou o seu es[Em]cravo
+Mas eu [Am]quero ser bem mais do que um es[C]cravo pra vo[D]cê
+
+[G] É o amor, que meche com minha ca[D]beça e me deixa as[Am]sim
+Que faz eu pensar em vo[C]cê e esque[D]cer de [G]mim
+Que faz eu esquecer que a vida é feita pra vi[D]ver
+Que faz eu acreditar que eu [Am]posso ser fe[C]liz
+A[D]mando vo[G]cê`
+  },
+  {
+    id: 'zeze-2',
+    title: 'No Dia em que Eu Saí de Casa',
+    artist: 'Zezé Di Camargo & Luciano',
+    genre: 'Sertanejo',
+    difficulty: 'Fácil',
+    tuning: 'Padrão',
+    originalKey: 'C',
+    verified: true,
+    content: `[Intro]
+e|-------0-1-0-----------------------|
+B|---1-3-------3-1-0-1---------------|
+G|-0---------------------------------|
+D|-----------------------------------|
+A|-----------------------------------|
+E|-----------------------------------|
+
+No [C]dia em que eu saí de ca[G]sa
+Minha [F]mãe me disse: Fi[C]lho, vem cá
+Pas[F]sou a mão em meus ca[C]belos
+Olhou em meus [G]olhos e começou fa[C]lar
+
+[C]O mundo é grande e o cami[G]nho é deserto
+Mas [F]Deus estará sempre per[C]to
+Aon[F]de quer que vo[C]cê vá
+Olhou em meus [G]olhos e começou fa[C]lar
+
+[C]Por onde você for, eu vou es[G]tar
+Com o meu pen[F]samento a te gui[C]ar
+Não im[F]porta a distân[C]cia que nos sepa[G]ra
+O meu cora[F]ção sem[G]pre vai te a[C]mar`
+  },
+  { id: 'zeze-3', title: 'Flores em Vida', artist: 'Zezé Di Camargo & Luciano', genre: 'Sertanejo', difficulty: 'Médio', content: '' },
+  { id: 'zeze-4', title: 'Pra Não Pensar em Você', artist: 'Zezé Di Camargo & Luciano', genre: 'Sertanejo', difficulty: 'Médio', content: '' },
+  { id: 'zeze-5', title: 'Pão de Mel', artist: 'Zezé Di Camargo & Luciano', genre: 'Sertanejo', difficulty: 'Fácil', content: '' },
+  { id: 'zeze-6', title: 'Você Vai Ver', artist: 'Zezé Di Camargo & Luciano', genre: 'Sertanejo', difficulty: 'Fácil', content: '' },
+  { id: 'zeze-7', title: 'Dois Corações e uma História', artist: 'Zezé Di Camargo & Luciano', genre: 'Sertanejo', difficulty: 'Difícil', content: '' },
+  { id: 'zeze-8', title: 'Indiferença', artist: 'Zezé Di Camargo & Luciano', genre: 'Sertanejo', difficulty: 'Médio', content: '' },
+  { id: 'zeze-9', title: 'Tarde Demais', artist: 'Zezé Di Camargo & Luciano', genre: 'Sertanejo', difficulty: 'Médio', content: '' },
+  { id: 'zeze-10', title: 'Mexe Que Mexe', artist: 'Zezé Di Camargo & Luciano', genre: 'Sertanejo', difficulty: 'Fácil', content: '' },
+  { id: 'zeze-11', title: 'Como Um Anjo', artist: 'Zezé Di Camargo & Luciano', genre: 'Sertanejo', difficulty: 'Médio', content: '' },
+  { id: 'zeze-12', title: 'Fui Eu', artist: 'Zezé Di Camargo & Luciano', genre: 'Sertanejo', difficulty: 'Médio', content: '' },
+  { id: 'zeze-13', title: 'Diz Pro Meu Olhar', artist: 'Zezé Di Camargo & Luciano', genre: 'Sertanejo', difficulty: 'Fácil', content: '' },
+  { id: 'zeze-14', title: 'A Ferro e Fogo', artist: 'Zezé Di Camargo & Luciano', genre: 'Sertanejo', difficulty: 'Difícil', content: '' },
+  { id: 'zeze-15', title: 'Preciso de Você', artist: 'Zezé Di Camargo & Luciano', genre: 'Sertanejo', difficulty: 'Fácil', content: '' },
+];
 
 export const MUSIC_ICONS = [
   { name: 'Michael Jackson', imageUrl: 'https://images.unsplash.com/photo-1619983081563-430f63602796?w=400&h=400&fit=crop' },
@@ -57,13 +142,8 @@ export const MUSIC_ICONS = [
   { name: 'Elvis Presley', imageUrl: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400&h=400&fit=crop' },
   { name: 'David Bowie', imageUrl: 'https://images.unsplash.com/photo-1526218626217-dc65a29bb444?w=400&h=400&fit=crop' },
   { name: 'Kurt Cobain', imageUrl: 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=400&h=400&fit=crop' },
-  { name: 'Janis Joplin', imageUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&h=400&fit=crop' },
-  { name: 'Jimi Hendrix', imageUrl: 'https://images.unsplash.com/photo-1511735111819-9a3f7709049c?w=400&h=400&fit=crop' },
-  { name: 'Madonna', imageUrl: 'https://images.unsplash.com/photo-1514525253344-f251357ad165?w=400&h=400&fit=crop' },
   { name: 'Tom Jobim', imageUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop' },
-  { name: 'Legião Urbana', imageUrl: 'https://images.unsplash.com/photo-1521337581100-8ca9a73a5f79?w=400&h=400&fit=crop' },
   { name: 'The Beatles', imageUrl: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=400&h=400&fit=crop' },
-  { name: 'Elis Regina', imageUrl: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=400&h=400&fit=crop' },
 ];
 
 export const POPULAR_ARTISTS = MUSIC_ICONS.slice(0, 8);
@@ -79,11 +159,6 @@ export const TOP_SONGS = [
   { rank: '8', title: 'Bohemian Rhapsody', artist: 'Queen' },
   { rank: '9', title: 'A Casa É Sua', artist: 'Casa Worship' },
   { rank: '10', title: 'Oceanos', artist: 'Ana Nóbrega' },
-  { rank: '11', title: 'Lanterna dos Afogados', artist: 'Paralamas do Sucesso' },
-  { rank: '12', title: 'Metamorfose Ambulante', artist: 'Raul Seixas' },
-  { rank: '13', title: 'Como É Grande o Meu Amor Por Você', artist: 'Roberto Carlos' },
-  { rank: '14', title: 'Pais e Filhos', artist: 'Legião Urbana' },
-  { rank: '15', title: 'Amarelo, Azul e Branco', artist: 'ANAVITÓRIA' },
 ];
 
-export const MOCK_SONGS: ExtendedSong[] = [];
+export const MOCK_SONGS: any[] = [];
