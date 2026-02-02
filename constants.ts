@@ -19,6 +19,8 @@ export const INSTRUMENT_CHORDS: Record<string, Record<string, ChordShape>> = {
   'Violão': {
     'C': { frets: ['x', 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0], keys: [0, 4, 7] },
     'D': { frets: ['x', 'x', 0, 2, 3, 2], fingers: [0, 0, 0, 1, 3, 2], keys: [2, 6, 9] },
+    'D4': { frets: ['x', 'x', 0, 2, 3, 3], fingers: [0, 0, 0, 1, 3, 4], keys: [2, 7, 9] },
+    'D7': { frets: ['x', 'x', 0, 2, 1, 2], fingers: [0, 0, 0, 2, 1, 3], keys: [2, 6, 9, 0] },
     'E': { frets: [0, 2, 2, 1, 0, 0], fingers: [0, 2, 3, 1, 0, 0], keys: [4, 8, 11] },
     'F': { frets: [1, 3, 3, 2, 1, 1], barre: 1, keys: [5, 9, 0] },
     'G': { frets: [3, 2, 0, 0, 0, 3], fingers: [3, 2, 0, 0, 0, 4], keys: [7, 11, 2] },
@@ -40,6 +42,8 @@ export const INSTRUMENT_CHORDS: Record<string, Record<string, ChordShape>> = {
   'Ukulele': {
     'C': { frets: [0, 0, 0, 3], keys: [0, 4, 7] },
     'D': { frets: [2, 2, 2, 0], keys: [2, 6, 9] },
+    'D4': { frets: [2, 2, 3, 0], keys: [2, 7, 9] },
+    'D7': { frets: [2, 0, 2, 0], keys: [2, 6, 9, 0] },
     'E': { frets: [4, 4, 4, 2], baseFret: 1, keys: [4, 8, 11] },
     'F': { frets: [2, 0, 1, 0], keys: [5, 9, 0] },
     'G': { frets: [0, 2, 3, 2], keys: [7, 11, 2] },
@@ -177,38 +181,122 @@ Meu Deus ela é demais`
     genre: 'Sertanejo',
     difficulty: 'Médio',
     imageUrl: RICK_RENNER_IMG,
-    content: `[Intro] [E] [B7] [A] [B7] [E]
+    content: `[Intro] [D] [D4] [D] [D4]
 
 [Primeira Parte]
 
-[E]
-Garçom, olhe pelo espelho
-                [B7]
-Estou num estado deplorável
-[A]
-Sei que o meu rosto está vermelho
-                  [E]
-E o meu pranto é inevitável
+    [D]                     [D4]          [D]
+Garçom, me traga outra garrafa de cerveja
+             [D4]          [D]
+Vou ficar sozinho nessa mesa
+                            [A7]
+Eu quero beber e chorar por ela
 
-[E]
-Ela me deixou e foi embora
-                   [B7]
-Com outro alguém que nem conhece
-[A]
-Por isso eu estou aqui agora
-                      [E]  (passagem 2)
-Bebendo o que a gente merece
+   [G]
+Garçom, a minha vida agora
+               [D]
+Tá de ponta cabeça
+Já tentei mas nada
+                   [A]
+Faz com que eu esqueça
+              [G]                  [D] [G] [A] [G]
+Os olhos e os lábios daquela mulher
+
+   [D]                 [D4]           [D]
+Garçom, ela saiu de vez da minha vida
+            [D4]         [D]
+E agora eu busco uma saída
+                [D7]               [G]
+Minha história de amor acaba em solidão
+   [G]
+Garçom, se eu ficar muito chato
+               [D]
+E der algum vexame
+                                 [A]
+Pegue toda a minha cerveja e derrame
+                [G]         [A]         [D] [A7]
+Faça o que ela fez com a minha paixão
 
 [Refrão]
 
-          [A]
-E nos bares da cidade
-                [E]
-Eu vou curtir a solidão
-           [B7]
-Bebendo e chorando
-             [E]
-A morte da minha paixão`
+   [D]
+Derrama cerveja, derrama
+               [A]
+Derrama a tristeza do meu coração
+    [A]                     [A7]
+Que essa angústia é uma bebida
+              [D]             [A7]
+Misturada, batida com a solidão
+   [D]
+Derrama cerveja, derrama
+               [D7]                [G]
+Enquanto eu derramo toda essa saudade
+   [G]                 [D]                      [A]
+Eu sou apenas um qualquer bebendo por mulher
+                 [D]
+Nos bares da cidade
+
+[Ponte]
+
+( [D] [D4] [D] [D4] )
+
+[Segunda Parte]
+
+    [D]                     [D4]          [D]
+Garçom, me traga outra garrafa de cerveja
+             [D4]           [D]
+Vou ficar sozinho nessa mesa
+                            [A7]
+Eu quero beber e chorar por ela
+
+   [G]
+Garçom, a minha vida agora
+               [D]
+Tá de ponta cabeça
+Já tentei mas nada
+                    [A]
+Faz com que eu esqueça
+     [G]                           [D] [G] [A] [G]
+Os olhos e os lábios daquela mulher
+
+   [D]                 [D4]           [D]
+Garçom, ela saiu de vez da minha vida
+           [D4]           [D]
+E agora eu busco uma saída
+                [D7]             [G]
+Minha história de amor acaba em solidão
+   [G]
+Garçom, se eu ficar muito chato
+              [D]
+E der algum vexame
+                                [A]
+Pegue toda a minha cerveja e derrame
+                [G]         [A]         [D] [A7]
+Faça o que ela fez com a minha paixão
+
+[Refrão Final]
+
+   [D]
+Derrama cerveja, derrama
+               [A]
+Derrama a tristeza do meu coração
+    [A]                     [A7]
+Que essa angústia é uma bebida
+              [D]             [A7]
+Misturada, batida com a solidão
+   [D]
+Derrama cerveja, derrama
+               [D7]                [G]
+Enquanto eu derramo toda essa saudade
+   [G]                 [D]                      [A]
+Eu sou apenas um qualquer bebendo por mulher
+                 [D]
+Nos bares da cidade
+
+   [G]                 [D]                      [A]
+Eu sou apenas um qualquer bebendo por mulher
+                 [D]
+Nos bares da cidade`
   }
 ];
 
