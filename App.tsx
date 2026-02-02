@@ -5,7 +5,7 @@ import {
   Globe, ChevronRight, Menu, Search, Video, Settings, ChevronDown, 
   Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users, Flame, Disc, ArrowLeft, CheckCircle2, Bookmark,
   Scissors, ArrowUpDown, Type, Eye, PlusCircle, Timer, Book, Edit, Activity, Folder, ExternalLink, Info, Download, PlayCircle,
-  Keyboard, Monitor, Youtube, Sparkles
+  Keyboard, Monitor, Youtube, Sparkles, Zap, AlertCircle
 } from 'lucide-react';
 import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
@@ -14,6 +14,7 @@ import SearchInput from './components/SearchInput';
 import ChordDisplay from './components/ChordDisplay';
 import ChordDiagram from './components/ChordDiagram';
 import JoaoAssistant from './components/JoaoAssistant';
+import Tuner from './components/Tuner';
 
 const GENRES = ['Sertanejo', 'Rock', 'Pop', 'Reggae', 'Gospel', 'Forró', 'MPB', 'Samba', 'Sofrência'];
 const INSTRUMENTS = [
@@ -33,8 +34,9 @@ const App: React.FC = () => {
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   const [scrollSpeed, setScrollSpeed] = useState(1);
   const [isJoaoOpen, setIsJoaoOpen] = useState(false);
+  const [isTunerOpen, setIsTunerOpen] = useState(false);
   const [selectedInstrument, setSelectedInstrument] = useState('Violão');
-  const [showChordsInSidebar, setShowChordsInSidebar] = useState(true);
+  const [showChordsInSidebar, setShowChordsInSidebar] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   const groupedContent = useMemo(() => {
@@ -69,6 +71,9 @@ const App: React.FC = () => {
     setFontSize(16);
     setIsJoaoOpen(false);
     setIsVideoModalOpen(false);
+    setIsAutoScrolling(false);
+    setScrollSpeed(1);
+    setShowChordsInSidebar(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
@@ -116,7 +121,7 @@ const App: React.FC = () => {
     if (isAutoScrolling) {
       interval = setInterval(() => {
         window.scrollBy(0, 1);
-      }, 50 / scrollSpeed);
+      }, 60 / scrollSpeed);
     }
     return () => clearInterval(interval);
   }, [isAutoScrolling, scrollSpeed]);
@@ -206,19 +211,21 @@ const App: React.FC = () => {
       className={`flex items-center justify-between w-full px-4 py-2.5 rounded-xl border transition-all group ${
         primary 
           ? 'bg-[#38cc63] border-[#38cc63] text-white' 
-          : 'bg-white border-gray-200 hover:border-gray-400'
+          : active 
+            ? 'bg-[#38cc63]/5 border-[#38cc63]/30 text-[#38cc63]' 
+            : 'bg-white border-gray-200 hover:border-gray-400'
       }`}
     >
       <div className="flex items-center gap-3">
         <Icon className={`w-4 h-4 ${primary ? 'text-white' : active ? 'text-[#38cc63]' : 'text-gray-400'}`} />
-        <span className={`text-[11px] font-bold uppercase tracking-tight ${primary ? 'text-white' : 'text-gray-600'}`}>{label}</span>
+        <span className={`text-[11px] font-bold uppercase tracking-tight ${primary ? 'text-white' : active ? 'text-[#38cc63]' : 'text-gray-600'}`}>{label}</span>
       </div>
       {children}
     </button>
   );
 
   return (
-    <div className="min-h-screen bg-[#f4f4f4] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f4f4f4] flex flex-col font-sans relative overflow-x-hidden">
       <header className="bg-[#1c1c1c] text-white sticky top-0 z-[60] h-16 flex items-center shadow-lg">
         <div className="max-w-[1280px] mx-auto w-full px-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => { setCurrentSong(null); setSelectedGenre(null); setSelectedArtist(null); }}>
@@ -229,8 +236,8 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      <div className="flex-1 max-w-[1280px] mx-auto w-full px-4 pt-6 flex gap-6 mb-20">
-        <main className={`flex-1 min-w-0 bg-white rounded-xl border border-gray-200 p-4 md:p-10 shadow-sm relative ${currentSong ? 'flex flex-col md:flex-row gap-10' : ''}`}>
+      <div className="flex-1 max-w-[1280px] mx-auto w-full px-4 pt-6 flex gap-6 mb-20 relative">
+        <main className={`flex-1 min-w-0 bg-white rounded-xl border border-gray-200 p-4 md:p-10 shadow-sm relative transition-all duration-300 ${currentSong ? 'flex flex-col md:flex-row gap-10' : ''} ${showChordsInSidebar ? 'md:mr-[280px]' : ''}`}>
           {!currentSong && !selectedGenre && renderHome()}
           {selectedGenre && !selectedArtist && !currentSong && renderArtistsView()}
           {selectedArtist && !currentSong && renderSongsView()}
@@ -247,9 +254,34 @@ const App: React.FC = () => {
 
                 <SidebarButton icon={Scissors} label="Simplificar cifra" onClick={() => {}} />
                 
-                <SidebarButton icon={ArrowUpDown} label="Auto rolagem" onClick={() => setIsAutoScrolling(!isAutoScrolling)} active={isAutoScrolling}>
-                  <div className={`w-2.5 h-2.5 rounded-full ${isAutoScrolling ? 'bg-[#38cc63] shadow-[0_0_8px_#38cc63]' : 'bg-gray-200'}`}></div>
-                </SidebarButton>
+                <div className="flex flex-col gap-1">
+                  <SidebarButton 
+                    icon={ArrowUpDown} 
+                    label="Auto rolagem" 
+                    onClick={() => setIsAutoScrolling(!isAutoScrolling)} 
+                    active={isAutoScrolling}
+                  >
+                    <div className={`w-2.5 h-2.5 rounded-full ${isAutoScrolling ? 'bg-[#38cc63] shadow-[0_0_8px_#38cc63]' : 'bg-gray-200'}`}></div>
+                  </SidebarButton>
+                  
+                  {isAutoScrolling && (
+                    <div className="flex items-center justify-between p-1 bg-gray-50 rounded-xl border border-gray-100 animate-in slide-in-from-top-1 duration-200">
+                      {[0.5, 1, 1.5, 2].map((speed) => (
+                        <button
+                          key={speed}
+                          onClick={() => setScrollSpeed(speed)}
+                          className={`flex-1 py-1 text-[9px] font-black rounded-lg transition-all ${
+                            scrollSpeed === speed 
+                              ? 'bg-[#38cc63] text-white shadow-sm' 
+                              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                          }`}
+                        >
+                          {speed}x
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
                 <div className="flex items-center justify-between w-full px-3 py-2 bg-white border border-gray-200 rounded-xl">
                   <div className="flex items-center gap-2 text-gray-400">
@@ -273,8 +305,14 @@ const App: React.FC = () => {
                   </div>
                 </div>
 
-                <SidebarButton icon={Grid} label="Acordes" onClick={() => setShowChordsInSidebar(!showChordsInSidebar)} />
-                <SidebarButton icon={Activity} label="Afinação" onClick={() => {}} />
+                <SidebarButton 
+                  icon={Grid} 
+                  label="Acordes" 
+                  onClick={() => setShowChordsInSidebar(!showChordsInSidebar)} 
+                  active={showChordsInSidebar}
+                />
+                
+                <SidebarButton icon={Activity} label="Afinador" onClick={() => setIsTunerOpen(true)} />
                 <SidebarButton icon={Bookmark} label="Capotraste" onClick={() => {}} />
                 <SidebarButton icon={Eye} label="Exibir" onClick={() => {}} />
                 
@@ -321,7 +359,6 @@ const App: React.FC = () => {
 
                 <ChordDisplay content={transposedContent} fontSize={fontSize} instrument={selectedInstrument} />
 
-                {/* Grounding Sources - MUST ALWAYS be listed for Google Search grounding to comply with policies */}
                 {currentSong.sources && currentSong.sources.length > 0 && (
                   <div className="mt-10 pt-10 border-t border-gray-100">
                     <h4 className="text-lg font-black text-gray-900 mb-4 uppercase tracking-tight flex items-center gap-3">
@@ -344,21 +381,40 @@ const App: React.FC = () => {
                     </div>
                   </div>
                 )}
-
-                <div className="mt-20 pt-10 border-t border-gray-100">
-                  <h4 className="text-xl font-black text-gray-900 mb-8 uppercase tracking-tight flex items-center gap-3">
-                    <Grid className="w-6 h-6 text-[#38cc63]" /> Acordes Utilizados ({selectedInstrument})
-                  </h4>
-                  <div className="flex flex-wrap gap-8">
-                    {songChords.map(chord => (
-                      <ChordDiagram key={chord} chord={chord} instrument={selectedInstrument} />
-                    ))}
-                  </div>
-                </div>
               </div>
             </>
           )}
         </main>
+
+        {/* Floating Chord Panel (Drawer) */}
+        {currentSong && (
+          <div className={`fixed top-20 right-4 bottom-20 w-[260px] bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 transition-all duration-500 transform ${showChordsInSidebar ? 'translate-x-0 opacity-100' : 'translate-x-[120%] opacity-0 pointer-events-none'}`}>
+             <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50 rounded-t-2xl">
+                <div className="flex items-center gap-2">
+                   <Grid className="w-4 h-4 text-[#38cc63]" />
+                   <span className="text-[11px] font-black uppercase tracking-widest text-gray-900">Dicionário da Música</span>
+                </div>
+                <button onClick={() => setShowChordsInSidebar(false)} className="p-1.5 hover:bg-gray-200 rounded-lg transition-colors">
+                   <X className="w-4 h-4 text-gray-400" />
+                </button>
+             </div>
+             <div className="overflow-y-auto h-[calc(100%-60px)] p-4 space-y-6 custom-scrollbar">
+                <div className="flex flex-col gap-8">
+                  {songChords.map(chord => (
+                    <div key={chord} className="flex flex-col items-center">
+                       <ChordDiagram chord={chord} instrument={selectedInstrument} />
+                    </div>
+                  ))}
+                </div>
+                {songChords.length === 0 && (
+                  <div className="text-center py-20">
+                     <AlertCircle className="w-10 h-10 text-gray-200 mx-auto mb-2" />
+                     <p className="text-[10px] font-bold text-gray-400 uppercase">Nenhum acorde detectado</p>
+                  </div>
+                )}
+             </div>
+          </div>
+        )}
       </div>
 
       {/* Video Modal */}
@@ -422,6 +478,7 @@ const App: React.FC = () => {
       )}
 
       <JoaoAssistant isOpen={isJoaoOpen} onClose={() => setIsJoaoOpen(false)} onSongFound={handleSongSelect} />
+      <Tuner isOpen={isTunerOpen} onClose={() => setIsTunerOpen(false)} />
     </div>
   );
 };
