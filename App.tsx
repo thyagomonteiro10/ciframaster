@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
-  Play, Pause, Grid, Printer, Music, Heart, X, Bot, Link as LinkIcon, 
+  Play, Pause, Grid, Music, Heart, X, Bot, Link as LinkIcon, 
   Globe, ChevronRight, Menu, Search, Video, Settings, ChevronDown, 
   Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users, Flame, Disc, ArrowLeft, CheckCircle2,
   ArrowUpDown, Type, PlusCircle, Timer, Activity, Folder, ExternalLink, Info, Download, PlayCircle,
@@ -421,7 +421,6 @@ const App: React.FC = () => {
                 />
                 
                 <SidebarButton icon={Timer} label="Metrônomo" onClick={() => setIsMetronomeOpen(true)} />
-                <SidebarButton icon={Printer} label="Imprimir" onClick={() => window.print()} />
                 <SidebarButton icon={Download} label="Baixar cifra" onClick={handleDownload} />
 
                 <div className="mt-4 p-4 bg-[#38cc63] rounded-xl text-center shadow-lg shadow-[#38cc63]/20 cursor-pointer hover:scale-[1.02] transition-transform">
