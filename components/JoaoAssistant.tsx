@@ -70,6 +70,7 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
     }
 
     // Inteligência Artificial
+    // CRITICAL: Initialize GoogleGenAI right before making an API call to ensure it uses the correct context.
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     try {
       const response = await ai.models.generateContent({
@@ -99,9 +100,29 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
             }
           }`,
           responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              message: { type: Type.STRING },
+              songData: {
+                type: Type.OBJECT,
+                properties: {
+                  title: { type: Type.STRING },
+                  artist: { type: Type.STRING },
+                  content: { type: Type.STRING, description: "Full chords and lyrics format" },
+                  genre: { type: Type.STRING },
+                  difficulty: { type: Type.STRING, enum: ["Fácil", "Médio", "Difícil"] },
+                  originalKey: { type: Type.STRING }
+                },
+                required: ["title", "artist", "content", "genre", "difficulty"]
+              }
+            },
+            required: ["message"]
+          }
         }
       });
 
+      // Directly access .text property as per guidelines (it is a property, not a method)
       const data = JSON.parse(response.text);
       
       if (data.songData) {

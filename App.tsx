@@ -5,7 +5,7 @@ import {
   Globe, ChevronRight, Menu, Search, Video, Settings, ChevronDown, 
   Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users, Flame, Disc, ArrowLeft, CheckCircle2, Bookmark,
   Scissors, ArrowUpDown, Type, Eye, PlusCircle, Timer, Book, Edit, Activity, Folder, ExternalLink, Info, Download, PlayCircle,
-  Keyboard, Monitor
+  Keyboard, Monitor, Youtube, Sparkles
 } from 'lucide-react';
 import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
@@ -35,6 +35,7 @@ const App: React.FC = () => {
   const [isJoaoOpen, setIsJoaoOpen] = useState(false);
   const [selectedInstrument, setSelectedInstrument] = useState('Violão');
   const [showChordsInSidebar, setShowChordsInSidebar] = useState(true);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   const groupedContent = useMemo(() => {
     const allSongs = [...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS];
@@ -67,6 +68,7 @@ const App: React.FC = () => {
     setTransposition(0);
     setFontSize(16);
     setIsJoaoOpen(false);
+    setIsVideoModalOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
@@ -237,9 +239,10 @@ const App: React.FC = () => {
             <>
               <aside className="w-full md:w-[200px] shrink-0 flex flex-col gap-2">
                 <button 
-                  className="w-full bg-[#38cc63] text-white py-3 rounded-xl font-black text-[12px] uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#2da34f] transition-colors mb-2 shadow-lg shadow-[#38cc63]/20"
+                  onClick={() => setIsVideoModalOpen(true)}
+                  className="w-full bg-[#38cc63] text-white py-3 rounded-xl font-black text-[12px] uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#2da34f] transition-all mb-2 shadow-lg shadow-[#38cc63]/20 hover:scale-[1.02] active:scale-95 group"
                 >
-                   <Users className="w-4 h-4" /> {currentSong.artist}
+                   <Users className="w-4 h-4 group-hover:scale-110 transition-transform" /> {currentSong.artist}
                 </button>
 
                 <SidebarButton icon={Scissors} label="Simplificar cifra" onClick={() => {}} />
@@ -318,6 +321,30 @@ const App: React.FC = () => {
 
                 <ChordDisplay content={transposedContent} fontSize={fontSize} instrument={selectedInstrument} />
 
+                {/* Grounding Sources - MUST ALWAYS be listed for Google Search grounding to comply with policies */}
+                {currentSong.sources && currentSong.sources.length > 0 && (
+                  <div className="mt-10 pt-10 border-t border-gray-100">
+                    <h4 className="text-lg font-black text-gray-900 mb-4 uppercase tracking-tight flex items-center gap-3">
+                      <Globe className="w-5 h-5 text-[#38cc63]" /> Fontes da Cifra (Grounding)
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {currentSong.sources.map((source, idx) => (
+                        <a 
+                          key={idx} 
+                          href={source.uri} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-[10px] font-bold text-gray-600 hover:border-[#38cc63] hover:text-[#38cc63] transition-all group"
+                        >
+                          <LinkIcon className="w-3 h-3 text-gray-400 group-hover:text-[#38cc63]" />
+                          <span className="truncate max-w-[200px]">{source.title || 'Ver Fonte'}</span>
+                          <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="mt-20 pt-10 border-t border-gray-100">
                   <h4 className="text-xl font-black text-gray-900 mb-8 uppercase tracking-tight flex items-center gap-3">
                     <Grid className="w-6 h-6 text-[#38cc63]" /> Acordes Utilizados ({selectedInstrument})
@@ -333,6 +360,56 @@ const App: React.FC = () => {
           )}
         </main>
       </div>
+
+      {/* Video Modal */}
+      {isVideoModalOpen && currentSong && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 animate-in fade-in duration-300">
+          <div className="relative w-full max-w-4xl bg-[#1c1c1c] rounded-3xl overflow-hidden shadow-2xl border border-white/10 animate-in zoom-in-95 duration-300">
+            <div className="p-5 flex items-center justify-between border-b border-white/5 bg-[#1c1c1c]">
+              <div className="flex items-center gap-3">
+                 <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-600/20">
+                    <Youtube className="text-white w-6 h-6" />
+                 </div>
+                 <div className="hidden sm:block">
+                   <h3 className="text-white font-black text-sm uppercase tracking-tight">{currentSong.title}</h3>
+                   <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">{currentSong.artist} • Oficial</p>
+                 </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => setIsVideoModalOpen(false)}
+                  className="flex items-center gap-2 px-4 py-2 bg-[#38cc63] hover:bg-[#2da34f] text-white rounded-xl text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-[#38cc63]/20"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  Voltar para a Cifra
+                </button>
+                <button 
+                  onClick={() => setIsVideoModalOpen(false)}
+                  className="p-2 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+            <div className="aspect-video w-full bg-black">
+              <iframe 
+                width="100%" 
+                height="100%" 
+                src={`https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(currentSong.artist + ' ' + currentSong.title + ' oficial clipe')}`}
+                title="YouTube video player" 
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowFullScreen
+              ></iframe>
+            </div>
+            <div className="p-4 bg-black/40 flex items-center justify-center gap-4">
+               <span className="text-white/60 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                 <Sparkles className="w-3 h-3 text-[#38cc63]" /> Player Cifra Master
+               </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {!isJoaoOpen && (
         <button 
