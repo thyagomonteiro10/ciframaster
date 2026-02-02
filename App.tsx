@@ -180,27 +180,39 @@ const App: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {artistNames.map((artist) => (
-            <button 
-              key={artist}
-              onClick={() => handleArtistClick(artist)}
-              className="group flex flex-col bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-[#38cc63] hover:shadow-xl transition-all text-left"
-            >
-              <div className="h-32 bg-gray-50 flex items-center justify-center border-b border-gray-100 group-hover:bg-[#38cc63]/5 transition-colors relative">
-                 <Folder className="w-12 h-12 text-gray-200 group-hover:text-[#38cc63]/40 transition-colors" />
-                 <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-md border border-gray-100 shadow-sm text-[9px] font-black text-gray-400 group-hover:text-[#38cc63]">
-                    {artists[artist].length} MÚSICAS
-                 </div>
-              </div>
-              <div className="p-5 flex items-center justify-between">
-                <div>
-                   <h3 className="font-black text-gray-900 uppercase tracking-tight group-hover:text-[#38cc63] transition-colors">{artist}</h3>
-                   <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">Pasta do Artista</p>
+          {artistNames.map((artist) => {
+            const artistSongs = artists[artist];
+            const artistImage = artistSongs[0]?.imageUrl;
+
+            return (
+              <button 
+                key={artist}
+                onClick={() => handleArtistClick(artist)}
+                className="group flex flex-col bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-[#38cc63] hover:shadow-xl transition-all text-left"
+              >
+                <div className="h-32 bg-gray-50 flex items-center justify-center border-b border-gray-100 group-hover:bg-[#38cc63]/5 transition-colors relative overflow-hidden">
+                  {artistImage ? (
+                    <>
+                      <img src={artistImage} alt={artist} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                    </>
+                  ) : (
+                    <Folder className="w-12 h-12 text-gray-200 group-hover:text-[#38cc63]/40 transition-colors" />
+                  )}
+                   <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-md border border-gray-100 shadow-sm text-[9px] font-black text-gray-400 group-hover:text-[#38cc63]">
+                      {artistSongs.length} MÚSICAS
+                   </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-[#38cc63] group-hover:translate-x-1 transition-all" />
-              </div>
-            </button>
-          ))}
+                <div className="p-5 flex items-center justify-between">
+                  <div>
+                     <h3 className="font-black text-gray-900 uppercase tracking-tight group-hover:text-[#38cc63] transition-colors">{artist}</h3>
+                     <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">Pasta do Artista</p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-[#38cc63] group-hover:translate-x-1 transition-all" />
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
     );

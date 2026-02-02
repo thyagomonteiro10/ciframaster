@@ -8,33 +8,41 @@ interface ChordDisplayProps {
   instrument?: string;
 }
 
-const ChordHover: React.FC<{ chord: string, children: React.ReactNode, fontSize: number, instrument?: string }> = React.memo(({ chord, children, fontSize, instrument }) => {
+const ChordInteraction: React.FC<{ chord: string, children: React.ReactNode, fontSize: number, instrument?: string }> = React.memo(({ chord, children, fontSize, instrument }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
 
-  const handleToggle = useCallback((e: React.MouseEvent) => {
-    // No mobile, o click abre/fecha o diagrama. No desktop, o hover cuida disso.
-    if (window.innerWidth <= 768) {
-      e.preventDefault();
-      setIsHovered(prev => !prev);
-    }
-  }, []);
+  const isOpen = isHovered || isPinned;
 
   return (
     <span 
-      className="relative inline-block group"
-      onMouseEnter={() => window.innerWidth > 768 && setIsHovered(true)}
-      onMouseLeave={() => window.innerWidth > 768 && setIsHovered(false)}
-      onClick={handleToggle}
+      className="relative inline-block"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={(e) => {
+        setIsPinned(prev => !prev);
+        e.stopPropagation();
+      }}
     >
-      <span className={`font-bold font-mono transition-all duration-200 rounded px-1 cursor-pointer ${
-        isHovered ? 'bg-[#38cc63] text-white shadow-lg' : 'text-[#38cc63] hover:bg-[#38cc63]/10'
+      <span className={`font-bold font-mono transition-all duration-200 rounded px-1 cursor-pointer border-b-2 ${
+        isPinned 
+          ? 'bg-[#38cc63] text-white border-[#2da34f] shadow-md scale-105' 
+          : isHovered 
+            ? 'bg-[#38cc63]/20 text-[#38cc63] border-[#38cc63]' 
+            : 'text-[#38cc63] border-transparent hover:border-[#38cc63]/40'
       }`}>
         {children}
       </span>
-      {isHovered && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 z-[150] transition-all duration-300 transform origin-bottom scale-100 opacity-100 pointer-events-none">
-           <ChordDiagram chord={chord} instrument={instrument} />
-           <div className="w-3 h-3 bg-white border-r border-b border-gray-100 rotate-45 absolute -bottom-1.5 left-1/2 -translate-x-1/2 shadow-lg"></div>
+      {isOpen && (
+        <div 
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 z-[999] animate-in fade-in zoom-in-95 duration-200 origin-bottom pointer-events-auto"
+          onClick={(e) => e.stopPropagation()} // Impede que o clique no diagrama feche ele mesmo
+        >
+           <div className="relative">
+             <ChordDiagram chord={chord} instrument={instrument} />
+             {/* Seta indicadora */}
+             <div className="w-3 h-3 bg-white absolute -bottom-1.5 left-1/2 -translate-x-1/2 rotate-45 border-r border-b border-gray-100 shadow-[2px_2px_2px_-1px_rgba(0,0,0,0.05)]"></div>
+           </div>
         </div>
       )}
     </span>
@@ -73,7 +81,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = React.memo(({ content, fontSiz
            <div className="h-10 flex items-end min-w-max" style={{ fontSize: `${fontSize + 1}px` }}>
               {chords.map((part, pIdx) => {
                 if (part.trim() === "") return <span key={pIdx} className="whitespace-pre">{part}</span>;
-                return <ChordHover key={pIdx} chord={part.trim()} fontSize={fontSize} instrument={instrument}>{part}</ChordHover>;
+                return <ChordInteraction key={pIdx} chord={part.trim()} fontSize={fontSize} instrument={instrument}>{part}</ChordInteraction>;
               })}
            </div>
          </div>
@@ -104,7 +112,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = React.memo(({ content, fontSiz
           chordLineElements.push(<span key={`s-${pIdx}`} className="whitespace-pre">{" ".repeat(spacesNeeded)}</span>);
           currentPos += spacesNeeded;
         }
-        chordLineElements.push(<ChordHover key={`c-${pIdx}`} chord={chord} fontSize={fontSize} instrument={instrument}>{chord}</ChordHover>);
+        chordLineElements.push(<ChordInteraction key={`c-${pIdx}`} chord={chord} fontSize={fontSize} instrument={instrument}>{chord}</ChordInteraction>);
         currentPos += chord.length;
       } else {
         lyricsLine += part;

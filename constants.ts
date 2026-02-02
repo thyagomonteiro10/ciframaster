@@ -87,7 +87,7 @@ export const JULIANY_SOUZA_SONGS: ExtendedSong[] = [
     originalKey: 'E',
     capo: 2,
     verified: true,
-    imageUrl: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=200&h=200&fit=crop',
+    imageUrl: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=400&h=400&fit=crop',
     content: `Tom: [E] (formato acorde em formato [D])
 Capo: 2ª casa
 
@@ -163,6 +163,7 @@ export const ZEZE_SONGS: ExtendedSong[] = [
     tuning: 'Padrão',
     originalKey: 'B',
     verified: true,
+    imageUrl: 'https://images.unsplash.com/photo-1521417531039-75e91486cc40?w=400&h=400&fit=crop',
     content: `[Intro] [E] [B] [F#7] [B] [F#7]
 
 [Primeira Parte]
@@ -236,6 +237,7 @@ Que a [F#7]vida é nada sem vo[B]cê`
     tuning: 'Padrão',
     originalKey: 'A',
     verified: true,
+    imageUrl: 'https://images.unsplash.com/photo-1521417531039-75e91486cc40?w=400&h=400&fit=crop',
     content: `[Intro] [Bm] [E] [A] [E] [A] (passagem 1)
 
 [Tab - Passagem 1]
