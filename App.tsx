@@ -3,8 +3,8 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   Play, Pause, Grid, Printer, Music, Heart, X, Bot, Link as LinkIcon, 
   Globe, ChevronRight, Menu, Search, Video, Settings, ChevronDown, 
-  Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users, Flame, Disc, ArrowLeft, CheckCircle2, Bookmark,
-  Scissors, ArrowUpDown, Type, Eye, PlusCircle, Timer, Book, Edit, Activity, Folder, ExternalLink, Info, Download, PlayCircle,
+  Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users, Flame, Disc, ArrowLeft, CheckCircle2,
+  ArrowUpDown, Type, PlusCircle, Timer, Activity, Folder, ExternalLink, Info, Download, PlayCircle,
   Keyboard, Monitor, Youtube, Sparkles, Zap, AlertCircle
 } from 'lucide-react';
 import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS } from './constants';
@@ -15,6 +15,7 @@ import ChordDisplay from './components/ChordDisplay';
 import ChordDiagram from './components/ChordDiagram';
 import JoaoAssistant from './components/JoaoAssistant';
 import Tuner from './components/Tuner';
+import Metronome from './components/Metronome';
 
 const GENRES = ['Sertanejo', 'Rock', 'Pop', 'Reggae', 'Gospel', 'Forró', 'MPB', 'Samba', 'Sofrência'];
 const INSTRUMENTS = [
@@ -35,9 +36,44 @@ const App: React.FC = () => {
   const [scrollSpeed, setScrollSpeed] = useState(1);
   const [isJoaoOpen, setIsJoaoOpen] = useState(false);
   const [isTunerOpen, setIsTunerOpen] = useState(false);
+  const [isMetronomeOpen, setIsMetronomeOpen] = useState(false);
   const [selectedInstrument, setSelectedInstrument] = useState('Violão');
   const [showChordsInSidebar, setShowChordsInSidebar] = useState(false);
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [favorites, setFavorites] = useState<ExtendedSong[]>([]);
+  const [isFavFolderOpen, setIsFavFolderOpen] = useState(true);
+
+  // Load favorites from local storage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('cifra_master_favorites');
+    if (saved) {
+      try {
+        setFavorites(JSON.parse(saved));
+      } catch (e) {
+        console.error("Erro ao carregar favoritos", e);
+      }
+    }
+  }, []);
+
+  // Save favorites to local storage whenever they change
+  useEffect(() => {
+    localStorage.setItem('cifra_master_favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = useCallback((song: ExtendedSong) => {
+    setFavorites(prev => {
+      const isFav = prev.some(f => f.id === song.id);
+      if (isFav) {
+        return prev.filter(f => f.id !== song.id);
+      } else {
+        return [...prev, song];
+      }
+    });
+  }, []);
+
+  const isCurrentFavorite = useMemo(() => {
+    if (!currentSong) return false;
+    return favorites.some(f => f.id === currentSong.id);
+  }, [favorites, currentSong]);
 
   const groupedContent = useMemo(() => {
     const allSongs = [...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS];
@@ -70,7 +106,6 @@ const App: React.FC = () => {
     setTransposition(0);
     setFontSize(16);
     setIsJoaoOpen(false);
-    setIsVideoModalOpen(false);
     setIsAutoScrolling(false);
     setScrollSpeed(1);
     setShowChordsInSidebar(false);
@@ -131,14 +166,78 @@ const App: React.FC = () => {
     return transposeContent(currentSong.content, transposition);
   }, [currentSong, transposition]);
 
+  // Download functionality
+  const handleDownload = useCallback(() => {
+    if (!currentSong) return;
+
+    const timestamp = new Date().toLocaleDateString('pt-BR');
+    const header = `--------------------------------------------------\nCIFRA MASTER - Seu portal de música\nGerado em: ${timestamp}\n--------------------------------------------------\n\nMúsica: ${currentSong.title}\nArtista: ${currentSong.artist}\nTom Original: ${currentSong.originalKey || 'N/A'}\nTransposição Atual: ${transposition > 0 ? '+' : ''}${transposition} semitonia(s)\n\n--------------------------------------------------\n\n`;
+    const footer = `\n\n--------------------------------------------------\nBaixe mais cifras em: Cifra Master AI\n--------------------------------------------------`;
+    
+    const fullText = header + transposedContent + footer;
+    const blob = new Blob([fullText], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${currentSong.artist} - ${currentSong.title}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, [currentSong, transposedContent, transposition]);
+
   const renderHome = () => (
     <div className="py-2">
-      <div className="flex items-center justify-between mb-10 border-b border-gray-100 pb-6">
-        <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
-          <Disc className="text-[#38cc63] w-8 h-8" /> Navegar por Ritmos
+      {/* Pasta de Favoritos Otimizada */}
+      {favorites.length > 0 && (
+        <div className="mb-8 animate-in fade-in slide-in-from-left-4 duration-500">
+           <button 
+             onClick={() => setIsFavFolderOpen(!isFavFolderOpen)}
+             className="w-full flex items-center justify-between p-4 bg-[#1c1c1c] rounded-2xl shadow-xl border border-white/5 hover:bg-gray-800 transition-all group"
+           >
+              <div className="flex items-center gap-4">
+                 <div className="w-10 h-10 bg-[#38cc63]/20 rounded-xl flex items-center justify-center border border-[#38cc63]/30">
+                    <Folder className="text-[#38cc63] w-5 h-5 fill-[#38cc63]/20" />
+                 </div>
+                 <div className="text-left">
+                    <h2 className="text-lg font-black text-white tracking-tight uppercase">Meus Favoritos</h2>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{favorites.length} música{favorites.length !== 1 ? 's' : ''} salva{favorites.length !== 1 ? 's' : ''}</p>
+                 </div>
+              </div>
+              <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${isFavFolderOpen ? 'rotate-180' : ''}`} />
+           </button>
+           
+           {isFavFolderOpen && (
+             <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-in slide-in-from-top-2 duration-300 origin-top">
+                {favorites.map((song) => (
+                  <div 
+                    key={song.id} 
+                    onClick={() => handleSongSelect(song)}
+                    className="group flex items-center justify-between p-3.5 bg-white border border-gray-100 rounded-xl hover:border-[#38cc63] hover:shadow-sm transition-all cursor-pointer relative overflow-hidden"
+                  >
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#38cc63] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="flex-1 min-w-0 pr-3">
+                      <h4 className="font-bold text-gray-800 text-sm truncate group-hover:text-[#38cc63]">{song.title}</h4>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight truncate">{song.artist}</p>
+                    </div>
+                    <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center group-hover:bg-[#38cc63] group-hover:text-white transition-all">
+                      <Play className="w-4 h-4" />
+                    </div>
+                  </div>
+                ))}
+             </div>
+           )}
+        </div>
+      )}
+
+      <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-5">
+        <h1 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+          <Disc className="text-[#38cc63] w-7 h-7" /> Navegar por Ritmos
         </h1>
         <div className="flex gap-2">
-          <span className="px-3 py-1 bg-[#38cc63]/10 text-[10px] font-black rounded-full text-[#38cc63] uppercase tracking-widest flex items-center gap-1.5">
+          <span className="px-3 py-1 bg-[#38cc63]/10 text-[9px] font-black rounded-full text-[#38cc63] uppercase tracking-widest flex items-center gap-1.5">
             <Flame className="w-3 h-3" /> Explorar
           </span>
         </div>
@@ -246,14 +345,12 @@ const App: React.FC = () => {
             <>
               <aside className="w-full md:w-[200px] shrink-0 flex flex-col gap-2">
                 <button 
-                  onClick={() => setIsVideoModalOpen(true)}
+                  onClick={handleBack}
                   className="w-full bg-[#38cc63] text-white py-3 rounded-xl font-black text-[12px] uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#2da34f] transition-all mb-2 shadow-lg shadow-[#38cc63]/20 hover:scale-[1.02] active:scale-95 group"
                 >
-                   <Users className="w-4 h-4 group-hover:scale-110 transition-transform" /> {currentSong.artist}
+                   <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> {currentSong.artist}
                 </button>
 
-                <SidebarButton icon={Scissors} label="Simplificar cifra" onClick={() => {}} />
-                
                 <div className="flex flex-col gap-1">
                   <SidebarButton 
                     icon={ArrowUpDown} 
@@ -313,17 +410,19 @@ const App: React.FC = () => {
                 />
                 
                 <SidebarButton icon={Activity} label="Afinador" onClick={() => setIsTunerOpen(true)} />
-                <SidebarButton icon={Bookmark} label="Capotraste" onClick={() => {}} />
-                <SidebarButton icon={Eye} label="Exibir" onClick={() => {}} />
                 
                 <div className="my-2 border-t border-gray-100"></div>
 
-                <SidebarButton icon={PlusCircle} label="Adicionar à lista" onClick={() => {}} />
-                <SidebarButton icon={Timer} label="Metrônomo" onClick={() => {}} />
-                <SidebarButton icon={Book} label="Dicionário" onClick={() => {}} />
-                <SidebarButton icon={Edit} label="Corrigir" onClick={() => {}} />
+                <SidebarButton 
+                  icon={isCurrentFavorite ? Heart : PlusCircle} 
+                  label={isCurrentFavorite ? "Remover favoritos" : "Adicionar à lista"} 
+                  onClick={() => toggleFavorite(currentSong)} 
+                  active={isCurrentFavorite}
+                />
+                
+                <SidebarButton icon={Timer} label="Metrônomo" onClick={() => setIsMetronomeOpen(true)} />
                 <SidebarButton icon={Printer} label="Imprimir" onClick={() => window.print()} />
-                <SidebarButton icon={Download} label="Baixar cifra" onClick={() => {}} />
+                <SidebarButton icon={Download} label="Baixar cifra" onClick={handleDownload} />
 
                 <div className="mt-4 p-4 bg-[#38cc63] rounded-xl text-center shadow-lg shadow-[#38cc63]/20 cursor-pointer hover:scale-[1.02] transition-transform">
                    <div className="text-white font-black text-[12px] uppercase tracking-tighter">Cifra Master PRO</div>
@@ -353,7 +452,15 @@ const App: React.FC = () => {
                    <div className="flex items-center gap-2 mb-4">
                      <span className="text-[10px] font-black text-[#38cc63] uppercase tracking-widest bg-[#38cc63]/10 px-2 py-0.5 rounded">Tom: {currentSong.originalKey || 'A'}</span>
                    </div>
-                   <h2 className="text-4xl md:text-5xl font-black text-gray-950 tracking-tight leading-none mb-2 uppercase">{currentSong.title}</h2>
+                   <div className="flex items-center justify-between gap-4">
+                      <h2 className="text-4xl md:text-5xl font-black text-gray-950 tracking-tight leading-none mb-2 uppercase">{currentSong.title}</h2>
+                      <button 
+                        onClick={() => toggleFavorite(currentSong)}
+                        className={`p-3 rounded-full transition-all border ${isCurrentFavorite ? 'bg-red-50 border-red-200 text-red-500 shadow-md' : 'bg-white border-gray-100 text-gray-300 hover:text-red-400 hover:border-red-100'}`}
+                      >
+                         <Heart className={`w-6 h-6 ${isCurrentFavorite ? 'fill-red-500' : ''}`} />
+                      </button>
+                   </div>
                    <h3 className="text-xl font-medium text-gray-400">{currentSong.artist}</h3>
                 </div>
 
@@ -417,56 +524,6 @@ const App: React.FC = () => {
         )}
       </div>
 
-      {/* Video Modal */}
-      {isVideoModalOpen && currentSong && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 animate-in fade-in duration-300">
-          <div className="relative w-full max-w-4xl bg-[#1c1c1c] rounded-3xl overflow-hidden shadow-2xl border border-white/10 animate-in zoom-in-95 duration-300">
-            <div className="p-5 flex items-center justify-between border-b border-white/5 bg-[#1c1c1c]">
-              <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-600/20">
-                    <Youtube className="text-white w-6 h-6" />
-                 </div>
-                 <div className="hidden sm:block">
-                   <h3 className="text-white font-black text-sm uppercase tracking-tight">{currentSong.title}</h3>
-                   <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">{currentSong.artist} • Oficial</p>
-                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <button 
-                  onClick={() => setIsVideoModalOpen(false)}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#38cc63] hover:bg-[#2da34f] text-white rounded-xl text-[11px] font-black uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-[#38cc63]/20"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  Voltar para a Cifra
-                </button>
-                <button 
-                  onClick={() => setIsVideoModalOpen(false)}
-                  className="p-2 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-            </div>
-            <div className="aspect-video w-full bg-black">
-              <iframe 
-                width="100%" 
-                height="100%" 
-                src={`https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(currentSong.artist + ' ' + currentSong.title + ' oficial clipe')}`}
-                title="YouTube video player" 
-                frameBorder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                allowFullScreen
-              ></iframe>
-            </div>
-            <div className="p-4 bg-black/40 flex items-center justify-center gap-4">
-               <span className="text-white/60 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                 <Sparkles className="w-3 h-3 text-[#38cc63]" /> Player Cifra Master
-               </span>
-            </div>
-          </div>
-        </div>
-      )}
-
       {!isJoaoOpen && (
         <button 
           onClick={() => setIsJoaoOpen(true)} 
@@ -479,6 +536,7 @@ const App: React.FC = () => {
 
       <JoaoAssistant isOpen={isJoaoOpen} onClose={() => setIsJoaoOpen(false)} onSongFound={handleSongSelect} />
       <Tuner isOpen={isTunerOpen} onClose={() => setIsTunerOpen(false)} />
+      <Metronome isOpen={isMetronomeOpen} onClose={() => setIsMetronomeOpen(false)} />
     </div>
   );
 };
