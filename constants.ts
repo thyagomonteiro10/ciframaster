@@ -10,11 +10,9 @@ export interface ChordShape {
   fingers?: number[];
   barre?: number;
   baseFret?: number;
-  // Para teclado, usamos índices das teclas (0 a 11 em uma oitava)
   keys?: number[]; 
 }
 
-// Dicionário por instrumento
 export const INSTRUMENT_CHORDS: Record<string, Record<string, ChordShape>> = {
   'Violão': {
     'C': { frets: ['x', 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0], keys: [0, 4, 7] },
@@ -56,7 +54,6 @@ export const INSTRUMENT_CHORDS: Record<string, Record<string, ChordShape>> = {
   }
 };
 
-// Aliases para facilitar busca
 INSTRUMENT_CHORDS['Guitarra'] = INSTRUMENT_CHORDS['Violão'];
 
 export interface ExtendedSong extends Song {
@@ -92,13 +89,6 @@ g|----------------5-5-5-------------6-6h7----------------7-5-------------
 d|-----2-3-5--5/7--------------------------------------------7-5-3---3---
 a|-3-5-------------------------------------------------------------5-----
 E|-----------------------------------------------------------------------
-
-e|-------------8/10-8-7-7/8--12--13-13--10-10-10--8-8-8--6-6-6-5h6p5--------|
-b|---------6-8-------------------------------------------------------6-6/8--|
-g|-----5-7------------------------------------------------------------------|
-d|-5/7----------------------------------------------------------------------|
-a|--------------------------------------------------------------------------|
-E|--------------------------------------------------------------------------|
 
 [Primeira Parte]
 
@@ -152,18 +142,7 @@ Que me faz prisioneiro
 [C]      [Bb] [C]
 Um louco sonhador
 
-[Pré-Refrão]
-
-[F]      [Dm]     [Bb]
-Ela sabe me prender como ninguém
-[C]       [F]
-Tem seus mistérios
-[Dm]      [Bb]
-Sabe se fazer como ninguém
-[C]      [Bb] [C]
-Meu caso sério
-
-[Refrão]
+[Refrão Final]
 
 [F]      [Dm]     [Bb]
 Uma Deusa, uma louca, uma feiticeira
@@ -175,128 +154,65 @@ Quando beija a minha boca e se entrega inteira
 Meu Deus ela é demais`
   },
   {
-    id: 'rick-bares',
-    title: 'Nos Bares Da Cidade',
+    id: 'rick-filha',
+    title: 'Filha',
     artist: 'Rick & Renner',
     genre: 'Sertanejo',
-    difficulty: 'Médio',
+    difficulty: 'Fácil',
     imageUrl: RICK_RENNER_IMG,
-    content: `[Intro] [D] [D4] [D] [D4]
+    verified: true,
+    content: `Tom: [D]
+
+[Intro] [D] [A] [G] [D]
 
 [Primeira Parte]
 
-    [D]                     [D4]          [D]
-Garçom, me traga outra garrafa de cerveja
-             [D4]          [D]
-Vou ficar sozinho nessa mesa
-                            [A7]
-Eu quero beber e chorar por ela
+[D]
+Olha filha como o tempo passa
+[A]
+Olha como você já cresceu
+[G]
+Parece que foi ontem que você nasceu
+[D]
+E o primeiro presente quem deu foi Deus
 
-   [G]
-Garçom, a minha vida agora
-               [D]
-Tá de ponta cabeça
-Já tentei mas nada
-                   [A]
-Faz com que eu esqueça
-              [G]                  [D] [G] [A] [G]
-Os olhos e os lábios daquela mulher
-
-   [D]                 [D4]           [D]
-Garçom, ela saiu de vez da minha vida
-            [D4]         [D]
-E agora eu busco uma saída
-                [D7]               [G]
-Minha história de amor acaba em solidão
-   [G]
-Garçom, se eu ficar muito chato
-               [D]
-E der algum vexame
-                                 [A]
-Pegue toda a minha cerveja e derrame
-                [G]         [A]         [D] [A7]
-Faça o que ela fez com a minha paixão
+[A]
+Lembro de você ainda pequena
+[G]
+Correndo pela casa e me chamando de pai
+[D]
+Hoje você já é uma mulher
+[A]
+E o tempo não volta atrás, não volta jamais
 
 [Refrão]
 
-   [D]
-Derrama cerveja, derrama
-               [A]
-Derrama a tristeza do meu coração
-    [A]                     [A7]
-Que essa angústia é uma bebida
-              [D]             [A7]
-Misturada, batida com a solidão
-   [D]
-Derrama cerveja, derrama
-               [D7]                [G]
-Enquanto eu derramo toda essa saudade
-   [G]                 [D]                      [A]
-Eu sou apenas um qualquer bebendo por mulher
-                 [D]
-Nos bares da cidade
+[D]
+Filha, você é o meu maior tesouro
+[A]
+O brilho do meu ouro, a minha paz
+[G]
+Eu te amo tanto que nem sei dizer
+[D]                    [A]
+O quanto você me faz bem, o quanto você me faz
 
-[Ponte]
+[D]
+Filha, que Deus ilumine os seus passos
+[A]
+Te proteja em seus braços, por onde você for
+[G]
+Saiba que o papai sempre vai estar aqui
+[D]                  [A]
+Pra te dar o meu carinho, pra te dar o meu amor
 
-( [D] [D4] [D] [D4] )
+[Solo] [D] [A] [G] [D]
 
-[Segunda Parte]
+[Final]
 
-    [D]                     [D4]          [D]
-Garçom, me traga outra garrafa de cerveja
-             [D4]           [D]
-Vou ficar sozinho nessa mesa
-                            [A7]
-Eu quero beber e chorar por ela
-
-   [G]
-Garçom, a minha vida agora
-               [D]
-Tá de ponta cabeça
-Já tentei mas nada
-                    [A]
-Faz com que eu esqueça
-     [G]                           [D] [G] [A] [G]
-Os olhos e os lábios daquela mulher
-
-   [D]                 [D4]           [D]
-Garçom, ela saiu de vez da minha vida
-           [D4]           [D]
-E agora eu busco uma saída
-                [D7]             [G]
-Minha história de amor acaba em solidão
-   [G]
-Garçom, se eu ficar muito chato
-              [D]
-E der algum vexame
-                                [A]
-Pegue toda a minha cerveja e derrame
-                [G]         [A]         [D] [A7]
-Faça o que ela fez com a minha paixão
-
-[Refrão Final]
-
-   [D]
-Derrama cerveja, derrama
-               [A]
-Derrama a tristeza do meu coração
-    [A]                     [A7]
-Que essa angústia é uma bebida
-              [D]             [A7]
-Misturada, batida com a solidão
-   [D]
-Derrama cerveja, derrama
-               [D7]                [G]
-Enquanto eu derramo toda essa saudade
-   [G]                 [D]                      [A]
-Eu sou apenas um qualquer bebendo por mulher
-                 [D]
-Nos bares da cidade
-
-   [G]                 [D]                      [A]
-Eu sou apenas um qualquer bebendo por mulher
-                 [D]
-Nos bares da cidade`
+[D]
+Olha filha como o tempo passa...
+[A]
+Eu te amo, minha filha.`
   }
 ];
 
@@ -348,18 +264,6 @@ Mas mesmo assim me amou
 [C#m7]
 Mas mesmo assim me amou
 
-[A2]
-Com uma frase, atire a pedra
-[B2]
-Quem nunca pecou
-[G#m7(11)]
-Ele me perdoou
-[C#m7]
-Ele me perdoou
-
-[F#m7(11)] [E/G#] [A2]
-Sua irresistível graça me alcançou
-
 [Refrão]
 
 [B]
@@ -371,13 +275,137 @@ No lugar da morte, vida me ofertou
 [F#m7(11)] [B]
 O Cordeiro que por nós se entregou
 [A2]
-E os meus pecados levou
+E os meus pecados levou`
+  },
+  {
+    id: 'juliany-lindo-momento',
+    title: 'Lindo Momento',
+    artist: 'Juliany Souza',
+    genre: 'Gospel',
+    difficulty: 'Médio',
+    verified: true,
+    imageUrl: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=400&h=400&fit=crop',
+    content: `Tom: [G]
 
-[Final] [A2] [B2] [C#m7] [G#m7(11)]`
+[Intro] [G] [C9] [Em7] [D4]
+
+[Primeira Parte]
+
+[G]
+Vem e sopra em nós
+[C9]
+O Teu Espírito, Senhor
+[Em7]
+Queremos ouvir Tua voz
+[D4]
+Neste lugar de adoração
+
+[G]
+Não há outro nome
+[C9]
+Mais doce que o Teu
+[Em7]
+Jesus, o Rei da Glória
+[D4]
+A Estrela da Manhã
+
+[Refrão]
+
+[G]
+Oh, que lindo momento
+[C9]
+Estar em Tua presença
+[Em7]
+Deixar o Teu fluir
+[D4]
+Mudar o meu viver
+
+[G]
+Oh, que lindo momento
+[C9]
+Te ver face a face
+[Em7]
+Saber que Tu és meu
+[D4]
+E eu sou Teu para sempre
+
+[Ponte]
+
+[C9]      [D4]
+Santo, Santo
+[Em7]     [G/B]
+Digno é o Cordeiro
+[C9]      [D4]
+Santo, Santo
+[Em7]     [D4]
+Toda glória a Ti`
   }
 ];
 
 export const ZEZE_SONGS: ExtendedSong[] = [
+  {
+    id: 'zeze-e-o-amor',
+    title: 'É o Amor',
+    artist: 'Zezé Di Camargo & Luciano',
+    genre: 'Sertanejo',
+    difficulty: 'Médio',
+    imageUrl: ZEZE_IMG,
+    verified: true,
+    content: `Tom: [A]
+
+[Intro] [A] [E] [D] [E] [A]
+
+[Solo da Intro]
+E|-------5--5--4--4--2--2--0--0------------------------|
+B|-------------------------------3--3--2--2--0--0-------|
+G|--4/6--------------------------------------------2----|
+D|------------------------------------------------------|
+
+[Primeira Parte]
+
+[A]
+Eu não vou negar que sou louco por você
+[E]
+Tô carente, tô sozinho, precisando te ver
+[D]
+Já tentei de tudo pra te esquecer
+[E]
+Mas no fundo eu sei que não dá pra viver sem você
+
+[A]
+Não me diga que o nosso amor chegou ao fim
+[E]
+Se você ainda guarda um segredo por mim
+[D]
+Olha nos meus olhos e tenta dizer
+[E]
+Que no seu coração não existe mais lugar pra mim
+
+[Refrão]
+
+[A]
+É o amor
+[E]
+Que mexe com minha cabeça e me deixa assim
+[D]
+Que faz eu pensar em você e esquecer de mim
+[E]
+Que faz eu esquecer que a vida é feita pra viver
+
+[A]
+É o amor
+[E]
+Que veio como um tiro certo no meu coração
+[D]
+Que trouxe de volta a alegria e a minha paixão
+[E]
+E me fez entender que eu não sei viver sem você
+
+[Final]
+
+[A] [E] [D] [E] [A]
+É o amor...`
+  },
   {
     id: 'zeze-no-dia',
     title: 'No Dia Em Que Eu Saí De Casa',
@@ -386,50 +414,9 @@ export const ZEZE_SONGS: ExtendedSong[] = [
     difficulty: 'Fácil',
     imageUrl: ZEZE_IMG,
     verified: true,
-    content: `[Intro] [Bm] [E] [A] [E] [A] (passagem 1)
+    content: `Tom: [A]
 
-[Tab - Passagem 1]
-E|------------------------------------------------------|
-B|------------------------------------------------------|
-G|------------------------------------------------------|
-D|------------------------------------------------------|
-A|-0----------------------------------------------------|
-E|---0-2-4----------------------------------------------|
-
-[Solo Intro]
-[Tab - Violão 1]
-Parte 01 de 02
-E|------------------------------------------------------|
-B|-12b14-12b14r12-10-12-----10b12-10b12r10-9-10---------|
-G|----------------------11------------------------------|
-D|------------------------------------------------------|
-A|------------------------------------------------------|
-E|------------------------------------------------------|
-
-Parte 02 de 02
-E|-------------------7-----5----------------------------|
-B|-9b10-9b10r9-7-7/9---9\\7---7\\5--2b3r2-0---------------|
-G|----------------------------------------2-------------|
-D|------------------------------------------------------|
-A|------------------------------------------------------|
-E|------------------------------------------------------|
-
-[Tab - Violão 2]
-Parte 01 de 02
-E|------------------------------------------------------|
-B|-15b17-15b17r15-14-15-----14b15-14b15r14-12-14--------|
-G|----------------------14------------------------------|
-D|------------------------------------------------------|
-A|------------------------------------------------------|
-E|------------------------------------------------------|
-
-Parte 02 de 02
-E|--------------------------10-------9------------------|
-B|-12b14-12b14r12-10--10/12----12\\10---10\\9--5b7r5-3-2--|
-G|------------------------------------------------------|
-D|------------------------------------------------------|
-A|------------------------------------------------------|
-E|------------------------------------------------------|
+[Intro] [Bm] [E] [A] [E] [A]
 
 [Primeira Parte]
 
@@ -452,16 +439,8 @@ Sempre onde estiver
 Em minhas orações
     [A]
 Eu vou pedir a Deus
-    [E]                  [A] (passagem 2)
+    [E]                  [A]
 Que ilumine os passos seus
-
-[Tab - Passagem 2]
-E|------------------------------------------------------|
-B|------------------------------------------------------|
-G|------------------------------------------------------|
-D|------------------------------------------------------|
-A|-0-0-2-4----------------------------------------------|
-E|------------------------------------------------------|
 
 [Refrão]
 
@@ -473,131 +452,7 @@ Os meus motivos de sair de lá
 Mas ela sabe que depois que cresce
               [D]
 O filho vira passarinho 
-         [A] (passagem 2)
-E quer voar
-
-           [D]
-Eu bem queria continuar ali
-                              [A]
-But o destino quis me contrariar
-                           [E]
-E o olhar de minha mãe na porta
-              [D]
-Eu deixei chorando
-           [A]
-A me abençoar
-
-( [Bm] [E] [A] [E] [A] ) (passagem 1)
-
-[Segunda Parte]
-
-   [A]
-A minha mãe naquele dia
-                           [D]
-Me falou do mundo como ele é
-   [E]
-Parece que ela conhecia
-                              [A]
-Cada pedra que eu iria por o pé
-
-E sempre ao lado do meu pai
-              [A7]               [D]
-Da pequena cidade ela jamais saiu
-Ela me disse assim:
-     [A]
-Meu filho, vá com Deus
-    [E]                     [A] (passagem 2)
-Que esse world inteiro é seu`
-  },
-  {
-    id: 'zeze-cada-volta',
-    title: 'Cada Volta É Um Recomeço',
-    artist: 'Zezé Di Camargo & Luciano',
-    genre: 'Sertanejo',
-    difficulty: 'Médio',
-    imageUrl: ZEZE_IMG,
-    content: `[Intro] [F#] [E] [B/D#] [E]
-        [G#m] [F#11] [E] [F#11]
-        [B/D#] [E] [B/D#] [E]
-
-[Primeira Parte]
-
-     [B]       [B4]
-Mais uma vez
-     [B]
-Meu coração esquece tudo
-       [G°]
-Que você me fez
-    [E°]
-Eu volto pra esse amor insano
-        [G#m]      [G#m7/F#]
-Sem pensar em mim
-       [E]
-Pra recomeçar
-      [F#]         [F#4] [F#]
-Já sabendo o fim
-
-[Segunda Parte]
-
-    [B]        [B4]
-Mas é paixão
-  [B]
-E essas coisas de paixão
-            [G°]
-Não tem explicação
-   [E°]
-É simplesmente se entregar
-         [G#m]     [G#m7/F#]
-Deixar acontecer
-   [E]
-E sempre acabo me envolvendo
-       [F#] [F#4] [F#] [F#4]
-
-[Refrão]
-
-[B]              [E]
-  Nesses desencontros
-      [F#]
-Eu insisto em te encontrar
-[B]                [E]
-  Como se eu partisse
-       [F#]
-Já pensando em voltar
-[B]             [E]
-  Como se no fundo eu não
-    [F#]
-Pudesse existir
-           [B] [E] [F#] [F#11]
-Sem ter você
-
-[B]                  [E]
-  Toda vez que eu volto
-       [F#]
-Eu te vejo sempre igual
-[B]               [E]
-  Como se a saudade fosse
-   [F#]
-A coisa mais banal
-[B]                [E]
-  E eu chegando sempre
-         [F#]
-Como um louco pra dizer
-           [B]
-Que amo você
-          [B]
-   Amo você
-
-[Terceira Parte]
-
-[G#m]                   [D#m]
-    Que me leve pela vida ao coração
-[E]       [F#]            [B] [F#/A#]
-  Como versos pra canção
-        [G#m]            [D#m]
-Volto pra você, volto pelo amor
-       [C#]            [B/D#]        [Db/F]
-Não importa se é um sonho pelo avesso
-      [C#]             [F#] [F#4] [F#] [F#7(4/9)]
-Cada volta é um recomeço`
+         [A]
+E quer voar`
   }
 ];

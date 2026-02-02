@@ -13,7 +13,6 @@ import { transposeContent } from './utils/musicUtils';
 import SearchInput from './components/SearchInput';
 import ChordDisplay from './components/ChordDisplay';
 import ChordDiagram from './components/ChordDiagram';
-import JoaoAssistant from './components/JoaoAssistant';
 import Tuner from './components/Tuner';
 import Metronome from './components/Metronome';
 
@@ -34,7 +33,6 @@ const App: React.FC = () => {
   const [fontSize, setFontSize] = useState(16);
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   const [scrollSpeed, setScrollSpeed] = useState(1);
-  const [isJoaoOpen, setIsJoaoOpen] = useState(false);
   const [isTunerOpen, setIsTunerOpen] = useState(false);
   const [isMetronomeOpen, setIsMetronomeOpen] = useState(false);
   const [selectedInstrument, setSelectedInstrument] = useState('Violão');
@@ -55,7 +53,6 @@ const App: React.FC = () => {
     setSelectedArtist(null);
     setIsViewMode(false);
     setIsAuthModalOpen(false);
-    setIsJoaoOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
@@ -120,7 +117,6 @@ const App: React.FC = () => {
     setCurrentSong(song);
     setTransposition(0);
     setFontSize(16);
-    setIsJoaoOpen(false);
     setIsAutoScrolling(false);
     setScrollSpeed(1);
     setShowChordsInSidebar(false);
@@ -354,7 +350,7 @@ const App: React.FC = () => {
       {/* Auth Modal */}
       {isAuthModalOpen && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-[2px] animate-in fade-in duration-300">
-           <div className="relative w-full max-sm bg-white rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+           <div className="relative w-full max-w-sm bg-white rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
               <button 
                 onClick={() => setIsAuthModalOpen(false)}
                 className="absolute top-4 right-4 p-1.5 bg-gray-100 hover:bg-gray-200 rounded-full transition-all text-gray-500"
@@ -722,25 +718,8 @@ const App: React.FC = () => {
              </button>
           </div>
         )}
-
-        {(!isViewMode || !isAutoScrolling) && !isJoaoOpen && (
-          <button 
-            onClick={() => setIsJoaoOpen(true)} 
-            className="w-13 h-13 bg-[#1c1c1c] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all group border-4 border-white"
-            title="Assistente João"
-          >
-            <Guitar className="text-yellow-400 w-7 h-7" />
-            <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#38cc63] rounded-full border-[3px] border-white"></div>
-          </button>
-        )}
       </div>
 
-      <JoaoAssistant 
-        isOpen={isJoaoOpen} 
-        onClose={() => setIsJoaoOpen(false)} 
-        onSongFound={handleSongSelect} 
-        onGoHome={goHome} 
-      />
       <Tuner isOpen={isTunerOpen} onClose={() => setIsTunerOpen(false)} />
       <Metronome isOpen={isMetronomeOpen} onClose={() => setIsMetronomeOpen(false)} />
     </div>
