@@ -271,12 +271,4 @@ O meu cora[F]ção sem[G]pre vai te a[C]mar`
   },
 ];
 
-export const TOP_SONGS = [
-  { rank: '1', title: 'Quem É Esse?', artist: 'Juliany Souza' },
-  { rank: '2', title: 'Erro Gostoso', artist: 'Simone Mendes' },
-  { rank: '3', title: 'Solteiro Forçado', artist: 'Ana Castela' },
-  { rank: '4', title: 'Liberdade Provisória', artist: 'Henrique & Juliano' },
-  { rank: '5', title: 'Evidências', artist: 'Chitãozinho & Xororó' },
-];
-
 export const MOCK_SONGS: any[] = [];

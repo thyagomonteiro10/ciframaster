@@ -6,7 +6,7 @@ import {
   Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users, Flame, Disc, ArrowLeft, CheckCircle2, Bookmark,
   Scissors, ArrowUpDown, Type, Eye, PlusCircle, Timer, Book, Edit, Activity
 } from 'lucide-react';
-import { ExtendedSong, TOP_SONGS, ZEZE_SONGS, JULIANY_SOUZA_SONGS } from './constants';
+import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
 import { transposeContent } from './utils/musicUtils';
 import SearchInput from './components/SearchInput';
@@ -125,28 +125,11 @@ const App: React.FC = () => {
         ))}
       </div>
 
-      <div className="bg-gray-50 p-8 rounded-3xl border border-gray-100">
-         <h2 className="text-2xl font-black text-gray-900 mb-8 flex items-center gap-3">
-            <Star className="text-yellow-400 w-7 h-7 fill-yellow-400" /> Mais Procuradas
-         </h2>
-         <div className="space-y-4">
-            {TOP_SONGS.map((song, idx) => (
-              <div 
-                key={idx} 
-                onClick={() => handleSearch(song.title)}
-                className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 hover:border-[#38cc63] hover:shadow-md transition-all cursor-pointer group"
-              >
-                <div className="flex items-center gap-4">
-                  <span className="text-lg font-black text-gray-300 group-hover:text-[#38cc63]">#{song.rank}</span>
-                  <div>
-                    <h4 className="font-bold text-gray-800 group-hover:text-[#38cc63]">{song.title}</h4>
-                    <p className="text-[10px] text-gray-400 font-black uppercase">{song.artist}</p>
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-gray-200 group-hover:text-[#38cc63] group-hover:translate-x-1 transition-all" />
-              </div>
-            ))}
-         </div>
+      <div className="py-12 text-center bg-gray-50 rounded-3xl border border-gray-100 px-6">
+        <Bot className="w-12 h-12 text-[#38cc63]/20 mx-auto mb-4" />
+        <p className="text-gray-400 font-bold text-xs uppercase tracking-widest leading-relaxed max-w-sm mx-auto">
+          Use a barra de busca acima ou fale com o João para encontrar qualquer cifra instantaneamente.
+        </p>
       </div>
     </div>
   );
