@@ -1,14 +1,15 @@
 
-import { Send, X, Music, Guitar, Link as LinkIcon, Bot, Globe } from 'lucide-react';
+import { Send, X, Music, Guitar, Link as LinkIcon, Bot, Globe, CheckCircle2 } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
-import { ExtendedSong } from '../constants';
+import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS } from '../constants';
 
 interface Message {
   role: 'user' | 'joao';
   text: string;
   songData?: ExtendedSong;
   sources?: { uri: string; title: string }[];
+  isLocal?: boolean;
 }
 
 interface JoaoAssistantProps {
@@ -19,7 +20,7 @@ interface JoaoAssistantProps {
 
 const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onClose }) => {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'joao', text: 'Fala, mestre! Tô conectado ao banco do Cifra Master via IA. Pode pedir qualquer música que eu encontro a cifra oficial e os diagramas pra você!' }
+    { role: 'joao', text: 'Fala, mestre! Tô conectado ao banco do Cifra Master. Pode pedir qualquer música ou artista que eu encontro pra você!' }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -31,12 +32,40 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
     }
   }, [messages, isTyping]);
 
+  const findLocalSong = (query: string): ExtendedSong | undefined => {
+    const q = query.toLowerCase().trim();
+    if (q.length < 2) return undefined;
+    
+    const allLocal = [...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS];
+    // Tenta match exato ou parcial no título ou artista
+    return allLocal.find(song => 
+      song.title.toLowerCase().includes(q) || 
+      song.artist.toLowerCase().includes(q)
+    );
+  };
+
   const askJoao = async (query: string) => {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    setIsTyping(true);
     setMessages(prev => [...prev, { role: 'user', text: query }]);
     setInput('');
+    setIsTyping(true);
 
+    // 1. Verificar se a música já existe localmente
+    const localMatch = findLocalSong(query);
+    if (localMatch) {
+      setTimeout(() => {
+        setMessages(prev => [...prev, { 
+          role: 'joao', 
+          text: `Mestre, essa eu já conheço de cor! Encontrei no nosso banco de dados verificado. Dá uma olhada:`, 
+          songData: localMatch,
+          isLocal: true
+        }]);
+        setIsTyping(false);
+      }, 600); // Delay curto para parecer que ele pensou
+      return;
+    }
+
+    // 2. Se não encontrou localmente, usa a IA
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     try {
       const response = await ai.models.generateContent({
         model: "gemini-3-pro-preview",
@@ -45,7 +74,8 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
           tools: [{ googleSearch: {} }],
           systemInstruction: `Você é o João do Cifra Master. Você busca as cifras mais precisas na internet. 
           Retorne sempre a letra integral e os acordes [C] de forma correta. 
-          Sua personalidade é de um instrutor de música gente boa.`,
+          Sua personalidade é de um instrutor de música gente boa. 
+          Se o usuário pedir algo que pareça busca de música, foque em retornar o objeto songData.`,
           responseMimeType: "application/json",
           responseSchema: {
             type: Type.OBJECT,
@@ -86,8 +116,6 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
         songData: newSong,
         sources
       }]);
-
-      if (newSong) onSongFound(newSong);
     } catch (error) {
       setMessages(prev => [...prev, { role: 'joao', text: 'Eita, mestre, perdi o sinal. Tenta perguntar de novo?' }]);
     } finally {
@@ -126,13 +154,24 @@ const JoaoAssistant: React.FC<JoaoAssistantProps> = ({ onSongFound, isOpen, onCl
               {msg.text}
               
               {msg.songData && (
-                <div className="mt-3 pt-3 border-t border-gray-50 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    <Music className="w-3 h-3 text-[#38cc63] shrink-0" />
-                    <span className="text-[10px] font-black uppercase truncate text-gray-600">{msg.songData.title}</span>
+                <div className={`mt-3 pt-3 border-t flex flex-col gap-2 ${msg.isLocal ? 'border-[#38cc63]/20' : 'border-gray-50'}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      <Music className={`w-3 h-3 shrink-0 ${msg.isLocal ? 'text-[#38cc63]' : 'text-gray-400'}`} />
+                      <span className="text-[10px] font-black uppercase truncate text-gray-600">{msg.songData.title}</span>
+                    </div>
+                    {msg.isLocal && <CheckCircle2 className="w-3 h-3 text-[#38cc63]" title="Cifra Premium" />}
                   </div>
-                  <button onClick={() => onSongFound(msg.songData!)} className="text-[9px] font-black bg-[#38cc63]/10 text-[#38cc63] px-3 py-1.5 rounded-full hover:bg-[#38cc63]/20">
-                    ABRIR
+                  <div className="text-[9px] text-gray-400 font-bold uppercase mb-1">{msg.songData.artist}</div>
+                  <button 
+                    onClick={() => onSongFound(msg.songData!)} 
+                    className={`w-full text-[9px] font-black px-3 py-2 rounded-lg transition-all ${
+                      msg.isLocal 
+                        ? 'bg-[#38cc63] text-white hover:bg-green-600 shadow-md shadow-[#38cc63]/20' 
+                        : 'bg-[#38cc63]/10 text-[#38cc63] hover:bg-[#38cc63]/20'
+                    }`}
+                  >
+                    {msg.isLocal ? 'ABRIR CIFRA PREMIUM' : 'ABRIR CIFRA'}
                   </button>
                 </div>
               )}
