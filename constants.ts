@@ -10,33 +10,61 @@ export interface ChordShape {
   fingers?: number[];
   barre?: number;
   baseFret?: number;
+  // Para teclado, usamos índices das teclas (0 a 11 em uma oitava)
+  keys?: number[]; 
 }
 
-export const CHORD_SHAPES: Record<string, ChordShape> = {
-  // MAIORES E ADICIONAIS
-  'C': { frets: ['x', 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0] },
-  'D': { frets: ['x', 'x', 0, 2, 3, 2], fingers: [0, 0, 0, 1, 3, 2] },
-  'E': { frets: [0, 2, 2, 1, 0, 0], fingers: [0, 2, 3, 1, 0, 0] },
-  'F': { frets: [1, 3, 3, 2, 1, 1], barre: 1 },
-  'G': { frets: [3, 2, 0, 0, 0, 3], fingers: [3, 2, 0, 0, 0, 4] },
-  'A': { frets: ['x', 0, 2, 2, 2, 0], fingers: [0, 0, 1, 2, 3, 0] },
-  'B': { frets: ['x', 2, 4, 4, 4, 2], barre: 2 },
-  
-  // ACORDES DA JULIANY SOUZA
-  'A2': { frets: ['x', 0, 2, 2, 0, 0], fingers: [0, 0, 2, 3, 0, 0] },
-  'B2': { frets: ['x', 2, 4, 4, 2, 2], fingers: [0, 1, 3, 4, 1, 1], barre: 2 },
-  'C#m7': { frets: ['x', 4, 6, 4, 5, 4], barre: 4, baseFret: 4 },
-  'G#m7(11)': { frets: [4, 'x', 4, 4, 2, 'x'], fingers: [3, 0, 4, 2, 1, 0] },
-  'F#m7(11)': { frets: [2, 'x', 2, 2, 0, 0], fingers: [2, 0, 3, 4, 0, 0] },
-  'E/G#': { frets: [4, 'x', 2, 4, 5, 'x'], baseFret: 4 },
-  
-  // OUTROS
-  'F#7': { frets: [2, 4, 2, 3, 2, 2], barre: 2 },
-  'B7': { frets: ['x', 2, 1, 2, 0, 2] },
-  'D#°': { frets: ['x', 'x', 1, 2, 1, 2] },
-  'C#m/B': { frets: [7, 'x', 6, 6, 5, 'x'] },
-  'Am': { frets: ['x', 0, 2, 2, 1, 0] },
-  'Bm': { frets: ['x', 2, 4, 4, 3, 2], barre: 2 },
+// Dicionário por instrumento
+export const INSTRUMENT_CHORDS: Record<string, Record<string, ChordShape>> = {
+  'Violão': {
+    'C': { frets: ['x', 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0], keys: [0, 4, 7] },
+    'D': { frets: ['x', 'x', 0, 2, 3, 2], fingers: [0, 0, 0, 1, 3, 2], keys: [2, 6, 9] },
+    'E': { frets: [0, 2, 2, 1, 0, 0], fingers: [0, 2, 3, 1, 0, 0], keys: [4, 8, 11] },
+    'F': { frets: [1, 3, 3, 2, 1, 1], barre: 1, keys: [5, 9, 0] },
+    'G': { frets: [3, 2, 0, 0, 0, 3], fingers: [3, 2, 0, 0, 0, 4], keys: [7, 11, 2] },
+    'A': { frets: ['x', 0, 2, 2, 2, 0], fingers: [0, 0, 1, 2, 3, 0], keys: [9, 1, 4] },
+    'B': { frets: ['x', 2, 4, 4, 4, 2], barre: 2, keys: [11, 3, 6] },
+    'A7': { frets: ['x', 0, 2, 0, 2, 0], fingers: [0, 0, 1, 0, 2, 0], keys: [9, 1, 4, 7] },
+    'Bm': { frets: ['x', 2, 4, 4, 3, 2], barre: 2, keys: [11, 2, 6] },
+    'Am': { frets: ['x', 0, 2, 2, 1, 0], keys: [9, 0, 4] },
+  },
+  'Ukulele': {
+    'C': { frets: [0, 0, 0, 3], keys: [0, 4, 7] },
+    'D': { frets: [2, 2, 2, 0], keys: [2, 6, 9] },
+    'E': { frets: [4, 4, 4, 2], baseFret: 1, keys: [4, 8, 11] },
+    'F': { frets: [2, 0, 1, 0], keys: [5, 9, 0] },
+    'G': { frets: [0, 2, 3, 2], keys: [7, 11, 2] },
+    'A': { frets: [2, 1, 0, 0], keys: [9, 1, 4] },
+    'B': { frets: [4, 3, 2, 2], barre: 2, keys: [11, 3, 6] },
+    'Am': { frets: [2, 0, 0, 0], keys: [9, 0, 4] },
+    'Bm': { frets: [4, 2, 2, 2], barre: 2, keys: [11, 2, 6] },
+  },
+  'Teclado': {
+    'C': { frets: [], keys: [0, 4, 7] },
+    'Cm': { frets: [], keys: [0, 3, 7] },
+    'D': { frets: [], keys: [2, 6, 9] },
+    'Dm': { frets: [], keys: [2, 5, 9] },
+    'E': { frets: [], keys: [4, 8, 11] },
+    'Em': { frets: [], keys: [4, 7, 11] },
+    'F': { frets: [], keys: [5, 9, 0] },
+    'G': { frets: [], keys: [7, 11, 2] },
+    'A': { frets: [], keys: [9, 1, 4] },
+    'Am': { frets: [], keys: [9, 0, 4] },
+    'B': { frets: [], keys: [11, 3, 6] },
+    'Bm': { frets: [], keys: [11, 2, 6] },
+  }
+};
+
+// Aliases para facilitar busca
+INSTRUMENT_CHORDS['Guitarra'] = INSTRUMENT_CHORDS['Violão'];
+INSTRUMENT_CHORDS['Baixo'] = {
+  'C': { frets: ['x', 3, 'x', 'x'], keys: [0] },
+  'D': { frets: ['x', 5, 'x', 'x'], keys: [2] },
+  'E': { frets: [0, 'x', 'x', 'x'], keys: [4] },
+  'F': { frets: [1, 'x', 'x', 'x'], keys: [5] },
+  'G': { frets: [3, 'x', 'x', 'x'], keys: [7] },
+  'A': { frets: [5, 'x', 'x', 'x'], keys: [9] },
+  'B': { frets: [7, 'x', 'x', 'x'], keys: [11] },
 };
 
 export interface ExtendedSong extends Song {
@@ -64,15 +92,6 @@ export const JULIANY_SOUZA_SONGS: ExtendedSong[] = [
 Capo: 2ª casa
 
 [Intro] [A2] [B2] [C#m7] [G#m7(11)]
-
-[Tab - Intro]
-   A2      B2      C#m7    G#m7(11)
-e|-----------------------------------|
-B|-----0-------2-------5-------0-----|
-G|---2---2---4---4---4---4---4---4---|
-D|-----------------------------------|
-A|-0-------2-------4-----------------|
-E|-------------------------4---------|
 
 [Primeira Parte]
 
@@ -146,35 +165,6 @@ export const ZEZE_SONGS: ExtendedSong[] = [
     verified: true,
     content: `[Intro] [E] [B] [F#7] [B] [F#7]
 
-[Tab - Solo Intro]
-e|----12p11-12p11-12--11-12--12-12-12-------|
-B|-12---------------------------------------|
-G|------------------------------------------|
-D|------------------------------------------|
-A|------------------------------------------|
-E|------------------------------------------|
-
-e|------------------------------------------|
-B|-14/16-16--12p11-12p11-12--12-12-12-------|
-G|------------------------------------------|
-D|------------------------------------------|
-A|------------------------------------------|
-E|------------------------------------------|
-
-e|------------------------------------------|
-B|-12/14p12-11--14-12-14-12-14--------------|
-G|------------------------------------------|
-D|------------------------------------------|
-A|------------------------------------------|
-E|------------------------------------------|
-
-e|----------12--11--------------------------|
-B|-12-14-12--------12-----------------------|
-G|------------------------------------------|
-D|------------------------------------------|
-A|------------------------------------------|
-E|------------------------------------------|
-
 [Primeira Parte]
 
 [B] Eu não vou negar que sou louco por você
@@ -244,31 +234,119 @@ Que a [F#7]vida é nada sem vo[B]cê`
     genre: 'Sertanejo',
     difficulty: 'Fácil',
     tuning: 'Padrão',
-    originalKey: 'C',
+    originalKey: 'A',
     verified: true,
-    content: `[Intro]
-e|-------0-1-0-----------------------|
-B|---1-3-------3-1-0-1---------------|
-G|-0---------------------------------|
-D|-----------------------------------|
-A|-----------------------------------|
-E|-----------------------------------|
+    content: `[Intro] [Bm] [E] [A] [E] [A] (passagem 1)
 
-No [C]dia em que eu saí de ca[G]sa
-Minha [F]mãe me disse: Fi[C]lho, vem cá
-Pas[F]sou a mão em meus ca[C]belos
-Olhou em meus [G]olhos e começou fa[C]lar
+[Tab - Passagem 1]
+E|------------------------------------------------------|
+B|------------------------------------------------------|
+G|------------------------------------------------------|
+D|------------------------------------------------------|
+A|-0----------------------------------------------------|
+E|---0-2-4----------------------------------------------|
 
-[C]O world é grande e o cami[G]nho é deserto
-Mas [F]Deus estará sempre per[C]to
-Aon[F]de quer que vo[C]cê vá
-Olhou em meus [G]olhos e começou fa[C]lar
+[Primeira Parte]
 
-[C]Por onde você for, eu vou es[G]tar
-Com o meu pen[F]samento a te gui[C]ar
-Não im[F]porta a distân[C]cia que nos sepa[G]ra
-O meu cora[F]ção sem[G]pre vai te a[C]mar`
+    [A]
+No dia em que eu saí de casa
+
+Minha mãe me disse
+            [D]
+Filho, vem cá
+    [E]
+Passou a mão em meus cabelos
+
+Olhou em meus olhos
+           [A]
+Começou falar
+
+Por onde você for eu sigo
+              [A7]
+Com meu pensamento
+                 [D]
+Sempre onde estiver
+
+Em minhas orações
+    [A]
+Eu vou pedir a Deus
+    [E]                  [A] (passagem 2)
+Que ilumine os passos seus
+
+[Refrão]
+
+           [D]
+Eu sei que ela nunca compreendeu
+                            [A]
+Os meus motivos de sair de lá
+                              [E]
+Mas ela sabe que depois que cresce
+              [D]
+O filho vira passarinho 
+         [A] (passagem 2)
+E quer voar
+
+           [D]
+Eu bem queria continuar ali
+                              [A]
+But o destino quis me contrariar
+                           [E]
+E o olhar de minha mãe na porta
+              
+Eu deixei chorando
+           [A]
+A me abençoar
+
+([Bm] [E] [A] [E] [A]) (passagem 1)
+
+[Segunda Parte]
+
+   [A]
+A minha mãe naquele dia
+                           [D]
+Me falou do mundo como ele é
+   [E]
+Parece que ela conhecia
+                              [A]
+Cada pedra que eu iria por o pé
+
+E sempre ao lado do meu pai
+              [A7]               [D]
+Da pequena cidade ela jamais saiu
+
+Ela me disse assim:
+     [A]
+Meu filho, vá com Deus
+    [E]                     [A] (passagem 2)
+Que esse mundo inteiro é seu
+
+[Refrão]
+
+           [D]
+Eu sei que ela nunca compreendeu
+                            [A]
+Os meus motivos de sair de lá
+                              [E]
+Mas ela sabe que depois que cresce
+              [D]
+O filho vira passarinho 
+         [A] (passagem 2)
+E quer voar
+
+           [D]
+Eu bem queria continuar ali
+                              [A]
+Mas o destino quis me contrariar
+                           [E]
+E o olhar de minha mãe na porta
+                             [A]
+Eu deixei chorando a me abençoar
+
+                           [E]
+E o olhar de minha mãe na porta
+                              [A]  
+Eu deixei chorando a me abençoar
+
+[Final] [E] [A] [D/A] [E] [A]`
   },
 ];
-
-export const MOCK_SONGS: any[] = [];

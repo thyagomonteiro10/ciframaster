@@ -5,38 +5,46 @@ import ChordDiagram from './ChordDiagram';
 interface ChordDisplayProps {
   content: string;
   fontSize: number;
+  instrument?: string;
 }
 
-const ChordHover: React.FC<{ chord: string, children: React.ReactNode, fontSize: number }> = React.memo(({ chord, children, fontSize }) => {
+const ChordHover: React.FC<{ chord: string, children: React.ReactNode, fontSize: number, instrument?: string }> = React.memo(({ chord, children, fontSize, instrument }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleToggle = useCallback(() => setIsHovered(prev => !prev), []);
+  const handleToggle = useCallback((e: React.MouseEvent) => {
+    // No mobile, o click abre/fecha o diagrama. No desktop, o hover cuida disso.
+    if (window.innerWidth <= 768) {
+      e.preventDefault();
+      setIsHovered(prev => !prev);
+    }
+  }, []);
 
   return (
     <span 
-      className="relative inline-block group cursor-pointer"
+      className="relative inline-block group"
       onMouseEnter={() => window.innerWidth > 768 && setIsHovered(true)}
       onMouseLeave={() => window.innerWidth > 768 && setIsHovered(false)}
       onClick={handleToggle}
     >
-      <span className="text-[#38cc63] font-bold font-mono transition-colors hover:bg-[#38cc63]/10 rounded px-0.5">
+      <span className={`font-bold font-mono transition-all duration-200 rounded px-1 cursor-pointer ${
+        isHovered ? 'bg-[#38cc63] text-white shadow-lg' : 'text-[#38cc63] hover:bg-[#38cc63]/10'
+      }`}>
         {children}
       </span>
       {isHovered && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 z-[100] animate-in fade-in zoom-in duration-200">
-           <ChordDiagram chord={chord} />
-           <div className="w-3 h-3 bg-white border-r border-b border-gray-100 rotate-45 absolute -bottom-1.5 left-1/2 -translate-x-1/2"></div>
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 z-[150] transition-all duration-300 transform origin-bottom scale-100 opacity-100 pointer-events-none">
+           <ChordDiagram chord={chord} instrument={instrument} />
+           <div className="w-3 h-3 bg-white border-r border-b border-gray-100 rotate-45 absolute -bottom-1.5 left-1/2 -translate-x-1/2 shadow-lg"></div>
         </div>
       )}
     </span>
   );
 });
 
-const ChordDisplay: React.FC<ChordDisplayProps> = React.memo(({ content, fontSize }) => {
+const ChordDisplay: React.FC<ChordDisplayProps> = React.memo(({ content, fontSize, instrument }) => {
   const lines = useMemo(() => content.trim().split('\n'), [content]);
 
   const renderLine = useCallback((line: string, idx: number) => {
-    // Cache de detecção
     const trimmedLine = line.trim();
     if (!trimmedLine && idx > 0 && lines[idx-1].trim() === "") return null;
 
@@ -62,10 +70,10 @@ const ChordDisplay: React.FC<ChordDisplayProps> = React.memo(({ content, fontSiz
        const chords = line.split(/(\s+)/);
        return (
          <div key={idx} className="overflow-x-auto no-scrollbar">
-           <div className="h-8 flex items-end min-w-max" style={{ fontSize: `${fontSize + 1}px` }}>
+           <div className="h-10 flex items-end min-w-max" style={{ fontSize: `${fontSize + 1}px` }}>
               {chords.map((part, pIdx) => {
                 if (part.trim() === "") return <span key={pIdx} className="whitespace-pre">{part}</span>;
-                return <ChordHover key={pIdx} chord={part.trim()} fontSize={fontSize}>{part}</ChordHover>;
+                return <ChordHover key={pIdx} chord={part.trim()} fontSize={fontSize} instrument={instrument}>{part}</ChordHover>;
               })}
            </div>
          </div>
@@ -78,7 +86,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = React.memo(({ content, fontSiz
     if (!hasChords) {
       const isBlank = trimmedLine === "";
       return (
-        <div key={idx} className={`${isBlank ? 'h-6' : 'mb-2'} text-[#555] font-mono whitespace-pre`} style={{ fontSize: `${fontSize}px` }}>
+        <div key={idx} className={`${isBlank ? 'h-6' : 'mb-2'} text-gray-700 font-mono whitespace-pre`} style={{ fontSize: `${fontSize}px` }}>
           {line || '\u00A0'}
         </div>
       );
@@ -96,7 +104,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = React.memo(({ content, fontSiz
           chordLineElements.push(<span key={`s-${pIdx}`} className="whitespace-pre">{" ".repeat(spacesNeeded)}</span>);
           currentPos += spacesNeeded;
         }
-        chordLineElements.push(<ChordHover key={`c-${pIdx}`} chord={chord} fontSize={fontSize}>{chord}</ChordHover>);
+        chordLineElements.push(<ChordHover key={`c-${pIdx}`} chord={chord} fontSize={fontSize} instrument={instrument}>{chord}</ChordHover>);
         currentPos += chord.length;
       } else {
         lyricsLine += part;
@@ -106,16 +114,16 @@ const ChordDisplay: React.FC<ChordDisplayProps> = React.memo(({ content, fontSiz
     return (
       <div key={idx} className="mb-4 group relative font-mono overflow-x-auto no-scrollbar">
         <div className="min-w-max">
-          <div className="h-6 flex items-end whitespace-pre" style={{ fontSize: `${fontSize}px` }}>
+          <div className="h-8 flex items-end whitespace-pre" style={{ fontSize: `${fontSize}px` }}>
             {chordLineElements}
           </div>
-          <div className="text-[#555] whitespace-pre" style={{ fontSize: `${fontSize}px` }}>
+          <div className="text-gray-700 whitespace-pre" style={{ fontSize: `${fontSize}px` }}>
             {lyricsLine || '\u00A0'}
           </div>
         </div>
       </div>
     );
-  }, [fontSize, lines]);
+  }, [fontSize, lines, instrument]);
 
   return (
     <div className="leading-tight pt-4 md:pt-8 border-t border-gray-100">
