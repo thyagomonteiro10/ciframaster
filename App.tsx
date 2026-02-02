@@ -4,7 +4,7 @@ import {
   Play, Pause, Grid, Printer, Music, Heart, X, Bot, Link as LinkIcon, 
   Globe, ChevronRight, Menu, Search, Video, Settings, ChevronDown, 
   Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users, Flame, Disc, ArrowLeft, CheckCircle2, Bookmark,
-  Scissors, ArrowUpDown, Type, Eye, PlusCircle, Timer, Book, Edit, Activity, Folder
+  Scissors, ArrowUpDown, Type, Eye, PlusCircle, Timer, Book, Edit, Activity, Folder, ExternalLink, Info
 } from 'lucide-react';
 import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
@@ -74,6 +74,8 @@ const App: React.FC = () => {
     const aiSong = await findChordsWithAI(query);
     if (aiSong) {
       handleSongSelect(aiSong as ExtendedSong);
+    } else {
+      alert("Desculpe, mestre! Não conseguimos encontrar essa cifra na internet agora. Tente novamente com o nome do artista.");
     }
     setIsLoading(false);
   }, [handleSongSelect]);
@@ -397,6 +399,20 @@ const App: React.FC = () => {
                   >
                     <ArrowLeft className="w-4 h-4" /> Voltar
                   </button>
+                  
+                  {/* Badge de busca em tempo real se a cifra veio da internet */}
+                  {currentSong.id.startsWith('web-') && (
+                    <div className="mb-6 p-2.5 bg-[#38cc63]/5 border border-[#38cc63]/10 rounded-lg flex items-center justify-between">
+                       <div className="flex items-center gap-2">
+                          <Globe className="w-4 h-4 text-[#38cc63]" />
+                          <span className="text-[#38cc63] font-black text-[10px] uppercase tracking-widest">Busca em tempo real ativa</span>
+                       </div>
+                       <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#38cc63] text-white rounded text-[8px] font-black uppercase tracking-tighter">
+                          Versão Atualizada
+                       </div>
+                    </div>
+                  )}
+
                   {currentSong.capo && (
                     <div className="mb-6 p-2.5 bg-[#ff7a00]/5 border border-[#ff7a00]/10 rounded-lg flex items-center gap-2">
                        <Bookmark className="w-4 h-4 text-[#ff7a00]" />
@@ -412,6 +428,29 @@ const App: React.FC = () => {
                 </div>
 
                 <ChordDisplay content={transposedContent} fontSize={fontSize} instrument={selectedInstrument} />
+
+                {/* Exibição das fontes de Grounding */}
+                {currentSong.sources && currentSong.sources.length > 0 && (
+                  <div className="mt-12 p-6 bg-gray-50 rounded-2xl border border-gray-100">
+                    <div className="flex items-center gap-2 mb-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                       <Info className="w-4 h-4" /> Fontes Consultadas via Google
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      {currentSong.sources.map((source, sIdx) => (
+                        <a 
+                          key={sIdx}
+                          href={source.uri} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-full text-[11px] font-bold text-gray-600 hover:border-[#38cc63] hover:text-[#38cc63] transition-all"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          {source.title.split('|')[0].trim()}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div className="mt-24 pt-12 border-t border-gray-100">
                   <div className="flex items-center gap-4 mb-12">

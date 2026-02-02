@@ -5,28 +5,30 @@ import { Song } from "../types";
 export const findChordsWithAI = async (query: string): Promise<Song | null> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
-  const prompt = `PESQUISE NA INTERNET e forneça a cifra COMPLETA da música: "${query}". 
-  REGRAS DE FORMATAÇÃO (ESTILO CIFRA CLUB):
-  1. Forneça a LETRA INTEGRAL com acordes entre colchetes exatamente acima da sílaba correta, como [C], [G], etc.
-  2. DEVE incluir a INTRODUÇÃO detalhada com TABLATURA (ex: e|---2---3---|).
-  3. Inclua variações de dedilhado ou batida se disponíveis.
-  4. Identifique o tom original, a afinação (ex: Padrão) e a dificuldade.
-  5. Use o Google Search para garantir que a cifra é a versão "Verificada" mais popular.
-  6. Retorne os dados estritamente em JSON.`;
+  // Instrução de sistema mais rigorosa para garantir qualidade técnica musical
+  const systemInstruction = `Você é o especialista em música do Cifra Master. 
+  Sua tarefa é encontrar a cifra mais atualizada e precisa para a música solicitada.
+  REGRAS CRÍTICAS:
+  1. Use o Google Search para encontrar versões "Verificadas".
+  2. Mantenha os acordes [ENTRE COLCHETES] exatamente acima das letras.
+  3. Inclua a introdução com tablatura e indicações de ritmo/batida.
+  4. Identifique o tom e a dificuldade.
+  5. Retorne APENAS um objeto JSON válido, sem explicações fora do JSON.`;
 
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-pro-preview",
-      contents: prompt,
+      contents: `Busque a cifra completa da música: "${query}"`,
       config: {
         tools: [{ googleSearch: {} }],
+        systemInstruction,
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
           properties: {
             title: { type: Type.STRING },
             artist: { type: Type.STRING },
-            content: { type: Type.STRING, description: "Cifra, letra, tablaturas e orientações de ritmo" },
+            content: { type: Type.STRING, description: "Cifra formatada com [Acordes] e Tablaturas" },
             genre: { type: Type.STRING },
             difficulty: { type: Type.STRING, enum: ['Fácil', 'Médio', 'Difícil'] },
             originalKey: { type: Type.STRING },
@@ -38,7 +40,11 @@ export const findChordsWithAI = async (query: string): Promise<Song | null> => {
     });
 
     const text = response.text;
-    const result = JSON.parse(text);
+    // Limpeza simples caso a IA retorne markdown em volta do JSON
+    const cleanJson = text.replace(/^```json/, '').replace(/```$/, '').trim();
+    const result = JSON.parse(cleanJson);
+    
+    // Extração das fontes de grounding (links reais da internet)
     const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map((chunk: any) => ({
       uri: chunk.web?.uri,
       title: chunk.web?.title
