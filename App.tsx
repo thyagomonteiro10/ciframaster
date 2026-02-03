@@ -341,22 +341,27 @@ const App: React.FC = () => {
         )}
       </div>
 
-      {/* Pastas de Ritmos */}
+      {/* Pastas de Ritmos - Black & Green Theme */}
       {!selectedGenre ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 mb-20 animate-in slide-in-from-bottom-4 duration-500">
           {GENRES.map((genre) => (
             <button 
               key={genre} 
               onClick={() => setSelectedGenre(genre)}
-              className="group flex flex-col items-center p-10 bg-white border border-gray-100 rounded-[2.5rem] shadow-sm hover:border-[#22c55e] hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative overflow-hidden"
+              className="group flex flex-col items-center p-10 bg-[#1c1c1c] border border-white/5 rounded-[2.5rem] shadow-xl hover:border-[#22c55e]/50 hover:shadow-[#22c55e]/10 hover:-translate-y-2 transition-all duration-300 relative overflow-hidden"
             >
-              <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100 group-hover:bg-[#22c55e] transition-colors"></div>
-              <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-[#22c55e]/10 group-hover:scale-110 transition-all">
-                 <Disc className="w-8 h-8 text-gray-300 group-hover:text-[#22c55e]" />
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-white/5 group-hover:bg-[#22c55e] transition-colors"></div>
+              {/* Subtle inner glow */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#22c55e]/0 to-[#22c55e]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              
+              <div className="relative z-10 w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-[#22c55e]/20 group-hover:scale-110 transition-all border border-white/5 group-hover:border-[#22c55e]/30">
+                 <Disc className="w-8 h-8 text-gray-500 group-hover:text-[#22c55e] transition-colors" />
               </div>
-              <span className="text-xs font-black text-gray-900 uppercase tracking-widest">{genre}</span>
-              <div className="mt-2 text-[8px] font-black text-gray-400 uppercase tracking-tighter bg-gray-50 px-2 py-0.5 rounded">
-                {communitySongs.filter(s => s.genre === genre).length} Arquivos
+              
+              <span className="relative z-10 text-xs font-black text-gray-300 group-hover:text-white uppercase tracking-widest transition-colors">{genre}</span>
+              
+              <div className="relative z-10 mt-3 text-[8px] font-black text-[#22c55e] uppercase tracking-tighter bg-[#22c55e]/10 px-3 py-1 rounded-full border border-[#22c55e]/20">
+                {communitySongs.filter(s => s.genre === genre).length} ARQUIVOS
               </div>
             </button>
           ))}
@@ -402,8 +407,8 @@ const App: React.FC = () => {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
-                   <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                      <Music className="w-12 h-12 text-gray-100" />
+                   <div className="w-24 h-24 bg-[#1c1c1c]/5 rounded-full flex items-center justify-center mb-6">
+                      <Music className="w-12 h-12 text-[#1c1c1c]/10" />
                    </div>
                    <h4 className="text-xl font-black text-gray-300 uppercase tracking-tight">PASTA VAZIA</h4>
                    <p className="text-gray-400 text-[10px] font-bold uppercase mt-2 max-w-xs leading-relaxed">Contribua enviando uma cifra de {selectedGenre} do seu dispositivo para o acervo mestre!</p>
