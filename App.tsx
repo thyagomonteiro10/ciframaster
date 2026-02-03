@@ -219,92 +219,89 @@ const App: React.FC = () => {
 
   const renderHome = () => (
     <div className="py-2 animate-in fade-in duration-500">
-      {/* Hero Section com Tema Violão Preto e Verde */}
-      <div className="mb-10 rounded-[3rem] overflow-hidden relative group border border-white/10 shadow-2xl h-[450px] flex items-center">
-          {/* Imagem de Fundo com Tratamento de Cor */}
+      {/* Hero Section Ultra Otimizada: Altura reduzida para 220px */}
+      <div className="mb-6 rounded-[2rem] overflow-hidden relative group border border-white/10 shadow-xl h-[220px] flex items-center">
+          {/* Imagem de Fundo */}
           <div 
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
+            className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
             style={{ 
               backgroundImage: 'url("https://images.unsplash.com/photo-1550985616-10810253b84d?q=80&w=1200&auto=format&fit=crop")',
-              filter: 'brightness(0.3) saturate(1.5) contrast(1.1)' 
+              filter: 'brightness(0.25) saturate(1.2)' 
             }}
           ></div>
-          {/* Overlay Verde Neon e Gradiente Preto */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
-          <div className="absolute inset-0 bg-[#22c55e]/5 mix-blend-color"></div>
+          {/* Overlay e Gradientes */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
           
-          <div className="relative z-10 p-10 md:p-16 max-w-2xl">
-              <div className="flex items-center gap-3 text-[#22c55e] mb-6 animate-in slide-in-from-left-4 duration-500">
-                  <div className="w-8 h-8 rounded-full bg-[#22c55e]/20 flex items-center justify-center border border-[#22c55e]/40">
-                    <Globe className="w-4 h-4 animate-pulse" />
+          <div className="relative z-10 p-6 md:p-8 max-w-2xl">
+              <div className="flex items-center gap-2 text-[#22c55e] mb-2 animate-in slide-in-from-left-4 duration-500">
+                  <div className="w-5 h-5 rounded-full bg-[#22c55e]/20 flex items-center justify-center border border-[#22c55e]/40">
+                    <Globe className="w-2.5 h-2.5" />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em] drop-shadow-md">Rede de Compartilhamento Musical</span>
+                  <span className="text-[8px] font-black uppercase tracking-[0.2em]">Rede Comunitária</span>
               </div>
-              <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4 leading-none text-white drop-shadow-2xl">
-                CIFRAS ORGANIZADAS <br/><span className="text-[#22c55e]">POR RITMO</span>
+              <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-2 leading-none text-white">
+                CIFRAS <span className="text-[#22c55e]">POR RITMO</span>
               </h1>
-              <p className="text-gray-300 max-w-md text-base font-medium leading-relaxed mb-10 drop-shadow-md">
-                Escolha um ritmo abaixo para ver as músicas enviadas pela comunidade. Contribua com seu repertório agora mesmo!
+              <p className="text-gray-400 max-w-xs text-xs font-medium mb-6">
+                Acesse o acervo mestre e colabore agora!
               </p>
-              <div className="flex flex-wrap gap-4">
-                <button 
-                  onClick={() => setIsSubmissionOpen(true)}
-                  className="px-12 py-5 bg-[#22c55e] hover:bg-[#16a34a] text-white rounded-[1.5rem] text-xs font-black uppercase tracking-[0.2em] transition-all shadow-xl shadow-[#22c55e]/40 active:scale-95 flex items-center gap-3 border border-white/20"
-                >
-                  <PlusSquare className="w-5 h-5" /> PUBLIQUE DO MEU DISPOSITIVO
-                </button>
-              </div>
+              <button 
+                onClick={() => setIsSubmissionOpen(true)}
+                className="px-6 py-3 bg-[#22c55e] hover:bg-[#16a34a] text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center gap-2 border border-white/10"
+              >
+                <PlusSquare className="w-3.5 h-3.5" /> PUBLIQUE DO DISPOSITIVO
+              </button>
           </div>
           
-          {/* Elemento Decorativo: Brilho Verde no Canto */}
-          <div className="absolute bottom-[-100px] right-[-100px] w-80 h-80 bg-[#22c55e]/20 blur-[120px] rounded-full pointer-events-none"></div>
+          <div className="absolute top-[-50px] right-[-50px] w-48 h-48 bg-[#22c55e]/10 blur-[80px] rounded-full pointer-events-none"></div>
       </div>
 
       {/* Main Grid: Tuner + Folders Access */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <button onClick={() => setIsTunerOpen(true)} className="w-full flex flex-col items-center justify-center p-10 bg-[#050505] rounded-[3rem] shadow-2xl border-2 border-[#00ff66]/40 hover:border-[#00ff66] transition-all group relative overflow-hidden">
-          <div className="absolute top-4 right-4"><div className="w-2 h-2 rounded-full bg-[#00ff66] animate-pulse"></div></div>
-          <Activity className="text-[#00ff66] w-12 h-12 mb-4 group-hover:scale-110 transition-transform" />
-          <h2 className="text-2xl font-black text-white uppercase tracking-tight">Afinador</h2>
-          <p className="text-[10px] font-black text-[#00ff66] uppercase tracking-[0.5em] mt-1">Alta Precisão Master</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <button onClick={() => setIsTunerOpen(true)} className="w-full flex flex-row items-center justify-start gap-4 p-6 bg-[#050505] rounded-[2rem] shadow-lg border border-[#00ff66]/40 hover:border-[#00ff66] transition-all group overflow-hidden">
+          <Activity className="text-[#00ff66] w-8 h-8 group-hover:scale-110 transition-transform" />
+          <div className="text-left">
+            <h2 className="text-lg font-black text-white uppercase tracking-tight">Afinador</h2>
+            <p className="text-[8px] font-black text-[#00ff66] uppercase tracking-[0.3em]">Mestre</p>
+          </div>
         </button>
 
-        <button onClick={() => setIsFavFolderOpen(!isFavFolderOpen)} className="p-8 bg-white rounded-[3rem] border border-gray-100 hover:border-[#22c55e]/30 transition-all flex flex-col justify-between shadow-sm">
-           <div className="flex items-center justify-between mb-2">
-              <Heart className={`w-8 h-8 ${favorites.length > 0 ? 'text-[#22c55e] fill-[#22c55e]/20' : 'text-gray-200'}`} />
-              <span className="text-2xl font-black text-gray-900">{favorites.length}</span>
+        <button onClick={() => setIsFavFolderOpen(!isFavFolderOpen)} className="p-5 bg-white rounded-[2rem] border border-gray-100 hover:border-[#22c55e]/30 transition-all flex flex-row items-center justify-between shadow-sm">
+           <div className="flex flex-col text-left">
+              <h3 className="font-black text-gray-900 uppercase text-[10px]">Favoritas</h3>
+              <p className="text-[7px] font-bold text-gray-400 uppercase tracking-widest">Pessoal</p>
            </div>
-           <div className="text-left">
-              <h3 className="font-black text-gray-900 uppercase text-sm">Favoritas</h3>
-              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Pasta Pessoal</p>
+           <div className="flex items-center gap-2">
+              <span className="text-lg font-black text-gray-900">{favorites.length}</span>
+              <Heart className={`w-5 h-5 ${favorites.length > 0 ? 'text-[#22c55e] fill-[#22c55e]/20' : 'text-gray-200'}`} />
            </div>
         </button>
 
-        <button onClick={() => setIsUserSongsOpen(!isUserSongsOpen)} className="p-8 bg-white rounded-[3rem] border border-gray-100 hover:border-[#22c55e]/30 transition-all flex flex-col justify-between shadow-sm">
-           <div className="flex items-center justify-between mb-2">
-              <Save className={`w-8 h-8 ${userSongs.length > 0 ? 'text-[#22c55e]' : 'text-gray-200'}`} />
-              <span className="text-2xl font-black text-gray-900">{userSongs.length}</span>
+        <button onClick={() => setIsUserSongsOpen(!isUserSongsOpen)} className="p-5 bg-white rounded-[2rem] border border-gray-100 hover:border-[#22c55e]/30 transition-all flex flex-row items-center justify-between shadow-sm">
+           <div className="flex flex-col text-left">
+              <h3 className="font-black text-gray-900 uppercase text-[10px]">Repertório</h3>
+              <p className="text-[7px] font-bold text-gray-400 uppercase tracking-widest">Privado</p>
            </div>
-           <div className="text-left">
-              <h3 className="font-black text-gray-900 uppercase text-sm">Meu Repertório</h3>
-              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Arquivos Privados</p>
+           <div className="flex items-center gap-2">
+              <span className="text-lg font-black text-gray-900">{userSongs.length}</span>
+              <Save className={`w-5 h-5 ${userSongs.length > 0 ? 'text-[#22c55e]' : 'text-gray-200'}`} />
            </div>
         </button>
       </div>
 
       {/* Expandable Private Content */}
-      <div className="space-y-4 mb-12">
+      <div className="space-y-3 mb-8">
         {isFavFolderOpen && favorites.length > 0 && (
-          <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 animate-in slide-in-from-top-4 shadow-sm">
-             <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2"><Heart className="w-4 h-4 text-[#22c55e]" /> Suas Favoritas</h3>
-             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white p-5 rounded-[1.5rem] border border-gray-100 animate-in slide-in-from-top-4 shadow-sm">
+             <h3 className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2"><Heart className="w-2.5 h-2.5 text-[#22c55e]" /> Favoritas</h3>
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                 {favorites.map((song) => (
-                  <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-white hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-[#22c55e]/20">
+                  <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-white hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-[#22c55e]/20">
                     <div className="flex-1 min-w-0 pr-2">
-                      <h4 className="font-bold text-gray-900 text-sm truncate group-hover:text-[#22c55e]">{song.title}</h4>
-                      <p className="text-[9px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
+                      <h4 className="font-bold text-gray-900 text-[11px] truncate group-hover:text-[#22c55e]">{song.title}</h4>
+                      <p className="text-[7px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
                     </div>
-                    <Play className="w-3 h-3 text-gray-300 group-hover:text-[#22c55e]" />
+                    <Play className="w-2 h-2 text-gray-300 group-hover:text-[#22c55e]" />
                   </div>
                 ))}
              </div>
@@ -312,16 +309,16 @@ const App: React.FC = () => {
         )}
 
         {isUserSongsOpen && userSongs.length > 0 && (
-          <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 animate-in slide-in-from-top-4 shadow-sm">
-             <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2"><Save className="w-4 h-4 text-[#22c55e]" /> Repertório Privado</h3>
-             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white p-5 rounded-[1.5rem] border border-gray-100 animate-in slide-in-from-top-4 shadow-sm">
+             <h3 className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2"><Save className="w-2.5 h-2.5 text-[#22c55e]" /> Privado</h3>
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                 {userSongs.map((song) => (
-                  <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-white hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-[#22c55e]/20">
+                  <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-white hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-[#22c55e]/20">
                     <div className="flex-1 min-w-0 pr-2">
-                      <h4 className="font-bold text-gray-900 text-sm truncate group-hover:text-[#22c55e]">{song.title}</h4>
-                      <p className="text-[9px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
+                      <h4 className="font-bold text-gray-900 text-[11px] truncate group-hover:text-[#22c55e]">{song.title}</h4>
+                      <p className="text-[7px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
                     </div>
-                    <button onClick={(e) => deleteUserSong(song.id, e)} className="p-2 text-gray-200 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4" /></button>
+                    <button onClick={(e) => deleteUserSong(song.id, e)} className="p-1.5 text-gray-200 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-3 h-3" /></button>
                   </div>
                 ))}
              </div>
@@ -330,90 +327,87 @@ const App: React.FC = () => {
       </div>
 
       {/* PUBLIC FOLDERS SECTION */}
-      <div className="flex items-center justify-between mb-8 border-b border-gray-200 pb-5">
-        <h2 className="text-2xl font-black text-gray-900 tracking-tighter flex items-center gap-3">
-          <FolderOpen className="text-[#22c55e] w-8 h-8" /> PASTAS DA COMUNIDADE
+      <div className="flex items-center justify-between mb-5 border-b border-gray-200 pb-3">
+        <h2 className="text-lg font-black text-gray-900 tracking-tighter flex items-center gap-2">
+          <FolderOpen className="text-[#22c55e] w-5 h-5" /> PASTAS DA COMUNIDADE
         </h2>
         {selectedGenre && (
-          <button onClick={() => setSelectedGenre(null)} className="flex items-center gap-2 text-[10px] font-black uppercase text-[#22c55e] bg-[#22c55e]/10 px-4 py-2 rounded-full hover:bg-[#22c55e] hover:text-white transition-all">
-            <X className="w-3 h-3" /> Fechar Pasta
+          <button onClick={() => setSelectedGenre(null)} className="flex items-center gap-2 text-[8px] font-black uppercase text-[#22c55e] bg-[#22c55e]/10 px-2 py-1 rounded-full hover:bg-[#22c55e] hover:text-white transition-all">
+            <X className="w-2 h-2" /> Fechar
           </button>
         )}
       </div>
 
-      {/* Pastas de Ritmos - Black & Green Theme */}
+      {/* Pastas de Ritmos - Black & Green Theme Compact */}
       {!selectedGenre ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 mb-20 animate-in slide-in-from-bottom-4 duration-500">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-12 animate-in slide-in-from-bottom-4 duration-500">
           {GENRES.map((genre) => (
             <button 
               key={genre} 
               onClick={() => setSelectedGenre(genre)}
-              className="group flex flex-col items-center p-10 bg-[#1c1c1c] border border-white/5 rounded-[2.5rem] shadow-xl hover:border-[#22c55e]/50 hover:shadow-[#22c55e]/10 hover:-translate-y-2 transition-all duration-300 relative overflow-hidden"
+              className="group flex flex-col items-center p-6 bg-[#1c1c1c] border border-white/5 rounded-[1.5rem] shadow hover:border-[#22c55e]/50 transition-all duration-300 relative overflow-hidden"
             >
-              <div className="absolute top-0 left-0 w-full h-1.5 bg-white/5 group-hover:bg-[#22c55e] transition-colors"></div>
-              {/* Subtle inner glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#22c55e]/0 to-[#22c55e]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="absolute top-0 left-0 w-full h-0.5 bg-white/5 group-hover:bg-[#22c55e] transition-colors"></div>
               
-              <div className="relative z-10 w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-[#22c55e]/20 group-hover:scale-110 transition-all border border-white/5 group-hover:border-[#22c55e]/30">
-                 <Disc className="w-8 h-8 text-gray-500 group-hover:text-[#22c55e] transition-colors" />
+              <div className="relative z-10 w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center mb-3 group-hover:bg-[#22c55e]/20 group-hover:scale-105 transition-all border border-white/5 group-hover:border-[#22c55e]/30">
+                 <Disc className="w-5 h-5 text-gray-500 group-hover:text-[#22c55e] transition-colors" />
               </div>
               
-              <span className="relative z-10 text-xs font-black text-gray-300 group-hover:text-white uppercase tracking-widest transition-colors">{genre}</span>
+              <span className="relative z-10 text-[9px] font-black text-gray-300 group-hover:text-white uppercase tracking-widest transition-colors">{genre}</span>
               
-              <div className="relative z-10 mt-3 text-[8px] font-black text-[#22c55e] uppercase tracking-tighter bg-[#22c55e]/10 px-3 py-1 rounded-full border border-[#22c55e]/20">
-                {communitySongs.filter(s => s.genre === genre).length} ARQUIVOS
+              <div className="relative z-10 mt-1.5 text-[6px] font-black text-[#22c55e] uppercase tracking-tighter bg-[#22c55e]/10 px-1.5 py-0.5 rounded-full border border-[#22c55e]/20">
+                {communitySongs.filter(s => s.genre === genre).length} ARQS
               </div>
             </button>
           ))}
         </div>
       ) : (
         <div className="animate-in fade-in zoom-in-95 duration-500">
-           <div className="bg-white p-10 rounded-[3rem] border-2 border-[#22c55e]/20 shadow-2xl min-h-[500px]">
-              <div className="flex items-center gap-4 mb-10">
-                 <div className="w-14 h-14 bg-[#1c1c1c] rounded-2xl flex items-center justify-center shadow-lg shadow-black/20 border border-[#22c55e]/50">
-                    <FolderOpen className="text-[#22c55e] w-7 h-7" />
+           <div className="bg-white p-6 rounded-[2rem] border border-[#22c55e]/20 shadow-lg min-h-[300px]">
+              <div className="flex items-center gap-2 mb-6">
+                 <div className="w-10 h-10 bg-[#1c1c1c] rounded-lg flex items-center justify-center border border-[#22c55e]/50">
+                    <FolderOpen className="text-[#22c55e] w-5 h-5" />
                  </div>
                  <div>
-                    <h3 className="text-3xl font-black text-gray-900 uppercase tracking-tight leading-none">BIBLIOTECA: {selectedGenre}</h3>
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mt-1">Acervo Público Colaborativo</p>
+                    <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight leading-none">{selectedGenre}</h3>
+                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em]">Biblioteca</p>
                  </div>
               </div>
 
               {songsInSelectedGenre.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                    {songsInSelectedGenre.map((song) => (
                      <div 
                       key={song.id} 
                       onClick={() => handleSongSelect(song)} 
-                      className="group flex flex-col p-6 bg-gray-50 rounded-[2rem] hover:bg-white hover:shadow-xl hover:border-[#22c55e] border border-transparent transition-all cursor-pointer relative"
+                      className="group flex flex-col p-4 bg-gray-50 rounded-[1.25rem] hover:bg-white hover:shadow-md hover:border-[#22c55e] border border-transparent transition-all cursor-pointer relative"
                     >
-                      <div className="flex items-center justify-between mb-4">
-                        <Music className="w-5 h-5 text-gray-200 group-hover:text-[#22c55e]" />
-                        <span className="text-[8px] font-black uppercase text-gray-400 bg-white px-2 py-1 rounded-md border border-gray-100">{song.difficulty}</span>
+                      <div className="flex items-center justify-between mb-2">
+                        <Music className="w-3.5 h-3.5 text-gray-200 group-hover:text-[#22c55e]" />
+                        <span className="text-[6px] font-black uppercase text-gray-400 bg-white px-1 py-0.5 rounded border border-gray-100">{song.difficulty}</span>
                       </div>
-                      <h4 className="font-black text-gray-900 text-base truncate group-hover:text-[#22c55e] mb-1">{song.title}</h4>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase truncate mb-6">{song.artist}</p>
-                      <div className="mt-auto pt-4 border-t border-gray-200/50 flex items-center justify-between">
-                         <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 bg-[#1c1c1c] rounded-full flex items-center justify-center border border-[#22c55e]/30">
-                               <User className="w-3.5 h-3.5 text-[#22c55e]" />
+                      <h4 className="font-black text-gray-900 text-xs truncate group-hover:text-[#22c55e] mb-0.5">{song.title}</h4>
+                      <p className="text-[8px] text-gray-400 font-bold uppercase truncate mb-3">{song.artist}</p>
+                      <div className="mt-auto pt-2 border-t border-gray-200/50 flex items-center justify-between">
+                         <div className="flex items-center gap-1">
+                            <div className="w-4 h-4 bg-[#1c1c1c] rounded-full flex items-center justify-center border border-[#22c55e]/30">
+                               <User className="w-2 h-2 text-[#22c55e]" />
                             </div>
-                            <span className="text-[8px] text-gray-400 font-black uppercase truncate max-w-[80px]">Por {song.author || 'Mestre'}</span>
+                            <span className="text-[6px] text-gray-400 font-black uppercase truncate max-w-[60px]">{song.author || 'Mestre'}</span>
                          </div>
-                         <PlayCircle className="w-6 h-6 text-gray-100 group-hover:text-[#22c55e] transition-all" />
+                         <PlayCircle className="w-4 h-4 text-gray-100 group-hover:text-[#22c55e] transition-all" />
                       </div>
                     </div>
                    ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                   <div className="w-24 h-24 bg-[#1c1c1c]/5 rounded-full flex items-center justify-center mb-6">
-                      <Music className="w-12 h-12 text-[#1c1c1c]/10" />
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                   <div className="w-16 h-16 bg-[#1c1c1c]/5 rounded-full flex items-center justify-center mb-4">
+                      <Music className="w-8 h-8 text-[#1c1c1c]/10" />
                    </div>
-                   <h4 className="text-xl font-black text-gray-300 uppercase tracking-tight">PASTA VAZIA</h4>
-                   <p className="text-gray-400 text-[10px] font-bold uppercase mt-2 max-w-xs leading-relaxed">Contribua enviando uma cifra de {selectedGenre} do seu dispositivo para o acervo mestre!</p>
-                   <button onClick={() => setIsSubmissionOpen(true)} className="mt-8 px-10 py-4 bg-gray-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-[#22c55e] transition-all shadow-lg active:scale-95">
-                      CARREGAR MEU SOM AGORA
+                   <h4 className="text-md font-black text-gray-300 uppercase">Vazio</h4>
+                   <button onClick={() => setIsSubmissionOpen(true)} className="mt-4 px-6 py-2 bg-gray-900 text-white rounded-lg font-black text-[8px] uppercase tracking-widest hover:bg-[#22c55e] transition-all">
+                      ENVIAR
                    </button>
                 </div>
               )}
@@ -452,7 +446,7 @@ const App: React.FC = () => {
                 onClick={() => setIsSubmissionOpen(true)}
                 className="hidden lg:flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-[#22c55e] text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/10"
               >
-                <PlusSquare className="w-4 h-4" /> UPLOAD DISPOSITIVO
+                <PlusSquare className="w-4 h-4" /> UPLOAD
               </button>
               <button onClick={handleInstallClick} className="flex items-center gap-2 px-5 py-2.5 bg-[#22c55e] hover:bg-[#16a34a] text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95"><Smartphone className="w-4 h-4" /> APP</button>
               {currentUser ? (
