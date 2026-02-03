@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { X, Smartphone, Download } from 'lucide-react';
+import { X, Smartphone, Download, Guitar } from 'lucide-react';
 
 interface DownloadModalProps {
   isOpen: boolean;
@@ -17,7 +17,9 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ isOpen, onClose, onInstal
       <div className="relative w-full max-w-md bg-white rounded-[2.5rem] p-8 shadow-2xl overflow-hidden">
         <button onClick={onClose} className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-all"><X className="w-6 h-6" /></button>
         <div className="flex flex-col items-center">
-          <div className="w-20 h-20 bg-[#22c55e] rounded-3xl flex items-center justify-center shadow-xl shadow-[#22c55e]/30 mb-6"><Download className="w-10 h-10 text-white" /></div>
+          <div className="w-20 h-20 bg-[#1c1c1c] rounded-3xl flex items-center justify-center shadow-xl shadow-black/20 mb-6 border-2 border-[#22c55e]">
+            <Guitar className="w-10 h-10 text-[#22c55e]" />
+          </div>
           <h3 className="text-2xl font-black text-gray-900 text-center uppercase tracking-tight mb-2">Instalar App</h3>
           <p className="text-gray-500 text-center text-sm mb-8">Tenha o Cifra Master sempre à mão no seu celular!</p>
           {isInstallAvailable ? (
