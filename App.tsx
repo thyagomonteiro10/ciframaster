@@ -6,7 +6,7 @@ import {
   Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users, Flame, Disc, ArrowLeft, CheckCircle2,
   ArrowUpDown, Type, PlusCircle, Timer, Activity, Folder, ExternalLink, Info, Download, PlayCircle,
   Keyboard, Monitor, Youtube, Sparkles, Zap, AlertCircle, Eye, User, LogIn, Mail, Lock, LogOut, Home, ChevronUp, PlusSquare,
-  Upload, FileJson, FileText, Save, Trash2, Smartphone, Minimize2, BookOpen, FastForward, Speaker
+  Upload, FileJson, FileText, Save, Trash2, Smartphone, Minimize2, BookOpen
 } from 'lucide-react';
 import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS, RICK_RENNER_SONGS, COMMUNITY_SONGS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
@@ -22,15 +22,6 @@ import ChordDictionary from './components/ChordDictionary';
 
 const GENRES = ['Sertanejo', 'Rock', 'Pop', 'Reggae', 'Gospel', 'Forró', 'MPB', 'Samba', 'Sofrência'];
 const SCROLL_SPEEDS = [0.5, 1, 1.5, 2, 3];
-const INSTRUMENTS = [
-  { id: 'Violão', icon: Guitar },
-  { id: 'Guitarra', icon: Monitor },
-  { id: 'Ukulele', icon: Music },
-  { id: 'Teclado', icon: Keyboard },
-  { id: 'Baixo', icon: Speaker },
-  { id: 'Banjo', icon: Disc },
-  { id: 'Violão Caipira', icon: Sparkles }
-];
 
 const App: React.FC = () => {
   const [currentSong, setCurrentSong] = useState<ExtendedSong | null>(null);
@@ -268,7 +259,118 @@ const App: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-        {/* ... (remaning home grid) */}
+        <div className="animate-in fade-in slide-in-from-left-4 duration-500">
+           <button onClick={() => setIsFavFolderOpen(!isFavFolderOpen)} className="w-full flex items-center justify-between p-4 bg-[#1c1c1c] rounded-2xl shadow-xl border border-white/5 hover:bg-gray-800 transition-all group">
+              <div className="flex items-center gap-4">
+                 <div className="w-10 h-10 bg-[#22c55e]/20 rounded-xl flex items-center justify-center border border-[#22c55e]/30">
+                    <Heart className="text-[#22c55e] w-5 h-5 fill-[#22c55e]/20" />
+                 </div>
+                 <div className="text-left">
+                    <h2 className="text-lg font-black text-white tracking-tight uppercase">Favoritos</h2>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{favorites.length} músicas</p>
+                 </div>
+              </div>
+              <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${isFavFolderOpen ? 'rotate-180' : ''}`} />
+           </button>
+           {isFavFolderOpen && favorites.length > 0 && (
+             <div className="mt-3 grid grid-cols-1 gap-2 animate-in slide-in-from-top-2 duration-300 origin-top">
+                {favorites.map((song) => (
+                  <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl hover:border-[#22c55e] transition-all cursor-pointer">
+                    <div className="flex-1 min-w-0 pr-3">
+                      <h4 className="font-bold text-gray-800 text-xs truncate group-hover:text-[#22c55e]">{song.title}</h4>
+                      <p className="text-[9px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
+                    </div>
+                    <Play className="w-3.5 h-3.5 text-gray-300 group-hover:text-[#22c55e]" />
+                  </div>
+                ))}
+             </div>
+           )}
+        </div>
+
+        <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+           <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-[#22c55e]/30 transition-all group overflow-hidden">
+              <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => setIsUserSongsOpen(!isUserSongsOpen)}>
+                <div className="flex items-center gap-4">
+                   <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 group-hover:bg-[#22c55e]/10 group-hover:border-[#22c55e]/30 transition-all">
+                      <Save className="text-gray-400 w-5 h-5 group-hover:text-[#22c55e] transition-colors" />
+                   </div>
+                   <div className="text-left">
+                      <h2 className="text-lg font-black text-gray-900 tracking-tight uppercase">Minhas Cifras</h2>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{userSongs.length} enviadas</p>
+                   </div>
+                </div>
+                <ChevronDown className={`w-5 h-5 text-gray-300 transition-transform ${isUserSongsOpen ? 'rotate-180' : ''}`} />
+              </div>
+              {isUserSongsOpen && (
+                <div className="px-4 pb-4 grid grid-cols-1 gap-2 max-h-[250px] overflow-y-auto no-scrollbar">
+                    {userSongs.length > 0 ? userSongs.map((song) => (
+                        <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl hover:border-[#22c55e] transition-all cursor-pointer">
+                          <div className="flex-1 min-w-0 pr-3">
+                            <h4 className="font-bold text-gray-800 text-xs truncate group-hover:text-[#22c55e]">{song.title}</h4>
+                            <div className="flex items-center gap-2">
+                               <p className="text-[9px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
+                               {song.isPublic && <Globe className="w-2.5 h-2.5 text-[#22c55e]" />}
+                            </div>
+                          </div>
+                          <button onClick={(e) => deleteUserSong(song.id, e)} className="p-1.5 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100"><Trash2 className="w-3.5 h-3.5" /></button>
+                        </div>
+                    )) : (
+                      <div className="p-8 border-2 border-dashed border-gray-100 rounded-xl text-center text-[10px] text-gray-400 font-bold uppercase">
+                        Nenhuma música enviada.
+                      </div>
+                    )}
+                </div>
+              )}
+           </div>
+        </div>
+
+        <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+           <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-[#22c55e]/30 transition-all group overflow-hidden">
+              <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => setIsCommunityOpen(!isCommunityOpen)}>
+                <div className="flex items-center gap-4">
+                   <div className="w-10 h-10 bg-[#22c55e]/10 rounded-xl flex items-center justify-center border border-[#22c55e]/20">
+                      <Users className="text-[#22c55e] w-5 h-5" />
+                   </div>
+                   <div className="text-left">
+                      <h2 className="text-lg font-black text-gray-900 tracking-tight uppercase">Comunidade</h2>
+                      <p className="text-[10px] font-bold text-[#22c55e] uppercase tracking-widest">Recém Adicionadas</p>
+                   </div>
+                </div>
+                <ChevronDown className={`w-5 h-5 text-gray-300 transition-transform ${isCommunityOpen ? 'rotate-180' : ''}`} />
+              </div>
+              {isCommunityOpen && (
+                <div className="px-4 pb-4 grid grid-cols-1 gap-2 max-h-[250px] overflow-y-auto no-scrollbar">
+                    {COMMUNITY_SONGS.map((song) => (
+                        <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-3 bg-gray-50/50 border border-gray-100 rounded-xl hover:border-[#22c55e] transition-all cursor-pointer">
+                          <div className="flex-1 min-w-0 pr-3">
+                            <h4 className="font-bold text-gray-800 text-xs truncate group-hover:text-[#22c55e]">{song.title}</h4>
+                            <div className="flex items-center gap-2">
+                               <p className="text-[9px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
+                               <span className="text-[7px] text-[#22c55e] font-black uppercase">Por {song.author}</span>
+                            </div>
+                          </div>
+                          <PlayCircle className="w-4 h-4 text-gray-200 group-hover:text-[#22c55e] transition-colors" />
+                        </div>
+                    ))}
+                </div>
+              )}
+           </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-5">
+        <h1 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3"><Disc className="text-[#22c55e] w-7 h-7" /> Gêneros e Estilos</h1>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4 mb-20">
+        {GENRES.map((genre) => (
+          <button key={genre} onClick={() => setSelectedGenre(genre)} className="group relative h-28 rounded-2xl overflow-hidden bg-gray-900 shadow-lg border-2 border-transparent hover:border-[#22c55e] transition-all">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#22c55e]/20 to-black opacity-60 group-hover:opacity-40 transition-opacity"></div>
+            <div className="relative h-full flex flex-col items-center justify-center p-4">
+               <span className="text-white font-black text-sm uppercase tracking-widest">{genre}</span>
+               <div className="w-8 h-0.5 bg-[#22c55e] mt-2 group-hover:w-16 transition-all"></div>
+            </div>
+          </button>
+        ))}
       </div>
     </div>
   );
@@ -317,8 +419,6 @@ const App: React.FC = () => {
 
           {!currentSong && !selectedGenre && renderHome()}
           
-          {/* ... (genre/artist views) */}
-          
           {currentSong && (
             <>
               {!isViewMode && (
@@ -351,28 +451,6 @@ const App: React.FC = () => {
               )}
 
               <div className={`flex-1 min-w-0 ${isViewMode ? 'mx-auto max-w-4xl' : ''}`}>
-                {/* ABA DE INSTRUMENTOS */}
-                <div className="mb-8 flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 bg-gray-50/50 p-2 rounded-2xl border border-gray-100">
-                    {INSTRUMENTS.map((inst) => {
-                        const Icon = inst.icon;
-                        const isSelected = selectedInstrument === inst.id;
-                        return (
-                            <button
-                                key={inst.id}
-                                onClick={() => setSelectedInstrument(inst.id)}
-                                className={`flex items-center gap-3 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border-2 ${
-                                    isSelected 
-                                    ? 'bg-[#22c55e] border-[#22c55e] text-white shadow-lg shadow-[#22c55e]/20 scale-105' 
-                                    : 'bg-white border-transparent text-gray-400 hover:bg-gray-100'
-                                }`}
-                            >
-                                <Icon className={`w-4 h-4 ${isSelected ? 'text-white' : 'text-gray-300'}`} />
-                                {inst.id}
-                            </button>
-                        );
-                    })}
-                </div>
-
                 <div className={`${isViewMode ? 'mb-14 text-center' : 'mb-10'}`}>
                    {currentSong.isPublic && (
                       <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#22c55e]/10 border border-[#22c55e]/20 rounded-full mb-4">
