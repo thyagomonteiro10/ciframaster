@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import ChordDiagram from './ChordDiagram';
 
 interface ChordDisplayProps {
@@ -7,8 +7,6 @@ interface ChordDisplayProps {
   fontSize: number;
   instrument?: string;
 }
-
-const SECTION_KEYWORDS = ['Intro', 'Solo', 'Refrão', 'Ponte', 'Bridge', 'Final', 'Outro', 'Instrumental', 'Parte', 'Passagem', 'Tab'];
 
 const ChordInteraction: React.FC<{ chord: string, children: React.ReactNode, fontSize: number, instrument?: string, isHighlight?: boolean }> = React.memo(({ chord, children, fontSize, instrument, isHighlight }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -26,19 +24,19 @@ const ChordInteraction: React.FC<{ chord: string, children: React.ReactNode, fon
         e.stopPropagation();
       }}
     >
-      <span className={`font-mono transition-all duration-200 rounded px-1 cursor-pointer ${
+      <span className={`font-mono transition-all duration-150 rounded cursor-pointer whitespace-pre ${
         isPinned 
-          ? 'bg-[#22c55e] text-white shadow-md scale-110' 
+          ? 'bg-[#22c55e] text-white shadow-md' 
           : isHovered 
-            ? 'bg-[#22c55e]/20 text-[#22c55e] scale-105' 
+            ? 'bg-[#22c55e] text-white' 
             : isHighlight
-              ? 'text-[#22c55e] font-black'
-              : 'text-[#22c55e] font-bold'
-      }`} style={{ fontSize: isHighlight ? `${fontSize + 2}px` : 'inherit' }}>
+              ? 'text-[#16a34a] font-black'
+              : 'text-[#16a34a] font-bold'
+      }`} style={{ fontSize: `${fontSize}px`, padding: '0 1px' }}>
         {children}
       </span>
       {isOpen && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-[999] animate-in fade-in zoom-in-95 duration-200 origin-bottom pointer-events-auto">
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 z-[999] animate-in fade-in zoom-in-95 duration-200 origin-bottom pointer-events-auto">
            <ChordDiagram chord={chord} instrument={instrument} />
         </div>
       )}
@@ -48,19 +46,55 @@ const ChordInteraction: React.FC<{ chord: string, children: React.ReactNode, fon
 
 const ChordDisplay: React.FC<ChordDisplayProps> = React.memo(({ content, fontSize, instrument }) => {
   const lines = useMemo(() => content.split('\n'), [content]);
+  
   return (
-    <div className="leading-none pt-4 border-t border-gray-100 flex flex-col pb-32">
+    <div className="leading-none pt-6 border-t border-gray-100 flex flex-col pb-60 whitespace-pre-wrap overflow-x-auto no-scrollbar">
       {lines.map((line, idx) => {
-        const trimmed = line.trim();
         const parts = line.split(/(\[.*?\])/g);
+        
+        // Identifica se a linha é uma Tablatura ou apenas decorativa
+        const isTab = line.includes('|') || line.includes('-') && (line.includes('e') || line.includes('b') || line.includes('g') || line.includes('D') || line.includes('A') || line.includes('E'));
+        
+        // Identifica se a linha contém apenas acordes (comum em arquivos de texto profissionais)
+        const isChordOnlyLine = line.trim().length > 0 && line.trim().split(/\s+/).every(token => token.startsWith('[') && token.endsWith(']'));
+
         return (
-          <div key={idx} className="mb-0 font-mono text-gray-700 min-h-[1.2em]" style={{ fontSize: `${fontSize}px` }}>
+          <div 
+            key={idx} 
+            className={`font-mono min-h-[1.2em] transition-colors duration-300 ${
+              isTab ? 'text-gray-400 opacity-80 py-0.5' : 
+              isChordOnlyLine ? 'py-1' : 'text-gray-800'
+            }`} 
+            style={{ 
+              fontSize: `${fontSize}px`, 
+              lineHeight: isTab ? '1.1' : '1.6',
+              letterSpacing: '-0.02em'
+            }}
+          >
             {parts.map((part, pIdx) => {
                if (part.startsWith('[') && part.endsWith(']')) {
                  const chord = part.slice(1, -1);
-                 return <ChordInteraction key={pIdx} chord={chord} fontSize={fontSize} instrument={instrument} isHighlight={true}>{chord}</ChordInteraction>;
+                 
+                 // Se o conteúdo for longo (ex: [Refrão]), renderiza como etiqueta
+                 if (chord.length > 8) {
+                   return (
+                     <span key={pIdx} className="text-[#16a34a] font-black uppercase tracking-widest text-[0.75em] opacity-70 px-2 bg-[#22c55e]/5 rounded-md border border-[#22c55e]/10 mx-1 select-none">
+                       {chord}
+                     </span>
+                   );
+                 }
+                 
+                 // Renderiza o acorde mantendo os colchetes invisíveis para preservar o espaçamento monoespaçado (opcional)
+                 // Mas aqui vamos renderizar apenas o nome do acorde para limpeza visual, 
+                 // assumindo que o usuário quer a estética do "anexo"
+                 return (
+                   <ChordInteraction key={pIdx} chord={chord} fontSize={fontSize} instrument={instrument} isHighlight={true}>
+                     {chord}
+                   </ChordInteraction>
+                 );
                }
-               return part;
+               
+               return <span key={pIdx} className="whitespace-pre">{part}</span>;
             })}
           </div>
         );

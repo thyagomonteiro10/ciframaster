@@ -6,7 +6,7 @@ import {
   Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users, Flame, Disc, ArrowLeft, CheckCircle2,
   ArrowUpDown, Type, PlusCircle, Timer, Activity, Folder, ExternalLink, Info, Download, PlayCircle,
   Keyboard, Monitor, Youtube, Sparkles, Zap, AlertCircle, Eye, User, LogIn, Mail, Lock, LogOut, Home, ChevronUp, PlusSquare,
-  Upload, FileJson, FileText, Save, Trash2, Smartphone
+  Upload, FileJson, FileText, Save, Trash2, Smartphone, Minimize2, BookOpen
 } from 'lucide-react';
 import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS, RICK_RENNER_SONGS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
@@ -18,14 +18,9 @@ import Tuner from './components/Tuner';
 import Metronome from './components/Metronome';
 import SongSubmission from './components/SongSubmission';
 import DownloadModal from './components/DownloadModal';
+import ChordDictionary from './components/ChordDictionary';
 
 const GENRES = ['Sertanejo', 'Rock', 'Pop', 'Reggae', 'Gospel', 'Forró', 'MPB', 'Samba', 'Sofrência'];
-const INSTRUMENTS = [
-  { id: 'Violão', icon: Guitar, label: 'Violão' },
-  { id: 'Guitarra', icon: Monitor, label: 'Guitarra' },
-  { id: 'Teclado', icon: Keyboard, label: 'Teclado' },
-  { id: 'Ukulele', icon: Music, label: 'Ukulele' }
-];
 
 const App: React.FC = () => {
   const [currentSong, setCurrentSong] = useState<ExtendedSong | null>(null);
@@ -40,8 +35,8 @@ const App: React.FC = () => {
   const [isMetronomeOpen, setIsMetronomeOpen] = useState(false);
   const [isSubmissionOpen, setIsSubmissionOpen] = useState(false);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+  const [isChordDictOpen, setIsChordDictOpen] = useState(false);
   const [selectedInstrument, setSelectedInstrument] = useState('Violão');
-  const [showChordsInSidebar, setShowChordsInSidebar] = useState(false);
   const [favorites, setFavorites] = useState<ExtendedSong[]>([]);
   const [userSongs, setUserSongs] = useState<ExtendedSong[]>([]);
   const [isFavFolderOpen, setIsFavFolderOpen] = useState(true);
@@ -50,7 +45,6 @@ const App: React.FC = () => {
   const [installPrompt, setInstallPrompt] = useState<any>(null);
   
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [currentUser, setCurrentUser] = useState<{ name: string; email: string } | null>(null);
 
   useEffect(() => {
@@ -66,7 +60,7 @@ const App: React.FC = () => {
       return;
     }
     installPrompt.prompt();
-    installPrompt.userChoice.then((choiceResult: any) => {
+    installPrompt.userChoice.then(() => {
       setInstallPrompt(null);
       setIsDownloadModalOpen(false);
     });
@@ -92,16 +86,12 @@ const App: React.FC = () => {
     
     const savedFavs = localStorage.getItem('cifra_master_favorites');
     if (savedFavs) {
-      try {
-        setFavorites(JSON.parse(savedFavs));
-      } catch (e) { console.error(e); }
+      try { setFavorites(JSON.parse(savedFavs)); } catch (e) { console.error(e); }
     }
 
     const savedUserSongs = localStorage.getItem('cifra_master_user_songs');
     if (savedUserSongs) {
-      try {
-        setUserSongs(JSON.parse(savedUserSongs));
-      } catch (e) { console.error(e); }
+      try { setUserSongs(JSON.parse(savedUserSongs)); } catch (e) { console.error(e); }
     }
   }, []);
 
@@ -161,7 +151,6 @@ const App: React.FC = () => {
     setFontSize(16);
     setIsAutoScrolling(false);
     setScrollSpeed(1);
-    setShowChordsInSidebar(false);
     setIsViewMode(false);
     setIsSubmissionOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -194,6 +183,19 @@ const App: React.FC = () => {
     return transposeContent(currentSong.content, transposition);
   }, [currentSong, transposition]);
 
+  const songChords = useMemo(() => {
+    if (!currentSong) return [];
+    const chords = new Set<string>();
+    const matches = transposedContent.match(/\[(.*?)\]/g);
+    if (matches) {
+      matches.forEach(m => {
+        const chord = m.slice(1, -1).trim();
+        if (chord.length <= 8) chords.add(chord); // Ignora etiquetas longas de intro/refrão
+      });
+    }
+    return Array.from(chords);
+  }, [transposedContent, currentSong]);
+
   const handleDownload = useCallback(() => {
     if (!currentSong) return;
     const blob = new Blob([transposedContent], { type: 'text/plain;charset=utf-8' });
@@ -214,14 +216,6 @@ const App: React.FC = () => {
     });
     return map;
   }, [userSongs]);
-
-  const songChords = useMemo(() => {
-    if (!currentSong) return [];
-    const chords = new Set<string>();
-    const matches = currentSong.content.match(/\[(.*?)\]/g);
-    if (matches) matches.forEach(m => chords.add(m.slice(1, -1).trim()));
-    return Array.from(chords);
-  }, [currentSong]);
 
   const SidebarButton = ({ icon: Icon, label, onClick, children, active, primary }: any) => (
     <button onClick={onClick} className={`flex items-center justify-between w-full px-4 py-2.5 rounded-xl border transition-all group ${
@@ -335,7 +329,6 @@ const App: React.FC = () => {
         <header className="bg-[#1c1c1c] text-white sticky top-0 z-[60] h-16 flex items-center shadow-lg px-4">
           <div className="max-w-[1280px] mx-auto w-full flex items-center justify-between gap-4">
             <div className="flex items-center gap-4 cursor-pointer" onClick={goHome}>
-              {/* Logo Violão Preto e Verde */}
               <div className="bg-[#1c1c1c] p-2 rounded-lg border border-[#22c55e] shadow-md shadow-[#22c55e]/20 flex items-center justify-center">
                 <Guitar className="text-[#22c55e] w-5 h-5" />
               </div>
@@ -360,8 +353,20 @@ const App: React.FC = () => {
         </header>
       )}
 
+      {/* Main Content Area */}
       <div className={`flex-1 max-w-[1280px] mx-auto w-full pt-6 flex gap-6 relative ${isViewMode ? 'px-0 pt-0 max-w-none' : 'px-4'}`}>
-        <main className={`flex-1 min-w-0 bg-white relative transition-all duration-300 ${isViewMode ? 'p-6 md:p-20' : 'rounded-xl border border-gray-200 p-4 md:p-10'} ${currentSong && !isViewMode ? 'flex flex-col md:flex-row gap-10' : ''}`}>
+        <main className={`flex-1 min-w-0 bg-white relative transition-all duration-300 ${isViewMode ? 'p-6 md:p-20 pt-10' : 'rounded-xl border border-gray-200 p-4 md:p-10'} ${currentSong && !isViewMode ? 'flex flex-col md:flex-row gap-10' : ''}`}>
+          
+          {/* View Mode Exit Button */}
+          {isViewMode && (
+            <button 
+              onClick={() => setIsViewMode(false)}
+              className="fixed top-6 right-6 z-[100] w-12 h-12 bg-[#1c1c1c] text-white rounded-full flex items-center justify-center shadow-xl hover:bg-gray-800 transition-all border-2 border-white"
+            >
+              <Minimize2 className="w-5 h-5" />
+            </button>
+          )}
+
           {!currentSong && !selectedGenre && renderHome()}
           
           {selectedGenre && !selectedArtist && !currentSong && (
@@ -404,20 +409,49 @@ const App: React.FC = () => {
           
           {currentSong && (
             <>
+              {/* Sidebar: Hidden in View Mode */}
               {!isViewMode && (
                 <aside className="w-full md:w-[200px] shrink-0 flex flex-col gap-2">
                   <button onClick={handleBack} className="w-full bg-[#22c55e] text-white py-3 rounded-xl font-black text-[12px] uppercase shadow-lg mb-2"><ArrowLeft className="w-4 h-4 inline mr-2"/> {currentSong.artist}</button>
                   <SidebarButton icon={Activity} label="Afinador" onClick={() => setIsTunerOpen(true)} />
                   <SidebarButton icon={Timer} label="Metrônomo" onClick={() => setIsMetronomeOpen(true)} />
                   <SidebarButton icon={Heart} label={isCurrentFavorite ? "Remover" : "Favoritar"} onClick={() => toggleFavorite(currentSong)} active={isCurrentFavorite} />
+                  
+                  {/* Song Display Controls */}
+                  <div className="mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 flex flex-col gap-4">
+                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">Tamanho da Letra</p>
+                    <div className="flex items-center justify-between bg-white rounded-xl border p-1">
+                      <button onClick={() => setFontSize(Math.max(10, fontSize - 2))} className="p-2 text-gray-500 hover:text-[#22c55e] transition-colors"><Minus className="w-4 h-4" /></button>
+                      <span className="text-xs font-black text-gray-900">{fontSize}</span>
+                      <button onClick={() => setFontSize(Math.min(40, fontSize + 2))} className="p-2 text-gray-500 hover:text-[#22c55e] transition-colors"><Plus className="w-4 h-4" /></button>
+                    </div>
+
+                    <button 
+                      onClick={() => setIsChordDictOpen(true)}
+                      className="w-full flex items-center justify-center gap-2 py-3 bg-[#1c1c1c] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#22c55e] transition-all shadow-md border border-[#22c55e]/30"
+                    >
+                      <BookOpen className="w-4 h-4 text-[#22c55e]" /> Dicionário
+                    </button>
+
+                    <button 
+                      onClick={() => setIsViewMode(true)}
+                      className="w-full flex items-center justify-center gap-2 py-3 bg-[#1c1c1c] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all shadow-md"
+                    >
+                      <Eye className="w-4 h-4 text-[#22c55e]" /> Modo Leitura
+                    </button>
+                  </div>
+
                   <SidebarButton icon={Download} label="Baixar" onClick={handleDownload} />
                   <SidebarButton icon={Smartphone} label="Instalar App" onClick={handleInstallClick} primary />
                 </aside>
               )}
-              <div className="flex-1 min-w-0">
-                <div className="mb-10">
-                   <h2 className={`${isViewMode ? 'text-7xl' : 'text-5xl'} font-black text-gray-950 uppercase mb-2 tracking-tight`}>{currentSong.title}</h2>
-                   <h3 className="text-xl font-medium text-gray-400">{currentSong.artist}</h3>
+
+              {/* Song Content Area */}
+              <div className={`flex-1 min-w-0 ${isViewMode ? 'mx-auto max-w-4xl' : ''}`}>
+                <div className={`${isViewMode ? 'mb-14 text-center' : 'mb-10'}`}>
+                   <h2 className={`${isViewMode ? 'text-6xl md:text-8xl' : 'text-5xl'} font-black text-gray-950 uppercase mb-2 tracking-tight transition-all duration-500`}>{currentSong.title}</h2>
+                   <h3 className={`${isViewMode ? 'text-2xl' : 'text-xl'} font-medium text-gray-400 transition-all duration-500`}>{currentSong.artist}</h3>
+                   {isViewMode && <div className="w-20 h-1 bg-[#22c55e] mx-auto mt-6 rounded-full opacity-50"></div>}
                 </div>
                 <ChordDisplay content={transposedContent} fontSize={fontSize} instrument={selectedInstrument} />
               </div>
@@ -426,17 +460,34 @@ const App: React.FC = () => {
         </main>
       </div>
 
-      <div className={`fixed bottom-6 right-6 flex flex-col items-center gap-3 z-[80] ${isViewMode && !isAutoScrolling ? 'opacity-40 hover:opacity-100' : ''}`}>
+      {/* Floating Action Controls */}
+      <div className={`fixed bottom-6 right-6 flex flex-col items-center gap-3 z-[80] transition-all duration-300 ${isViewMode && !isAutoScrolling ? 'opacity-40 hover:opacity-100' : ''}`}>
         {currentSong && (
           <>
-             <button onClick={scrollToTop} className="w-11 h-11 bg-[#1c1c1c] text-[#22c55e] rounded-full flex items-center justify-center shadow-2xl border-4 border-white"><ChevronUp className="w-5 h-5" /></button>
-             <button onClick={() => setIsAutoScrolling(!isAutoScrolling)} className={`w-13 h-13 rounded-full flex items-center justify-center shadow-2xl border-4 border-white transition-all ${isAutoScrolling ? 'bg-[#22c55e] text-white scale-110' : 'bg-[#1c1c1c] text-white'}`}><ArrowUpDown className="w-6 h-6" /></button>
+             {isViewMode && (
+                <div className="flex flex-col gap-2 mb-2 p-2 bg-[#1c1c1c] rounded-full shadow-2xl border-4 border-white animate-in slide-in-from-bottom-4">
+                  <button onClick={() => setFontSize(Math.min(40, fontSize + 2))} className="w-10 h-10 flex items-center justify-center text-[#22c55e] hover:bg-white/10 rounded-full"><Plus className="w-5 h-5" /></button>
+                  <button onClick={() => setIsChordDictOpen(true)} className="w-10 h-10 flex items-center justify-center text-[#22c55e] hover:bg-white/10 rounded-full"><BookOpen className="w-5 h-5" /></button>
+                  <button onClick={() => setFontSize(Math.max(10, fontSize - 2))} className="w-10 h-10 flex items-center justify-center text-[#22c55e] hover:bg-white/10 rounded-full"><Minus className="w-5 h-5" /></button>
+                </div>
+             )}
+             
+             <button onClick={scrollToTop} className="w-11 h-11 bg-[#1c1c1c] text-[#22c55e] rounded-full flex items-center justify-center shadow-2xl border-4 border-white active:scale-95 transition-all"><ChevronUp className="w-5 h-5" /></button>
+             <button onClick={() => setIsAutoScrolling(!isAutoScrolling)} className={`w-14 h-14 rounded-full flex items-center justify-center shadow-2xl border-4 border-white transition-all active:scale-90 ${isAutoScrolling ? 'bg-[#22c55e] text-white scale-110' : 'bg-[#1c1c1c] text-white'}`}><ArrowUpDown className="w-6 h-6" /></button>
           </>
         )}
       </div>
 
+      {/* Modals */}
       <Tuner isOpen={isTunerOpen} onClose={() => setIsTunerOpen(false)} />
       <Metronome isOpen={isMetronomeOpen} onClose={() => setIsMetronomeOpen(false)} />
+      <ChordDictionary 
+        isOpen={isChordDictOpen} 
+        onClose={() => setIsChordDictOpen(false)} 
+        chords={songChords} 
+        instrument={selectedInstrument} 
+        onInstrumentChange={setSelectedInstrument} 
+      />
       <SongSubmission 
         isOpen={isSubmissionOpen} 
         onClose={() => setIsSubmissionOpen(false)} 
@@ -444,6 +495,21 @@ const App: React.FC = () => {
         defaultGenre={selectedGenre}
       />
       <DownloadModal isOpen={isDownloadModalOpen} onClose={() => setIsDownloadModalOpen(false)} onInstall={handleInstallClick} isInstallAvailable={!!installPrompt} />
+      
+      {/* Auth Modal Simple */}
+      {isAuthModalOpen && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+           <div className="relative w-full max-w-sm bg-white rounded-3xl p-8 shadow-2xl">
+              <button onClick={() => setIsAuthModalOpen(false)} className="absolute top-4 right-4 text-gray-400"><X className="w-5 h-5" /></button>
+              <h3 className="text-2xl font-black text-gray-950 text-center uppercase mb-8">Acesse seu Palco</h3>
+              <form onSubmit={handleLogin} className="space-y-4">
+                  <input type="email" placeholder="E-mail" required className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-[#22c55e] rounded-xl outline-none" />
+                  <input type="password" placeholder="Senha" required className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-[#22c55e] rounded-xl outline-none" />
+                  <button type="submit" className="w-full py-4 bg-[#22c55e] hover:bg-[#16a34a] text-white rounded-xl font-black text-xs uppercase shadow-lg">Entrar</button>
+              </form>
+           </div>
+        </div>
+      )}
     </div>
   );
 };
