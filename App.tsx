@@ -8,7 +8,7 @@ import {
   Keyboard, Monitor, Youtube, Sparkles, Zap, AlertCircle, Eye, User, LogIn, Mail, Lock, LogOut, Home, ChevronUp, PlusSquare,
   Upload, FileJson, FileText, Save, Trash2, Smartphone, Minimize2, BookOpen
 } from 'lucide-react';
-import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS, RICK_RENNER_SONGS } from './constants';
+import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS, RICK_RENNER_SONGS, COMMUNITY_SONGS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
 import { transposeContent } from './utils/musicUtils';
 import SearchInput from './components/SearchInput';
@@ -41,6 +41,7 @@ const App: React.FC = () => {
   const [userSongs, setUserSongs] = useState<ExtendedSong[]>([]);
   const [isFavFolderOpen, setIsFavFolderOpen] = useState(true);
   const [isUserSongsOpen, setIsUserSongsOpen] = useState(true);
+  const [isCommunityOpen, setIsCommunityOpen] = useState(true);
   const [isViewMode, setIsViewMode] = useState(false);
   const [installPrompt, setInstallPrompt] = useState<any>(null);
   
@@ -158,8 +159,11 @@ const App: React.FC = () => {
 
   const handleSearch = useCallback(async (query: string) => {
     const q = query.toLowerCase();
-    const userMatch = userSongs.find(s => s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q));
-    if (userMatch) { handleSongSelect(userMatch); return; }
+    const allAvailable = [...userSongs, ...COMMUNITY_SONGS, ...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS, ...RICK_RENNER_SONGS];
+    const match = allAvailable.find(s => s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q));
+    
+    if (match) { handleSongSelect(match); return; }
+    
     setIsLoading(true);
     const aiSong = await findChordsWithAI(query);
     if (aiSong) handleSongSelect(aiSong as ExtendedSong);
@@ -207,7 +211,7 @@ const App: React.FC = () => {
   }, [currentSong, transposedContent]);
 
   const groupedContent = useMemo(() => {
-    const allSongs = [...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS, ...RICK_RENNER_SONGS, ...userSongs];
+    const allSongs = [...COMMUNITY_SONGS, ...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS, ...RICK_RENNER_SONGS, ...userSongs];
     const map: Record<string, Record<string, ExtendedSong[]>> = {};
     allSongs.forEach(song => {
       if (!map[song.genre]) map[song.genre] = {};
@@ -231,7 +235,27 @@ const App: React.FC = () => {
 
   const renderHome = () => (
     <div className="py-2">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+      {/* Header Community Banner */}
+      <div className="mb-10 p-8 bg-gradient-to-r from-[#1c1c1c] to-[#2a2a2a] rounded-[2.5rem] text-white overflow-hidden relative group">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#22c55e]/10 blur-[100px] rounded-full"></div>
+          <div className="relative z-10">
+              <div className="flex items-center gap-3 text-[#22c55e] mb-4">
+                  <Globe className="w-5 h-5 animate-pulse" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em]">Rede Global de Músicos</span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-4">A maior comunidade <br/><span className="text-[#22c55e]">Cifrada</span> do Brasil</h1>
+              <p className="text-gray-400 max-w-lg text-sm font-medium leading-relaxed mb-6">Explore milhares de cifras enviadas por músicos como você. Compartilhe seu conhecimento e ajude a comunidade a crescer.</p>
+              <button 
+                onClick={() => setIsSubmissionOpen(true)}
+                className="px-8 py-3 bg-[#22c55e] hover:bg-[#16a34a] text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-xl shadow-[#22c55e]/20"
+              >
+                Publicar minha Cifra
+              </button>
+          </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+        {/* Favoritos */}
         <div className="animate-in fade-in slide-in-from-left-4 duration-500">
            <button onClick={() => setIsFavFolderOpen(!isFavFolderOpen)} className="w-full flex items-center justify-between p-4 bg-[#1c1c1c] rounded-2xl shadow-xl border border-white/5 hover:bg-gray-800 transition-all group">
               <div className="flex items-center gap-4">
@@ -239,7 +263,7 @@ const App: React.FC = () => {
                     <Heart className="text-[#22c55e] w-5 h-5 fill-[#22c55e]/20" />
                  </div>
                  <div className="text-left">
-                    <h2 className="text-lg font-black text-white tracking-tight uppercase">Meus Favoritos</h2>
+                    <h2 className="text-lg font-black text-white tracking-tight uppercase">Favoritos</h2>
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{favorites.length} músicas</p>
                  </div>
               </div>
@@ -260,6 +284,7 @@ const App: React.FC = () => {
            )}
         </div>
 
+        {/* Minhas Cifras */}
         <div className="animate-in fade-in slide-in-from-right-4 duration-500">
            <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-[#22c55e]/30 transition-all group overflow-hidden">
               <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => setIsUserSongsOpen(!isUserSongsOpen)}>
@@ -272,34 +297,60 @@ const App: React.FC = () => {
                       <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{userSongs.length} enviadas</p>
                    </div>
                 </div>
-                <div className="flex items-center gap-2">
-                   <button 
-                     onClick={(e) => { e.stopPropagation(); setIsSubmissionOpen(true); }}
-                     className="p-2 bg-[#22c55e]/10 text-[#22c55e] hover:bg-[#22c55e] hover:text-white rounded-lg transition-all"
-                   >
-                     <PlusSquare className="w-4 h-4" />
-                   </button>
-                   <ChevronDown className={`w-5 h-5 text-gray-300 transition-transform ${isUserSongsOpen ? 'rotate-180' : ''}`} />
-                </div>
+                <ChevronDown className={`w-5 h-5 text-gray-300 transition-transform ${isUserSongsOpen ? 'rotate-180' : ''}`} />
               </div>
               {isUserSongsOpen && (
-                <div className="px-4 pb-4 grid grid-cols-1 gap-2 max-h-[300px] overflow-y-auto no-scrollbar">
+                <div className="px-4 pb-4 grid grid-cols-1 gap-2 max-h-[250px] overflow-y-auto no-scrollbar">
                     {userSongs.length > 0 ? userSongs.map((song) => (
                         <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl hover:border-[#22c55e] transition-all cursor-pointer">
                           <div className="flex-1 min-w-0 pr-3">
                             <h4 className="font-bold text-gray-800 text-xs truncate group-hover:text-[#22c55e]">{song.title}</h4>
                             <div className="flex items-center gap-2">
                                <p className="text-[9px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
-                               <span className="text-[7px] bg-gray-100 text-gray-400 px-1 rounded uppercase font-black">{song.genre}</span>
+                               {song.isPublic && <Globe className="w-2.5 h-2.5 text-[#22c55e]" />}
                             </div>
                           </div>
                           <button onClick={(e) => deleteUserSong(song.id, e)} className="p-1.5 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100"><Trash2 className="w-3.5 h-3.5" /></button>
                         </div>
                     )) : (
                       <div className="p-8 border-2 border-dashed border-gray-100 rounded-xl text-center text-[10px] text-gray-400 font-bold uppercase">
-                        Nenhuma música enviada ainda.
+                        Nenhuma música enviada.
                       </div>
                     )}
+                </div>
+              )}
+           </div>
+        </div>
+
+        {/* Feed Comunidade */}
+        <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+           <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-[#22c55e]/30 transition-all group overflow-hidden">
+              <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => setIsCommunityOpen(!isCommunityOpen)}>
+                <div className="flex items-center gap-4">
+                   <div className="w-10 h-10 bg-[#22c55e]/10 rounded-xl flex items-center justify-center border border-[#22c55e]/20">
+                      <Users className="text-[#22c55e] w-5 h-5" />
+                   </div>
+                   <div className="text-left">
+                      <h2 className="text-lg font-black text-gray-900 tracking-tight uppercase">Comunidade</h2>
+                      <p className="text-[10px] font-bold text-[#22c55e] uppercase tracking-widest">Recém Adicionadas</p>
+                   </div>
+                </div>
+                <ChevronDown className={`w-5 h-5 text-gray-300 transition-transform ${isCommunityOpen ? 'rotate-180' : ''}`} />
+              </div>
+              {isCommunityOpen && (
+                <div className="px-4 pb-4 grid grid-cols-1 gap-2 max-h-[250px] overflow-y-auto no-scrollbar">
+                    {COMMUNITY_SONGS.map((song) => (
+                        <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-3 bg-gray-50/50 border border-gray-100 rounded-xl hover:border-[#22c55e] transition-all cursor-pointer">
+                          <div className="flex-1 min-w-0 pr-3">
+                            <h4 className="font-bold text-gray-800 text-xs truncate group-hover:text-[#22c55e]">{song.title}</h4>
+                            <div className="flex items-center gap-2">
+                               <p className="text-[9px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
+                               <span className="text-[7px] text-[#22c55e] font-black uppercase">Por {song.author}</span>
+                            </div>
+                          </div>
+                          <PlayCircle className="w-4 h-4 text-gray-200 group-hover:text-[#22c55e] transition-colors" />
+                        </div>
+                    ))}
                 </div>
               )}
            </div>
@@ -307,7 +358,7 @@ const App: React.FC = () => {
       </div>
 
       <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-5">
-        <h1 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3"><Disc className="text-[#22c55e] w-7 h-7" /> Navegar por Ritmos</h1>
+        <h1 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3"><Disc className="text-[#22c55e] w-7 h-7" /> Gêneros e Estilos</h1>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4 mb-20">
         {GENRES.map((genre) => (
@@ -374,7 +425,7 @@ const App: React.FC = () => {
               <div className="flex items-center justify-between mb-8">
                  <button onClick={handleBack} className="flex items-center gap-2 text-[10px] font-black text-[#22c55e] uppercase tracking-widest"><ArrowLeft className="w-4 h-4" /> Voltar</button>
                  <button onClick={() => setIsSubmissionOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-[#22c55e]/10 text-[#22c55e] rounded-xl text-[10px] font-black uppercase hover:bg-[#22c55e] hover:text-white transition-all">
-                    <PlusCircle className="w-4 h-4" /> Add ao {selectedGenre}
+                    <PlusCircle className="w-4 h-4" /> Publicar em {selectedGenre}
                  </button>
               </div>
               <h1 className="text-5xl font-black uppercase mb-12 tracking-tight">{selectedGenre}</h1>
@@ -396,9 +447,12 @@ const App: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {(groupedContent[selectedGenre!]?.[selectedArtist!] || []).map((song) => (
                   <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-5 bg-white border border-gray-100 rounded-2xl hover:border-[#22c55e] cursor-pointer transition-all hover:shadow-sm">
-                    <h4 className="font-bold text-gray-800 text-lg group-hover:text-[#22c55e]">{song.title}</h4>
+                    <div className="flex flex-col">
+                       <h4 className="font-bold text-gray-800 text-lg group-hover:text-[#22c55e]">{song.title}</h4>
+                       {song.author && <span className="text-[8px] font-black uppercase text-[#22c55e]">Postado por: {song.author}</span>}
+                    </div>
                     <div className="flex items-center gap-3">
-                       {userSongs.some(us => us.id === song.id) && <span className="text-[8px] bg-green-50 text-[#22c55e] px-1.5 py-0.5 rounded font-black uppercase">Enviada</span>}
+                       {song.isPublic && <Globe className="w-4 h-4 text-[#22c55e] opacity-50" title="Público" />}
                        <Play className="w-4 h-4 text-[#22c55e]" />
                     </div>
                   </div>
@@ -409,7 +463,6 @@ const App: React.FC = () => {
           
           {currentSong && (
             <>
-              {/* Sidebar: Hidden in View Mode */}
               {!isViewMode && (
                 <aside className="w-full md:w-[200px] shrink-0 flex flex-col gap-2">
                   <button onClick={handleBack} className="w-full bg-[#22c55e] text-white py-3 rounded-xl font-black text-[12px] uppercase shadow-lg mb-2"><ArrowLeft className="w-4 h-4 inline mr-2"/> {currentSong.artist}</button>
@@ -417,7 +470,6 @@ const App: React.FC = () => {
                   <SidebarButton icon={Timer} label="Metrônomo" onClick={() => setIsMetronomeOpen(true)} />
                   <SidebarButton icon={Heart} label={isCurrentFavorite ? "Remover" : "Favoritar"} onClick={() => toggleFavorite(currentSong)} active={isCurrentFavorite} />
                   
-                  {/* Song Display Controls */}
                   <div className="mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 flex flex-col gap-4">
                     <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest text-center">Tamanho da Letra</p>
                     <div className="flex items-center justify-between bg-white rounded-xl border p-1">
@@ -426,17 +478,11 @@ const App: React.FC = () => {
                       <button onClick={() => setFontSize(Math.min(40, fontSize + 2))} className="p-2 text-gray-500 hover:text-[#22c55e] transition-colors"><Plus className="w-4 h-4" /></button>
                     </div>
 
-                    <button 
-                      onClick={() => setIsChordDictOpen(true)}
-                      className="w-full flex items-center justify-center gap-2 py-3 bg-[#1c1c1c] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#22c55e] transition-all shadow-md border border-[#22c55e]/30"
-                    >
+                    <button onClick={() => setIsChordDictOpen(true)} className="w-full flex items-center justify-center gap-2 py-3 bg-[#1c1c1c] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#22c55e] transition-all shadow-md border border-[#22c55e]/30">
                       <BookOpen className="w-4 h-4 text-[#22c55e]" /> Dicionário
                     </button>
 
-                    <button 
-                      onClick={() => setIsViewMode(true)}
-                      className="w-full flex items-center justify-center gap-2 py-3 bg-[#1c1c1c] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all shadow-md"
-                    >
+                    <button onClick={() => setIsViewMode(true)} className="w-full flex items-center justify-center gap-2 py-3 bg-[#1c1c1c] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all shadow-md">
                       <Eye className="w-4 h-4 text-[#22c55e]" /> Modo Leitura
                     </button>
                   </div>
@@ -446,12 +492,16 @@ const App: React.FC = () => {
                 </aside>
               )}
 
-              {/* Song Content Area */}
               <div className={`flex-1 min-w-0 ${isViewMode ? 'mx-auto max-w-4xl' : ''}`}>
                 <div className={`${isViewMode ? 'mb-14 text-center' : 'mb-10'}`}>
+                   {currentSong.isPublic && (
+                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#22c55e]/10 border border-[#22c55e]/20 rounded-full mb-4">
+                        <Globe className="w-3 h-3 text-[#22c55e]" />
+                        <span className="text-[8px] font-black uppercase text-[#22c55e]">Cifra da Comunidade • Por {currentSong.author || 'Músico'}</span>
+                      </div>
+                   )}
                    <h2 className={`${isViewMode ? 'text-6xl md:text-8xl' : 'text-5xl'} font-black text-gray-950 uppercase mb-2 tracking-tight transition-all duration-500`}>{currentSong.title}</h2>
                    <h3 className={`${isViewMode ? 'text-2xl' : 'text-xl'} font-medium text-gray-400 transition-all duration-500`}>{currentSong.artist}</h3>
-                   {isViewMode && <div className="w-20 h-1 bg-[#22c55e] mx-auto mt-6 rounded-full opacity-50"></div>}
                 </div>
                 <ChordDisplay content={transposedContent} fontSize={fontSize} instrument={selectedInstrument} />
               </div>
@@ -460,7 +510,6 @@ const App: React.FC = () => {
         </main>
       </div>
 
-      {/* Floating Action Controls */}
       <div className={`fixed bottom-6 right-6 flex flex-col items-center gap-3 z-[80] transition-all duration-300 ${isViewMode && !isAutoScrolling ? 'opacity-40 hover:opacity-100' : ''}`}>
         {currentSong && (
           <>
@@ -471,32 +520,18 @@ const App: React.FC = () => {
                   <button onClick={() => setFontSize(Math.max(10, fontSize - 2))} className="w-10 h-10 flex items-center justify-center text-[#22c55e] hover:bg-white/10 rounded-full"><Minus className="w-5 h-5" /></button>
                 </div>
              )}
-             
              <button onClick={scrollToTop} className="w-11 h-11 bg-[#1c1c1c] text-[#22c55e] rounded-full flex items-center justify-center shadow-2xl border-4 border-white active:scale-95 transition-all"><ChevronUp className="w-5 h-5" /></button>
              <button onClick={() => setIsAutoScrolling(!isAutoScrolling)} className={`w-14 h-14 rounded-full flex items-center justify-center shadow-2xl border-4 border-white transition-all active:scale-90 ${isAutoScrolling ? 'bg-[#22c55e] text-white scale-110' : 'bg-[#1c1c1c] text-white'}`}><ArrowUpDown className="w-6 h-6" /></button>
           </>
         )}
       </div>
 
-      {/* Modals */}
       <Tuner isOpen={isTunerOpen} onClose={() => setIsTunerOpen(false)} />
       <Metronome isOpen={isMetronomeOpen} onClose={() => setIsMetronomeOpen(false)} />
-      <ChordDictionary 
-        isOpen={isChordDictOpen} 
-        onClose={() => setIsChordDictOpen(false)} 
-        chords={songChords} 
-        instrument={selectedInstrument} 
-        onInstrumentChange={setSelectedInstrument} 
-      />
-      <SongSubmission 
-        isOpen={isSubmissionOpen} 
-        onClose={() => setIsSubmissionOpen(false)} 
-        onSubmit={handleSongSubmission} 
-        defaultGenre={selectedGenre}
-      />
+      <ChordDictionary isOpen={isChordDictOpen} onClose={() => setIsChordDictOpen(false)} chords={songChords} instrument={selectedInstrument} onInstrumentChange={setSelectedInstrument} />
+      <SongSubmission isOpen={isSubmissionOpen} onClose={() => setIsSubmissionOpen(false)} onSubmit={handleSongSubmission} defaultGenre={selectedGenre} currentUser={currentUser} />
       <DownloadModal isOpen={isDownloadModalOpen} onClose={() => setIsDownloadModalOpen(false)} onInstall={handleInstallClick} isInstallAvailable={!!installPrompt} />
       
-      {/* Auth Modal Simple */}
       {isAuthModalOpen && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
            <div className="relative w-full max-w-sm bg-white rounded-3xl p-8 shadow-2xl">

@@ -63,7 +63,52 @@ export interface ExtendedSong extends Song {
   imageUrl?: string;
   verified?: boolean;
   capo?: number;
+  isPublic?: boolean;
+  author?: string;
 }
+
+export const COMMUNITY_SONGS: ExtendedSong[] = [
+  {
+    id: 'pub-1',
+    title: 'Tempo Perdido',
+    artist: 'Legião Urbana',
+    genre: 'Rock',
+    difficulty: 'Médio',
+    isPublic: true,
+    author: 'Pedro Rocha',
+    content: `Tom: [C]
+
+[Intro] [C] [Am] [F] [G]
+
+[C]
+Todos os dias quando acordo
+[Am]
+Não tenho mais o tempo que passou
+[F]
+Mas tenho muito tempo
+[G]
+Temos todo o tempo do mundo`
+  },
+  {
+    id: 'pub-2',
+    title: 'O Sol',
+    artist: 'Vitor Kley',
+    genre: 'Pop',
+    difficulty: 'Fácil',
+    isPublic: true,
+    author: 'Ana Paula',
+    content: `Tom: [G]
+
+[G]
+Ô Sol, vê se não esquece
+[D]
+E me ilumina
+[Em]
+Preciso de você aqui
+[C]
+Ô Sol`
+  }
+];
 
 const ZEZE_IMG = 'https://images.unsplash.com/photo-1521417531039-75e91486cc40?w=400&h=400&fit=crop';
 const RICK_RENNER_IMG = 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=400&h=400&fit=crop';
