@@ -9,36 +9,18 @@ interface SearchInputProps {
 
 const SearchInput: React.FC<SearchInputProps> = ({ onSearch, isLoading }) => {
   const [query, setQuery] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (query.trim()) {
-      onSearch(query);
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="relative w-full">
+    <form onSubmit={(e) => { e.preventDefault(); onSearch(query); }} className="relative w-full">
       <div className="relative group w-full">
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Busque artistas ou músicas..."
-          className="w-full pl-10 pr-10 py-2 md:py-2.5 bg-gray-100 rounded-full text-xs md:text-sm text-black outline-none focus:ring-2 focus:ring-[#38cc63]/20 focus:bg-white transition-all border border-transparent focus:border-[#38cc63]/40"
+          className="w-full pl-10 pr-10 py-2.5 bg-gray-100 rounded-full text-sm text-black outline-none focus:ring-2 focus:ring-[#22c55e]/20 focus:bg-white border border-transparent focus:border-[#22c55e]/40 transition-all"
         />
-        <Search className="absolute left-3 top-2.5 md:top-3 w-4 h-4 text-gray-400 group-focus-within:text-[#38cc63] transition-colors" />
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="absolute right-2 top-1.5 md:top-2 p-1 text-gray-400 hover:text-[#38cc63] transition-colors disabled:opacity-50"
-        >
-          {isLoading ? (
-            <div className="w-4 h-4 border-2 border-[#38cc63] border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <Sparkles className="w-4 h-4" />
-          )}
-        </button>
+        <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400 group-focus-within:text-[#22c55e]" />
+        {isLoading && <div className="absolute right-3 top-3 w-4 h-4 border-2 border-[#22c55e] border-t-transparent rounded-full animate-spin" />}
       </div>
     </form>
   );
