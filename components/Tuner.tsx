@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Mic, MicOff, Activity, Hash, Music2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Mic, MicOff, Activity, Hash, Music2, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 
 const Tuner: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const [isListening, setIsListening] = useState(false);
@@ -136,17 +136,14 @@ const Tuner: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onC
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-[#111] rounded-[1.5rem] flex items-center justify-center border border-white/10 shadow-inner">
-                <Activity className={`${isInTune ? 'text-[#00ff66]' : 'text-gray-600'} w-8 h-8 transition-colors duration-200`} />
-              </div>
-              <div>
-                <h3 className="text-white font-black text-3xl uppercase tracking-tighter">Cromático</h3>
-                <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${isListening ? 'bg-[#00ff66] animate-pulse shadow-[0_0_10px_#00ff66]' : 'bg-gray-800'}`}></div>
-                  <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">
-                    {frequency > 0 ? `${frequency.toFixed(1)} Hz` : 'Aguardando Som'}
-                  </p>
-                </div>
+              <button 
+                onClick={() => { stopTuner(); onClose(); }}
+                className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-[#00ff66] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-[#00ff66]/30"
+              >
+                <ArrowLeft className="w-4 h-4" /> Voltar
+              </button>
+              <div className="w-12 h-12 bg-[#111] rounded-xl flex items-center justify-center border border-white/10">
+                <Activity className={`${isInTune ? 'text-[#00ff66]' : 'text-gray-600'} w-6 h-6 transition-colors duration-200`} />
               </div>
             </div>
             
@@ -166,7 +163,7 @@ const Tuner: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onC
             </div>
 
             <button onClick={() => { stopTuner(); onClose(); }} className="p-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-full transition-all">
-              <X className="w-8 h-8" />
+              <X className="w-6 h-6" />
             </button>
           </div>
 
