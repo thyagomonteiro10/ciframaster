@@ -5,7 +5,7 @@ import {
   Globe, ChevronRight, Menu, Search, Video, Settings, ChevronDown, 
   Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users, Flame, Disc, ArrowLeft, CheckCircle2,
   ArrowUpDown, Type, PlusCircle, Timer, Activity, Folder, ExternalLink, Info, Download, PlayCircle,
-  Keyboard, Monitor, Youtube, Sparkles, Zap, AlertCircle, Eye, User, LogIn, Mail, Lock, LogOut, Home, ChevronUp
+  Keyboard, Monitor, Youtube, Sparkles, Zap, AlertCircle, Eye, User, LogIn, Mail, Lock, LogOut, Home, ChevronUp, PlusSquare
 } from 'lucide-react';
 import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS, RICK_RENNER_SONGS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
@@ -15,6 +15,7 @@ import ChordDisplay from './components/ChordDisplay';
 import ChordDiagram from './components/ChordDiagram';
 import Tuner from './components/Tuner';
 import Metronome from './components/Metronome';
+import SongSubmission from './components/SongSubmission';
 
 const GENRES = ['Sertanejo', 'Rock', 'Pop', 'Reggae', 'Gospel', 'Forró', 'MPB', 'Samba', 'Sofrência'];
 const INSTRUMENTS = [
@@ -35,10 +36,13 @@ const App: React.FC = () => {
   const [scrollSpeed, setScrollSpeed] = useState(1);
   const [isTunerOpen, setIsTunerOpen] = useState(false);
   const [isMetronomeOpen, setIsMetronomeOpen] = useState(false);
+  const [isSubmissionOpen, setIsSubmissionOpen] = useState(false);
   const [selectedInstrument, setSelectedInstrument] = useState('Violão');
   const [showChordsInSidebar, setShowChordsInSidebar] = useState(false);
   const [favorites, setFavorites] = useState<ExtendedSong[]>([]);
+  const [userSongs, setUserSongs] = useState<ExtendedSong[]>([]);
   const [isFavFolderOpen, setIsFavFolderOpen] = useState(true);
+  const [isUserSongsOpen, setIsUserSongsOpen] = useState(false);
   const [isViewMode, setIsViewMode] = useState(false);
   
   // Auth States
@@ -53,6 +57,7 @@ const App: React.FC = () => {
     setSelectedArtist(null);
     setIsViewMode(false);
     setIsAuthModalOpen(false);
+    setIsSubmissionOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
@@ -60,7 +65,7 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  // Load user and favorites from local storage on mount
+  // Load user, favorites and user songs from local storage on mount
   useEffect(() => {
     const savedUser = localStorage.getItem('cifra_master_user');
     if (savedUser) setCurrentUser(JSON.parse(savedUser));
@@ -73,12 +78,26 @@ const App: React.FC = () => {
         console.error("Erro ao carregar favoritos", e);
       }
     }
+
+    const savedUserSongs = localStorage.getItem('cifra_master_user_songs');
+    if (savedUserSongs) {
+      try {
+        setUserSongs(JSON.parse(savedUserSongs));
+      } catch (e) {
+        console.error("Erro ao carregar contribuições", e);
+      }
+    }
   }, []);
 
   // Save favorites to local storage whenever they change
   useEffect(() => {
     localStorage.setItem('cifra_master_favorites', JSON.stringify(favorites));
   }, [favorites]);
+
+  // Save user songs to local storage
+  useEffect(() => {
+    localStorage.setItem('cifra_master_user_songs', JSON.stringify(userSongs));
+  }, [userSongs]);
 
   const toggleFavorite = useCallback((song: ExtendedSong) => {
     if (!currentUser) {
@@ -94,6 +113,13 @@ const App: React.FC = () => {
       }
     });
   }, [currentUser]);
+
+  const handleSongSubmission = (song: ExtendedSong) => {
+    setUserSongs(prev => [song, ...prev]);
+    setIsUserSongsOpen(true);
+    // Auto select the new song
+    handleSongSelect(song);
+  };
 
   const isCurrentFavorite = useMemo(() => {
     if (!currentSong) return false;
@@ -121,11 +147,20 @@ const App: React.FC = () => {
     setScrollSpeed(1);
     setShowChordsInSidebar(false);
     setIsViewMode(false);
+    setIsSubmissionOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   const handleSearch = useCallback(async (query: string) => {
     const q = query.toLowerCase();
+    
+    // Check user songs first
+    const userMatch = userSongs.find(s => s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q));
+    if (userMatch) {
+      handleSongSelect(userMatch);
+      return;
+    }
+
     if (q.includes('juliany souza') || q.includes('quem é esse')) {
        handleSongSelect(JULIANY_SOUZA_SONGS[0]);
        return;
@@ -142,7 +177,7 @@ const App: React.FC = () => {
       alert("Desculpe, mestre! Não conseguimos encontrar essa cifra agora. Tente novamente.");
     }
     setIsLoading(false);
-  }, [handleSongSelect]);
+  }, [handleSongSelect, userSongs]);
 
   const handleBack = () => {
     if (currentSong) {
@@ -188,7 +223,7 @@ const App: React.FC = () => {
   }, [currentSong, transposedContent, transposition]);
 
   const groupedContent = useMemo(() => {
-    const allSongs = [...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS, ...RICK_RENNER_SONGS];
+    const allSongs = [...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS, ...RICK_RENNER_SONGS, ...userSongs];
     const map: Record<string, Record<string, ExtendedSong[]>> = {};
     allSongs.forEach(song => {
       if (!map[song.genre]) map[song.genre] = {};
@@ -196,7 +231,7 @@ const App: React.FC = () => {
       map[song.genre][song.artist].push(song);
     });
     return map;
-  }, []);
+  }, [userSongs]);
 
   const songChords = useMemo(() => {
     if (!currentSong) return [];
@@ -213,49 +248,93 @@ const App: React.FC = () => {
 
   const renderHome = () => (
     <div className="py-2">
-      {favorites.length > 0 && (
-        <div className="mb-8 animate-in fade-in slide-in-from-left-4 duration-500">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        {/* Favoritos */}
+        {favorites.length > 0 && (
+          <div className="animate-in fade-in slide-in-from-left-4 duration-500">
+             <button 
+               onClick={() => setIsFavFolderOpen(!isFavFolderOpen)}
+               className="w-full flex items-center justify-between p-4 bg-[#1c1c1c] rounded-2xl shadow-xl border border-white/5 hover:bg-gray-800 transition-all group"
+             >
+                <div className="flex items-center gap-4">
+                   <div className="w-10 h-10 bg-[#38cc63]/20 rounded-xl flex items-center justify-center border border-[#38cc63]/30">
+                      <Heart className="text-[#38cc63] w-5 h-5 fill-[#38cc63]/20" />
+                   </div>
+                   <div className="text-left">
+                      <h2 className="text-lg font-black text-white tracking-tight uppercase">Meus Favoritos</h2>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{favorites.length} músicas</p>
+                   </div>
+                </div>
+                <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${isFavFolderOpen ? 'rotate-180' : ''}`} />
+             </button>
+             
+             {isFavFolderOpen && (
+               <div className="mt-3 grid grid-cols-1 gap-2 animate-in slide-in-from-top-2 duration-300 origin-top">
+                  {favorites.slice(0, 5).map((song) => (
+                    <div 
+                      key={song.id} 
+                      onClick={() => handleSongSelect(song)}
+                      className="group flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl hover:border-[#38cc63] transition-all cursor-pointer"
+                    >
+                      <div className="flex-1 min-w-0 pr-3">
+                        <h4 className="font-bold text-gray-800 text-xs truncate group-hover:text-[#38cc63]">{song.title}</h4>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tight truncate">{song.artist}</p>
+                      </div>
+                      <Play className="w-3.5 h-3.5 text-gray-300 group-hover:text-[#38cc63]" />
+                    </div>
+                  ))}
+               </div>
+             )}
+          </div>
+        )}
+
+        {/* Minhas Contribuições */}
+        <div className="animate-in fade-in slide-in-from-right-4 duration-500">
            <button 
-             onClick={() => setIsFavFolderOpen(!isFavFolderOpen)}
-             className="w-full flex items-center justify-between p-4 bg-[#1c1c1c] rounded-2xl shadow-xl border border-white/5 hover:bg-gray-800 transition-all group"
+             onClick={() => setIsUserSongsOpen(!isUserSongsOpen)}
+             className="w-full flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-[#38cc63] transition-all group"
            >
               <div className="flex items-center gap-4">
-                 <div className="w-10 h-10 bg-[#38cc63]/20 rounded-xl flex items-center justify-center border border-[#38cc63]/30">
-                    <Folder className="text-[#38cc63] w-5 h-5 fill-[#38cc63]/20" />
+                 <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 group-hover:bg-[#38cc63]/10 group-hover:border-[#38cc63]/30 transition-all">
+                    <PlusSquare className="text-gray-400 w-5 h-5 group-hover:text-[#38cc63] transition-colors" />
                  </div>
                  <div className="text-left">
-                    <h2 className="text-lg font-black text-white tracking-tight uppercase">Meus Favoritos</h2>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                      {favorites.length} música{favorites.length !== 1 ? 's' : ''} 
-                      {currentUser ? ' Sincronizadas' : ' (Entre para salvar na nuvem)'}
-                    </p>
+                    <h2 className="text-lg font-black text-gray-900 tracking-tight uppercase">Minhas Cifras</h2>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{userSongs.length} contribuições</p>
                  </div>
               </div>
-              <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${isFavFolderOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-5 h-5 text-gray-300 transition-transform duration-300 ${isUserSongsOpen ? 'rotate-180' : ''}`} />
            </button>
            
-           {isFavFolderOpen && (
-             <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-in slide-in-from-top-2 duration-300 origin-top">
-                {favorites.map((song) => (
-                  <div 
-                    key={song.id} 
-                    onClick={() => handleSongSelect(song)}
-                    className="group flex items-center justify-between p-3.5 bg-white border border-gray-100 rounded-xl hover:border-[#38cc63] hover:shadow-sm transition-all cursor-pointer relative overflow-hidden"
+           {isUserSongsOpen && (
+             <div className="mt-3 grid grid-cols-1 gap-2 animate-in slide-in-from-top-2 duration-300 origin-top">
+                {userSongs.length > 0 ? (
+                  userSongs.slice(0, 5).map((song) => (
+                    <div 
+                      key={song.id} 
+                      onClick={() => handleSongSelect(song)}
+                      className="group flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl hover:border-[#38cc63] transition-all cursor-pointer"
+                    >
+                      <div className="flex-1 min-w-0 pr-3">
+                        <h4 className="font-bold text-gray-800 text-xs truncate group-hover:text-[#38cc63]">{song.title}</h4>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tight truncate">{song.artist}</p>
+                      </div>
+                      <div className="px-2 py-0.5 bg-gray-50 rounded text-[8px] font-black text-gray-400 uppercase">Draft</div>
+                    </div>
+                  ))
+                ) : (
+                  <button 
+                    onClick={() => setIsSubmissionOpen(true)}
+                    className="p-8 border-2 border-dashed border-gray-100 rounded-xl text-center hover:border-[#38cc63]/30 transition-all group"
                   >
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#38cc63] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div className="flex-1 min-w-0 pr-3">
-                      <h4 className="font-bold text-gray-800 text-sm truncate group-hover:text-[#38cc63]">{song.title}</h4>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight truncate">{song.artist}</p>
-                    </div>
-                    <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center group-hover:bg-[#38cc63] group-hover:text-white transition-all">
-                      <Play className="w-4 h-4" />
-                    </div>
-                  </div>
-                ))}
+                    <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest group-hover:text-[#38cc63]">Nenhuma cifra enviada</p>
+                    <span className="text-[9px] font-bold text-[#38cc63] mt-2 block">Clique para enviar a primeira</span>
+                  </button>
+                )}
              </div>
            )}
         </div>
-      )}
+      </div>
 
       <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-5">
         <h1 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3">
@@ -319,7 +398,14 @@ const App: React.FC = () => {
             
             <div className="flex-1 max-w-xl mx-4"><SearchInput onSearch={handleSearch} isLoading={isLoading} /></div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={() => setIsSubmissionOpen(true)}
+                className="hidden lg:flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/10"
+              >
+                <PlusSquare className="w-4 h-4 text-[#38cc63]" /> Enviar Música
+              </button>
+
               {currentUser ? (
                 <div className="flex items-center gap-3 pl-3 border-l border-white/10 group">
                   <div className="text-right hidden sm:block">
@@ -722,6 +808,11 @@ const App: React.FC = () => {
 
       <Tuner isOpen={isTunerOpen} onClose={() => setIsTunerOpen(false)} />
       <Metronome isOpen={isMetronomeOpen} onClose={() => setIsMetronomeOpen(false)} />
+      <SongSubmission 
+        isOpen={isSubmissionOpen} 
+        onClose={() => setIsSubmissionOpen(false)} 
+        onSubmit={handleSongSubmission} 
+      />
     </div>
   );
 };
