@@ -6,7 +6,7 @@ import {
   Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users, Flame, Disc, ArrowLeft, CheckCircle2,
   ArrowUpDown, Type, PlusCircle, Timer, Activity, Folder, ExternalLink, Info, Download, PlayCircle,
   Keyboard, Monitor, Youtube, Sparkles, Zap, AlertCircle, Eye, User, LogIn, Mail, Lock, LogOut, Home, ChevronUp, PlusSquare,
-  Upload, FileJson, FileText, Save
+  Upload, FileJson, FileText, Save, Trash2
 } from 'lucide-react';
 import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS, RICK_RENNER_SONGS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
@@ -43,7 +43,7 @@ const App: React.FC = () => {
   const [favorites, setFavorites] = useState<ExtendedSong[]>([]);
   const [userSongs, setUserSongs] = useState<ExtendedSong[]>([]);
   const [isFavFolderOpen, setIsFavFolderOpen] = useState(true);
-  const [isUserSongsOpen, setIsUserSongsOpen] = useState(false);
+  const [isUserSongsOpen, setIsUserSongsOpen] = useState(true);
   const [isViewMode, setIsViewMode] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -92,7 +92,7 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Save favorites to local storage whenever they change
+  // Save favorites to local storage
   useEffect(() => {
     localStorage.setItem('cifra_master_favorites', JSON.stringify(favorites));
   }, [favorites]);
@@ -123,6 +123,16 @@ const App: React.FC = () => {
     handleSongSelect(song);
   };
 
+  const deleteUserSong = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm("Tem certeza que deseja excluir esta cifra do seu repertório local?")) {
+      setUserSongs(prev => prev.filter(s => s.id !== id));
+      if (currentSong?.id === id) {
+        setCurrentSong(null);
+      }
+    }
+  };
+
   const handleImportClick = () => {
     fileInputRef.current?.click();
   };
@@ -135,7 +145,6 @@ const App: React.FC = () => {
     reader.onload = (e) => {
       const content = e.target?.result as string;
       try {
-        // Tenta ler como JSON (formato de backup)
         if (file.name.endsWith('.json')) {
           const imported = JSON.parse(content);
           if (Array.isArray(imported)) {
@@ -145,7 +154,6 @@ const App: React.FC = () => {
             handleSongSubmission(imported);
           }
         } else {
-          // Trata como texto puro (.txt)
           const lines = content.split('\n');
           const title = lines[0]?.trim() || 'Música Importada';
           const artist = lines[1]?.trim() || 'Artista Desconhecido';
@@ -168,7 +176,6 @@ const App: React.FC = () => {
       }
     };
     reader.readAsText(file);
-    // Reset input
     event.target.value = '';
   };
 
@@ -334,7 +341,7 @@ const App: React.FC = () => {
              
              {isFavFolderOpen && (
                <div className="mt-3 grid grid-cols-1 gap-2 animate-in slide-in-from-top-2 duration-300 origin-top">
-                  {favorites.slice(0, 5).map((song) => (
+                  {favorites.slice(0, 10).map((song) => (
                     <div 
                       key={song.id} 
                       onClick={() => handleSongSelect(song)}
@@ -352,19 +359,19 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* Minhas Contribuições */}
+        {/* Minhas Contribuições (Envios e Importações) */}
         <div className="animate-in fade-in slide-in-from-right-4 duration-500">
            <div 
-             className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-[#38cc63]/30 transition-all group"
+             className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-[#38cc63]/30 transition-all group overflow-hidden"
            >
               <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => setIsUserSongsOpen(!isUserSongsOpen)}>
                 <div className="flex items-center gap-4">
                    <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 group-hover:bg-[#38cc63]/10 group-hover:border-[#38cc63]/30 transition-all">
-                      <PlusSquare className="text-gray-400 w-5 h-5 group-hover:text-[#38cc63] transition-colors" />
+                      <Save className="text-gray-400 w-5 h-5 group-hover:text-[#38cc63] transition-colors" />
                    </div>
                    <div className="text-left">
                       <h2 className="text-lg font-black text-gray-900 tracking-tight uppercase">Minhas Cifras</h2>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{userSongs.length} contribuições</p>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{userSongs.length} salvas</p>
                    </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -379,9 +386,9 @@ const App: React.FC = () => {
                     <button 
                       onClick={(e) => { e.stopPropagation(); handleExportAll(); }}
                       className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-blue-500 transition-all"
-                      title="Exportar Todas (Backup)"
+                      title="Fazer Backup de Tudo"
                     >
-                      <Save className="w-4 h-4" />
+                      <Download className="w-4 h-4" />
                     </button>
                   </div>
                   <ChevronDown className={`w-5 h-5 text-gray-300 transition-transform duration-300 ${isUserSongsOpen ? 'rotate-180' : ''}`} />
@@ -397,9 +404,9 @@ const App: React.FC = () => {
               />
               
               {isUserSongsOpen && (
-                <div className="px-4 pb-4 grid grid-cols-1 gap-2 animate-in slide-in-from-top-2 duration-300 origin-top">
+                <div className="px-4 pb-4 grid grid-cols-1 gap-2 animate-in slide-in-from-top-2 duration-300 origin-top max-h-[400px] overflow-y-auto custom-scrollbar">
                     {userSongs.length > 0 ? (
-                      userSongs.slice(0, 5).map((song) => (
+                      userSongs.map((song) => (
                         <div 
                           key={song.id} 
                           onClick={() => handleSongSelect(song)}
@@ -409,7 +416,16 @@ const App: React.FC = () => {
                             <h4 className="font-bold text-gray-800 text-xs truncate group-hover:text-[#38cc63]">{song.title}</h4>
                             <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tight truncate">{song.artist}</p>
                           </div>
-                          <div className="px-2 py-0.5 bg-gray-50 rounded text-[8px] font-black text-gray-400 uppercase">Draft</div>
+                          <div className="flex items-center gap-2">
+                            <div className="px-2 py-0.5 bg-green-50 rounded text-[8px] font-black text-[#38cc63] uppercase">Salvo</div>
+                            <button 
+                              onClick={(e) => deleteUserSong(song.id, e)}
+                              className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                              title="Excluir"
+                            >
+                               <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
                       ))
                     ) : (
@@ -417,8 +433,8 @@ const App: React.FC = () => {
                         onClick={() => setIsSubmissionOpen(true)}
                         className="p-8 border-2 border-dashed border-gray-100 rounded-xl text-center hover:border-[#38cc63]/30 transition-all group"
                       >
-                        <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest group-hover:text-[#38cc63]">Nenhuma cifra enviada</p>
-                        <span className="text-[9px] font-bold text-[#38cc63] mt-2 block">Clique em enviar ou importar arquivo</span>
+                        <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest group-hover:text-[#38cc63]">Nenhuma música salva</p>
+                        <span className="text-[9px] font-bold text-[#38cc63] mt-2 block">Clique em enviar ou importe um arquivo</span>
                       </button>
                     )}
                 </div>
