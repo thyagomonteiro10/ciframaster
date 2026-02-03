@@ -1,11 +1,12 @@
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { 
   Play, Pause, Grid, Music, Heart, X, Bot, Link as LinkIcon, 
   Globe, ChevronRight, Menu, Search, Video, Settings, ChevronDown, 
   Maximize2, Type as FontIcon, Minus, Plus, Share2, Guitar, Star, Users, Flame, Disc, ArrowLeft, CheckCircle2,
   ArrowUpDown, Type, PlusCircle, Timer, Activity, Folder, ExternalLink, Info, Download, PlayCircle,
-  Keyboard, Monitor, Youtube, Sparkles, Zap, AlertCircle, Eye, User, LogIn, Mail, Lock, LogOut, Home, ChevronUp, PlusSquare
+  Keyboard, Monitor, Youtube, Sparkles, Zap, AlertCircle, Eye, User, LogIn, Mail, Lock, LogOut, Home, ChevronUp, PlusSquare,
+  Upload, FileJson, FileText, Save
 } from 'lucide-react';
 import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS, RICK_RENNER_SONGS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
@@ -45,6 +46,8 @@ const App: React.FC = () => {
   const [isUserSongsOpen, setIsUserSongsOpen] = useState(false);
   const [isViewMode, setIsViewMode] = useState(false);
   
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   // Auth States
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isRegisterMode, setIsRegisterMode] = useState(false);
@@ -117,8 +120,70 @@ const App: React.FC = () => {
   const handleSongSubmission = (song: ExtendedSong) => {
     setUserSongs(prev => [song, ...prev]);
     setIsUserSongsOpen(true);
-    // Auto select the new song
     handleSongSelect(song);
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      try {
+        // Tenta ler como JSON (formato de backup)
+        if (file.name.endsWith('.json')) {
+          const imported = JSON.parse(content);
+          if (Array.isArray(imported)) {
+            setUserSongs(prev => [...imported, ...prev]);
+            alert(`${imported.length} músicas importadas com sucesso!`);
+          } else if (imported.title && imported.content) {
+            handleSongSubmission(imported);
+          }
+        } else {
+          // Trata como texto puro (.txt)
+          const lines = content.split('\n');
+          const title = lines[0]?.trim() || 'Música Importada';
+          const artist = lines[1]?.trim() || 'Artista Desconhecido';
+          const songContent = lines.slice(2).join('\n').trim() || content;
+
+          const newSong: ExtendedSong = {
+            id: `imported-${Date.now()}`,
+            title,
+            artist,
+            content: songContent,
+            genre: 'Pop',
+            difficulty: 'Médio',
+            verified: false
+          };
+          handleSongSubmission(newSong);
+        }
+      } catch (err) {
+        console.error("Erro ao importar arquivo", err);
+        alert("Erro ao ler o arquivo. Certifique-se de que é um formato válido.");
+      }
+    };
+    reader.readAsText(file);
+    // Reset input
+    event.target.value = '';
+  };
+
+  const handleExportAll = () => {
+    if (userSongs.length === 0) {
+      alert("Você não tem cifras para exportar ainda.");
+      return;
+    }
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(userSongs, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "meu_repertorio_cifra_master.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
   };
 
   const isCurrentFavorite = useMemo(() => {
@@ -154,7 +219,6 @@ const App: React.FC = () => {
   const handleSearch = useCallback(async (query: string) => {
     const q = query.toLowerCase();
     
-    // Check user songs first
     const userMatch = userSongs.find(s => s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q));
     if (userMatch) {
       handleSongSelect(userMatch);
@@ -290,49 +354,76 @@ const App: React.FC = () => {
 
         {/* Minhas Contribuições */}
         <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-           <button 
-             onClick={() => setIsUserSongsOpen(!isUserSongsOpen)}
-             className="w-full flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-[#38cc63] transition-all group"
+           <div 
+             className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-[#38cc63]/30 transition-all group"
            >
-              <div className="flex items-center gap-4">
-                 <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 group-hover:bg-[#38cc63]/10 group-hover:border-[#38cc63]/30 transition-all">
-                    <PlusSquare className="text-gray-400 w-5 h-5 group-hover:text-[#38cc63] transition-colors" />
-                 </div>
-                 <div className="text-left">
-                    <h2 className="text-lg font-black text-gray-900 tracking-tight uppercase">Minhas Cifras</h2>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{userSongs.length} contribuições</p>
-                 </div>
-              </div>
-              <ChevronDown className={`w-5 h-5 text-gray-300 transition-transform duration-300 ${isUserSongsOpen ? 'rotate-180' : ''}`} />
-           </button>
-           
-           {isUserSongsOpen && (
-             <div className="mt-3 grid grid-cols-1 gap-2 animate-in slide-in-from-top-2 duration-300 origin-top">
-                {userSongs.length > 0 ? (
-                  userSongs.slice(0, 5).map((song) => (
-                    <div 
-                      key={song.id} 
-                      onClick={() => handleSongSelect(song)}
-                      className="group flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl hover:border-[#38cc63] transition-all cursor-pointer"
+              <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => setIsUserSongsOpen(!isUserSongsOpen)}>
+                <div className="flex items-center gap-4">
+                   <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 group-hover:bg-[#38cc63]/10 group-hover:border-[#38cc63]/30 transition-all">
+                      <PlusSquare className="text-gray-400 w-5 h-5 group-hover:text-[#38cc63] transition-colors" />
+                   </div>
+                   <div className="text-left">
+                      <h2 className="text-lg font-black text-gray-900 tracking-tight uppercase">Minhas Cifras</h2>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{userSongs.length} contribuições</p>
+                   </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); handleImportClick(); }}
+                      className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-[#38cc63] transition-all"
+                      title="Importar do Computador"
                     >
-                      <div className="flex-1 min-w-0 pr-3">
-                        <h4 className="font-bold text-gray-800 text-xs truncate group-hover:text-[#38cc63]">{song.title}</h4>
-                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tight truncate">{song.artist}</p>
-                      </div>
-                      <div className="px-2 py-0.5 bg-gray-50 rounded text-[8px] font-black text-gray-400 uppercase">Draft</div>
-                    </div>
-                  ))
-                ) : (
-                  <button 
-                    onClick={() => setIsSubmissionOpen(true)}
-                    className="p-8 border-2 border-dashed border-gray-100 rounded-xl text-center hover:border-[#38cc63]/30 transition-all group"
-                  >
-                    <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest group-hover:text-[#38cc63]">Nenhuma cifra enviada</p>
-                    <span className="text-[9px] font-bold text-[#38cc63] mt-2 block">Clique para enviar a primeira</span>
-                  </button>
-                )}
-             </div>
-           )}
+                      <Upload className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); handleExportAll(); }}
+                      className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-blue-500 transition-all"
+                      title="Exportar Todas (Backup)"
+                    >
+                      <Save className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <ChevronDown className={`w-5 h-5 text-gray-300 transition-transform duration-300 ${isUserSongsOpen ? 'rotate-180' : ''}`} />
+                </div>
+              </div>
+              
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileUpload} 
+                className="hidden" 
+                accept=".txt,.json"
+              />
+              
+              {isUserSongsOpen && (
+                <div className="px-4 pb-4 grid grid-cols-1 gap-2 animate-in slide-in-from-top-2 duration-300 origin-top">
+                    {userSongs.length > 0 ? (
+                      userSongs.slice(0, 5).map((song) => (
+                        <div 
+                          key={song.id} 
+                          onClick={() => handleSongSelect(song)}
+                          className="group flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl hover:border-[#38cc63] transition-all cursor-pointer"
+                        >
+                          <div className="flex-1 min-w-0 pr-3">
+                            <h4 className="font-bold text-gray-800 text-xs truncate group-hover:text-[#38cc63]">{song.title}</h4>
+                            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tight truncate">{song.artist}</p>
+                          </div>
+                          <div className="px-2 py-0.5 bg-gray-50 rounded text-[8px] font-black text-gray-400 uppercase">Draft</div>
+                        </div>
+                      ))
+                    ) : (
+                      <button 
+                        onClick={() => setIsSubmissionOpen(true)}
+                        className="p-8 border-2 border-dashed border-gray-100 rounded-xl text-center hover:border-[#38cc63]/30 transition-all group"
+                      >
+                        <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest group-hover:text-[#38cc63]">Nenhuma cifra enviada</p>
+                        <span className="text-[9px] font-bold text-[#38cc63] mt-2 block">Clique em enviar ou importar arquivo</span>
+                      </button>
+                    )}
+                </div>
+              )}
+           </div>
         </div>
       </div>
 
