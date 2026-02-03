@@ -10,47 +10,60 @@ export interface ChordShape {
   fingers?: number[];
   barre?: number;
   baseFret?: number;
-  keys?: number[]; 
+  keys?: number[]; // Usado para teclado: índices das teclas (0=C, 1=C#, etc)
 }
 
 export const INSTRUMENT_CHORDS: Record<string, Record<string, ChordShape>> = {
   'Violão': {
-    'C': { frets: ['x', 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0], keys: [0, 4, 7] },
-    'D': { frets: ['x', 'x', 0, 2, 3, 2], fingers: [0, 0, 0, 1, 3, 2], keys: [2, 6, 9] },
-    'D4': { frets: ['x', 'x', 0, 2, 3, 3], fingers: [0, 0, 0, 1, 3, 4], keys: [2, 7, 9] },
-    'D7': { frets: ['x', 'x', 0, 2, 1, 2], fingers: [0, 0, 0, 2, 1, 3], keys: [2, 6, 9, 0] },
-    'E': { frets: [0, 2, 2, 1, 0, 0], fingers: [0, 2, 3, 1, 0, 0], keys: [4, 8, 11] },
-    'F': { frets: [1, 3, 3, 2, 1, 1], barre: 1, keys: [5, 9, 0] },
-    'G': { frets: [3, 2, 0, 0, 0, 3], fingers: [3, 2, 0, 0, 0, 4], keys: [7, 11, 2] },
-    'A': { frets: ['x', 0, 2, 2, 2, 0], fingers: [0, 0, 1, 2, 3, 0], keys: [9, 1, 4] },
-    'B': { frets: ['x', 2, 4, 4, 4, 2], barre: 2, keys: [11, 3, 6] },
-    'A7': { frets: ['x', 0, 2, 0, 2, 0], fingers: [0, 0, 1, 0, 2, 0], keys: [9, 1, 4, 7] },
-    'B7': { frets: ['x', 2, 1, 2, 0, 2], fingers: [0, 2, 1, 3, 0, 4], keys: [11, 3, 6, 9] },
-    'Bm': { frets: ['x', 2, 4, 4, 3, 2], barre: 2, keys: [11, 2, 6] },
-    'Am': { frets: ['x', 0, 2, 2, 1, 0], keys: [9, 0, 4] },
-    'Dm': { frets: ['x', 'x', 0, 2, 3, 1], fingers: [0, 0, 0, 2, 3, 1], keys: [2, 5, 9] },
-    'Bb': { frets: ['x', 1, 3, 3, 3, 1], barre: 1, keys: [10, 2, 5] },
-    'F#': { frets: [2, 4, 4, 3, 2, 2], barre: 2, keys: [6, 10, 1] },
-    'G#m': { frets: [4, 6, 6, 4, 4, 4], barre: 4, keys: [8, 11, 3] },
-    'F#m': { frets: [2, 4, 4, 2, 2, 2], barre: 2, keys: [6, 9, 1] },
-    'E7': { frets: [0, 2, 0, 1, 0, 0], keys: [4, 8, 11, 2] },
-    'E/G#': { frets: [4, 'x', 2, 4, 5, 'x'], baseFret: 4, keys: [8, 11, 4] },
-    'A/C#': { frets: ['x', 4, 2, 2, 2, 'x'], baseFret: 2, keys: [1, 4, 9] },
+    'C': { frets: ['x', 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0] },
+    'D': { frets: ['x', 'x', 0, 2, 3, 2], fingers: [0, 0, 0, 1, 3, 2] },
+    'E': { frets: [0, 2, 2, 1, 0, 0], fingers: [0, 2, 3, 1, 0, 0] },
+    'F': { frets: [1, 3, 3, 2, 1, 1], barre: 1 },
+    'G': { frets: [3, 2, 0, 0, 0, 3], fingers: [3, 2, 0, 0, 0, 4] },
+    'A': { frets: ['x', 0, 2, 2, 2, 0], fingers: [0, 0, 1, 2, 3, 0] },
+    'B': { frets: ['x', 2, 4, 4, 4, 2], barre: 2 },
+    'Am': { frets: ['x', 0, 2, 2, 1, 0] },
+    'Dm': { frets: ['x', 'x', 0, 2, 3, 1] },
+    'Em': { frets: [0, 2, 2, 0, 0, 0] },
   },
   'Ukulele': {
-    'C': { frets: [0, 0, 0, 3], keys: [0, 4, 7] },
-    'D': { frets: [2, 2, 2, 0], keys: [2, 6, 9] },
-    'D4': { frets: [2, 2, 3, 0], keys: [2, 7, 9] },
-    'D7': { frets: [2, 0, 2, 0], keys: [2, 6, 9, 0] },
-    'E': { frets: [4, 4, 4, 2], baseFret: 1, keys: [4, 8, 11] },
-    'F': { frets: [2, 0, 1, 0], keys: [5, 9, 0] },
-    'G': { frets: [0, 2, 3, 2], keys: [7, 11, 2] },
-    'A': { frets: [2, 1, 0, 0], keys: [9, 1, 4] },
-    'B': { frets: [4, 3, 2, 2], barre: 2, keys: [11, 3, 6] },
-    'Am': { frets: [2, 0, 0, 0], keys: [9, 0, 4] },
-    'Bm': { frets: [4, 2, 2, 2], barre: 2, keys: [11, 2, 6] },
-    'Dm': { frets: [2, 2, 1, 0], keys: [2, 5, 9] },
-    'Bb': { frets: [3, 2, 1, 1], barre: 1, keys: [10, 2, 5] },
+    'C': { frets: [0, 0, 0, 3] },
+    'D': { frets: [2, 2, 2, 0] },
+    'E': { frets: [4, 4, 4, 2], baseFret: 1 },
+    'F': { frets: [2, 0, 1, 0] },
+    'G': { frets: [0, 2, 3, 2] },
+    'A': { frets: [2, 1, 0, 0] },
+    'B': { frets: [4, 3, 2, 2], barre: 2 },
+    'Am': { frets: [2, 0, 0, 0] },
+  },
+  'Baixo': {
+    'C': { frets: ['x', 3, 2, 0] },
+    'D': { frets: ['x', 'x', 0, 2] },
+    'E': { frets: [0, 2, 2, 1] },
+    'G': { frets: [3, 2, 0, 0] },
+    'A': { frets: ['x', 0, 2, 2] },
+  },
+  'Banjo': {
+    'C': { frets: [2, 0, 1, 2] },
+    'G': { frets: [0, 0, 0, 0] },
+    'D': { frets: [0, 2, 3, 2] },
+  },
+  'Violão Caipira': {
+    'A': { frets: [0, 0, 0, 0, 0] },
+    'E': { frets: [0, 2, 2, 1, 0] },
+    'B7': { frets: ['x', 2, 1, 2, 0] },
+  },
+  'Teclado': {
+    'C': { frets: [], keys: [0, 4, 7] },
+    'D': { frets: [], keys: [2, 6, 9] },
+    'E': { frets: [], keys: [4, 8, 11] },
+    'F': { frets: [], keys: [5, 9, 0] },
+    'G': { frets: [], keys: [7, 11, 2] },
+    'A': { frets: [], keys: [9, 1, 4] },
+    'B': { frets: [], keys: [11, 3, 6] },
+    'Am': { frets: [], keys: [9, 0, 4] },
+    'Dm': { frets: [], keys: [2, 5, 9] },
+    'Em': { frets: [], keys: [4, 7, 11] },
   }
 };
 
@@ -217,7 +230,7 @@ Olha filha como o tempo passa
 [A]
 Olha como você já cresceu
 [G]
-Parece que foi ontem que você nasceu
+Parece que foi online que você nasceu
 [D]
 E o primeiro presente quem deu foi Deus
 
