@@ -1,118 +1,259 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Mic, MicOff, Activity, Hash, Music2 } from 'lucide-react';
+import { X, Mic, MicOff, Activity, Hash, Music2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Tuner: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const [isListening, setIsListening] = useState(false);
   const [note, setNote] = useState("-");
   const [detune, setDetune] = useState(0);
   const [notation, setNotation] = useState<'#' | 'b'>('#');
+  const [frequency, setFrequency] = useState(0);
 
-  // Cores de alta visibilidade
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+
+  const notesSharp = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  const notesFlat = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+
   const COLOR_IN_TUNE = "#00ff66"; // Verde Neon
   const COLOR_OUT_TUNE = "#ff0044"; // Vermelho vibrante
-  const isInTune = Math.abs(detune) < 5 && note !== "-";
+  const isInTune = Math.abs(detune) < 3 && note !== "-";
+
+  const stopTuner = useCallback(() => {
+    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+    }
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+      audioContextRef.current.close();
+    }
+    setIsListening(false);
+    setNote("-");
+    setDetune(0);
+    setFrequency(0);
+  }, []);
+
+  const startTuner = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const audioContext = new AudioContextClass();
+      audioContextRef.current = audioContext;
+
+      const source = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 4096; // Aumentado para melhor resolução em baixas frequências
+      source.connect(analyser);
+      analyserRef.current = analyser;
+
+      setIsListening(true);
+      updatePitch();
+    } catch (err) {
+      console.error("Erro ao acessar microfone:", err);
+      alert("Permissão de microfone negada ou não disponível.");
+    }
+  };
+
+  const updatePitch = () => {
+    if (!analyserRef.current) return;
+
+    const bufferLength = analyserRef.current.fftSize;
+    const buffer = new Float32Array(bufferLength);
+    analyserRef.current.getFloatTimeDomainData(buffer);
+
+    const freq = autoCorrelate(buffer, audioContextRef.current!.sampleRate);
+
+    if (freq !== -1) {
+      setFrequency(freq);
+      const midiNote = 12 * (Math.log2(freq / 440)) + 69;
+      const roundedNote = Math.round(midiNote);
+      const diff = (midiNote - roundedNote) * 100;
+
+      const noteName = notation === '#' 
+        ? notesSharp[roundedNote % 12] 
+        : notesFlat[roundedNote % 12];
+
+      setNote(noteName);
+      setDetune(diff);
+    }
+
+    animationFrameRef.current = requestAnimationFrame(updatePitch);
+  };
+
+  const autoCorrelate = (buffer: Float32Array, sampleRate: number) => {
+    let size = buffer.length;
+    let rms = 0;
+    for (let i = 0; i < size; i++) rms += buffer[i] * buffer[i];
+    rms = Math.sqrt(rms / size);
+    if (rms < 0.005) return -1; // Sensibilidade ajustada
+
+    let r1 = 0, r2 = size - 1, thres = 0.2;
+    for (let i = 0; i < size / 2; i++) if (Math.abs(buffer[i]) < thres) { r1 = i; break; }
+    for (let i = 1; i < size / 2; i++) if (Math.abs(buffer[size - i]) < thres) { r2 = size - i; break; }
+
+    const buf = buffer.slice(r1, r2);
+    size = buf.length;
+    const c = new Float32Array(size);
+    for (let i = 0; i < size; i++) {
+      for (let j = 0; j < size - i; j++) c[i] = c[i] + buf[j] * buf[j + i];
+    }
+
+    let d = 0;
+    while (c[d] > c[d + 1]) d++;
+    let maxval = -1, maxpos = -1;
+    for (let i = d; i < size; i++) {
+      if (c[i] > maxval) { maxval = c[i]; maxpos = i; }
+    }
+    let T0 = maxpos;
+    const x1 = c[T0 - 1], x2 = c[T0], x3 = c[T0 + 1];
+    const a = (x1 + x3 - 2 * x2) / 2;
+    const b = (x3 - x1) / 2;
+    if (a) T0 = T0 - b / (2 * a);
+
+    return sampleRate / T0;
+  };
+
+  useEffect(() => {
+    return () => stopTuner();
+  }, [stopTuner]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="relative w-full max-w-lg bg-[#0a0a0a] rounded-[3rem] p-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/5 overflow-hidden">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/98 backdrop-blur-2xl animate-in fade-in duration-300">
+      <div className="relative w-full max-w-xl bg-[#050505] rounded-[4rem] p-10 shadow-[0_0_100px_rgba(0,0,0,0.9)] border border-white/10 overflow-hidden">
         
-        {/* Background Glow decorativo */}
-        <div className={`absolute -top-24 -left-24 w-64 h-64 rounded-full blur-[100px] transition-colors duration-500 ${isInTune ? 'bg-[#00ff66]/10' : 'bg-red-500/5'}`}></div>
+        {/* Glow de Fundo Dinâmico */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] rounded-full blur-[150px] transition-all duration-1000 opacity-20"
+          style={{ background: isInTune ? `radial-gradient(circle, ${COLOR_IN_TUNE} 0%, transparent 70%)` : `radial-gradient(circle, ${COLOR_OUT_TUNE} 0%, transparent 70%)` }}
+        ></div>
 
         <div className="relative z-10">
-          <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-[#1c1c1c] rounded-2xl flex items-center justify-center shadow-xl border border-white/5">
-                <Activity className={`${isInTune ? 'text-[#00ff66]' : 'text-gray-400'} w-7 h-7 transition-colors`} />
+              <div className="w-16 h-16 bg-[#111] rounded-[1.5rem] flex items-center justify-center border border-white/10 shadow-inner">
+                <Activity className={`${isInTune ? 'text-[#00ff66]' : 'text-gray-600'} w-8 h-8 transition-colors duration-200`} />
               </div>
               <div>
-                <h3 className="text-white font-black text-2xl uppercase tracking-tighter">Afinador</h3>
-                <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Precisão Master</p>
+                <h3 className="text-white font-black text-3xl uppercase tracking-tighter">Cromático</h3>
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${isListening ? 'bg-[#00ff66] animate-pulse shadow-[0_0_10px_#00ff66]' : 'bg-gray-800'}`}></div>
+                  <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">
+                    {frequency > 0 ? `${frequency.toFixed(1)} Hz` : 'Aguardando Som'}
+                  </p>
+                </div>
               </div>
             </div>
             
-            {/* Seletor de Notação # / b */}
-            <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10">
+            <div className="flex items-center gap-1.5 bg-white/5 p-1.5 rounded-[1.25rem] border border-white/10">
               <button 
                 onClick={() => setNotation('#')}
-                className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${notation === '#' ? 'bg-[#00ff66] text-black shadow-[0_0_15px_#00ff66]' : 'text-gray-500 hover:text-white'}`}
+                className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${notation === '#' ? 'bg-[#00ff66] text-black shadow-[0_0_20px_rgba(0,255,102,0.4)]' : 'text-gray-500 hover:text-white'}`}
               >
-                <Hash className="w-5 h-5" />
+                #
               </button>
               <button 
                 onClick={() => setNotation('b')}
-                className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${notation === 'b' ? 'bg-[#00ff66] text-black shadow-[0_0_15px_#00ff66]' : 'text-gray-500 hover:text-white'}`}
+                className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${notation === 'b' ? 'bg-[#00ff66] text-black shadow-[0_0_20px_rgba(0,255,102,0.4)]' : 'text-gray-500 hover:text-white'}`}
               >
-                <span className="font-black text-xl leading-none">b</span>
+                b
               </button>
             </div>
 
-            <button onClick={onClose} className="p-2 text-gray-500 hover:text-white transition-colors ml-2">
-              <X className="w-7 h-7" />
+            <button onClick={() => { stopTuner(); onClose(); }} className="p-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-full transition-all">
+              <X className="w-8 h-8" />
             </button>
           </div>
 
           <div className="flex flex-col items-center justify-center py-6">
-            <div 
-              className={`text-[10rem] leading-none font-black transition-all duration-300 select-none ${isInTune ? 'text-[#00ff66]' : 'text-white'}`}
-              style={{ 
-                textShadow: isInTune ? `0 0 40px ${COLOR_IN_TUNE}66` : 'none',
-                filter: isInTune ? 'brightness(1.2)' : 'none'
-              }}
-            >
-              {note}
-            </div>
             
-            <div className="text-[10px] font-black uppercase tracking-[0.4em] mb-12 text-gray-600">
-              {isInTune ? 'Afinado' : 'Ajuste a Corda'}
-            </div>
-
-            {/* Meter de Precisão */}
-            <div className="w-full relative h-16 flex items-end">
-              {/* Escala */}
-              <div className="absolute inset-0 flex justify-between px-2 opacity-20">
-                {Array.from({length: 11}).map((_, i) => (
-                  <div key={i} className={`w-0.5 ${i === 5 ? 'h-full bg-white' : 'h-1/2 bg-white'}`}></div>
-                ))}
-              </div>
-
-              {/* Trilho da Agulha */}
-              <div className="w-full h-1.5 bg-white/10 rounded-full relative overflow-visible">
-                {/* Marcador Central */}
-                <div className="absolute left-1/2 -top-4 -translate-x-1/2 w-0.5 h-10 bg-white/30"></div>
-                
-                {/* Agulha (Marcador Dinâmico) */}
-                <div 
-                  className={`absolute -top-6 h-14 w-1.5 rounded-full transition-all duration-150 ease-out shadow-xl ${isInTune ? 'bg-[#00ff66]' : 'bg-[#ff0044]'}`}
-                  style={{ 
-                    left: `${50 + (detune)}%`,
-                    boxShadow: isInTune ? `0 0 20px ${COLOR_IN_TUNE}` : `0 0 20px ${COLOR_OUT_TUNE}`
-                  }}
-                ></div>
+            {/* Visualização de Nota Principal */}
+            <div className="relative mb-4">
+              <div 
+                className={`text-[12rem] leading-none font-black transition-all duration-100 select-none ${isInTune ? 'text-[#00ff66]' : 'text-white'}`}
+                style={{ 
+                  textShadow: isInTune ? `0 0 60px ${COLOR_IN_TUNE}aa` : '0 0 30px rgba(255,255,255,0.1)',
+                  filter: isInTune ? 'brightness(1.2)' : 'none'
+                }}
+              >
+                {note}
               </div>
             </div>
             
-            <div className="flex justify-between w-full mt-4 px-2 text-[9px] font-black uppercase tracking-widest text-gray-600">
-              <span>Bemol</span>
-              <span>Perfeito</span>
-              <span>Sustenido</span>
+            <div className={`text-xs font-black uppercase tracking-[0.6em] mb-12 transition-colors ${isInTune ? 'text-[#00ff66]' : 'text-gray-700'}`}>
+              {note === "-" ? "Toque uma corda" : isInTune ? 'PERFEITO' : 'AJUSTE'}
+            </div>
+
+            {/* Fita Cromática de Precisão */}
+            <div className="w-full relative h-28 flex items-center justify-center overflow-hidden rounded-3xl bg-white/5 border border-white/5 px-4">
+              
+              {/* Marcador Central Fixo */}
+              <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0.5 bg-[#00ff66] z-20 shadow-[0_0_15px_#00ff66]">
+                 <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-[#00ff66] rotate-45"></div>
+              </div>
+
+              {/* Trilho de Notas */}
+              <div className="w-full relative h-full flex items-center">
+                 {/* Escala de Detune */}
+                 <div className="absolute inset-x-0 h-10 flex justify-between px-10">
+                    {Array.from({length: 21}).map((_, i) => {
+                      const pos = i - 10;
+                      return (
+                        <div 
+                          key={i} 
+                          className={`w-0.5 rounded-full transition-all duration-300 ${pos === 0 ? 'h-full bg-[#00ff66]/40' : i % 5 === 0 ? 'h-3/4 bg-white/20' : 'h-1/4 bg-white/10'}`}
+                        ></div>
+                      );
+                    })}
+                 </div>
+
+                 {/* Agulha Neon */}
+                 <div 
+                    className={`absolute h-20 w-1.5 rounded-full transition-all duration-150 ease-out z-10 ${isInTune ? 'bg-[#00ff66]' : 'bg-[#ff0044]'}`}
+                    style={{ 
+                      left: `calc(50% + ${detune * 0.45}%)`,
+                      boxShadow: isInTune 
+                        ? `0 0 25px ${COLOR_IN_TUNE}, 0 0 50px ${COLOR_IN_TUNE}66` 
+                        : `0 0 25px ${COLOR_OUT_TUNE}, 0 0 50px ${COLOR_OUT_TUNE}66`,
+                      transform: `translateX(-50%) scale(${note === "-" ? 0 : 1})`,
+                      opacity: note === "-" ? 0 : 1
+                    }}
+                 ></div>
+              </div>
+            </div>
+            
+            {/* Rótulos de Direção */}
+            <div className="flex justify-between w-full mt-6 px-10 text-[9px] font-black uppercase tracking-[0.2em] text-gray-800">
+              <span className={detune < -10 ? "text-[#ff0044] animate-pulse" : ""}>Muito Baixo</span>
+              <span className={isInTune ? "text-[#00ff66]" : ""}>Centro</span>
+              <span className={detune > 10 ? "text-[#ff0044] animate-pulse" : ""}>Muito Alto</span>
             </div>
           </div>
 
+          {/* Botão de Ação */}
           <button 
-            onClick={() => setIsListening(!isListening)} 
-            className={`w-full mt-12 py-6 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 ${
+            onClick={() => isListening ? stopTuner() : startTuner()} 
+            className={`w-full mt-12 py-8 rounded-[2.5rem] font-black uppercase tracking-[0.4em] text-xs shadow-2xl transition-all active:scale-[0.97] flex items-center justify-center gap-5 border-t border-white/10 ${
               isListening 
-                ? 'bg-[#ff0044] text-white shadow-[#ff0044]/20' 
-                : 'bg-[#00ff66] text-black shadow-[#00ff66]/20'
+                ? 'bg-[#ff0044] text-white shadow-[#ff0044]/40' 
+                : 'bg-[#00ff66] text-black shadow-[#00ff66]/40'
             }`}
           >
-            {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-            {isListening ? 'Desativar Microfone' : 'Ativar Microfone'}
+            {isListening ? (
+              <><MicOff className="w-5 h-5" /> Desligar Afinador</>
+            ) : (
+              <><Mic className="w-5 h-5" /> Iniciar Afinador</>
+            )}
           </button>
+          
+          <p className="mt-8 text-center text-gray-700 text-[8px] font-black uppercase tracking-[0.3em]">
+            Algoritmo de Precisão Master • 440Hz Reference
+          </p>
         </div>
       </div>
     </div>

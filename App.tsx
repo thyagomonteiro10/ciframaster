@@ -215,17 +215,6 @@ const App: React.FC = () => {
     link.click();
   }, [currentSong, transposedContent]);
 
-  const groupedContent = useMemo(() => {
-    const allSongs = [...COMMUNITY_SONGS, ...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS, ...RICK_RENNER_SONGS, ...userSongs];
-    const map: Record<string, Record<string, ExtendedSong[]>> = {};
-    allSongs.forEach(song => {
-      if (!map[song.genre]) map[song.genre] = {};
-      if (!map[song.genre][song.artist]) map[song.genre][song.artist] = [];
-      map[song.genre][song.artist].push(song);
-    });
-    return map;
-  }, [userSongs]);
-
   const SidebarButton = ({ icon: Icon, label, onClick, children, active, primary }: any) => (
     <button onClick={onClick} className={`flex items-center justify-between w-full px-4 py-2.5 rounded-xl border transition-all group ${
         primary ? 'bg-[#22c55e] border-[#22c55e] text-white shadow-lg shadow-[#22c55e]/20' : active ? 'bg-[#22c55e]/5 border-[#22c55e]/30 text-[#22c55e]' : 'bg-white border-gray-200 hover:border-gray-400'
@@ -249,119 +238,147 @@ const App: React.FC = () => {
               </div>
               <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-4">A maior comunidade <br/><span className="text-[#22c55e]">Cifrada</span> do Brasil</h1>
               <p className="text-gray-400 max-w-lg text-sm font-medium leading-relaxed mb-6">Explore milhares de cifras enviadas por músicos como você. Compartilhe seu conhecimento e ajude a comunidade a crescer.</p>
-              <button 
-                onClick={() => setIsSubmissionOpen(true)}
-                className="px-8 py-3 bg-[#22c55e] hover:bg-[#16a34a] text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-xl shadow-[#22c55e]/20"
-              >
-                Publicar minha Cifra
-              </button>
+              <div className="flex flex-wrap gap-4">
+                <button 
+                  onClick={() => setIsSubmissionOpen(true)}
+                  className="px-8 py-3 bg-[#22c55e] hover:bg-[#16a34a] text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-xl shadow-[#22c55e]/20"
+                >
+                  Publicar minha Cifra
+                </button>
+                <button 
+                  onClick={() => setIsTunerOpen(true)}
+                  className="px-8 py-3 bg-white text-black hover:bg-[#22c55e] hover:text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-xl"
+                >
+                  Afinar Instrumento
+                </button>
+              </div>
           </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+      {/* Grid de Ferramentas e Pastas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        
+        {/* Card do Afinador (Novo) */}
         <div className="animate-in fade-in slide-in-from-left-4 duration-500">
-           <button onClick={() => setIsFavFolderOpen(!isFavFolderOpen)} className="w-full flex items-center justify-between p-4 bg-[#1c1c1c] rounded-2xl shadow-xl border border-white/5 hover:bg-gray-800 transition-all group">
-              <div className="flex items-center gap-4">
-                 <div className="w-10 h-10 bg-[#22c55e]/20 rounded-xl flex items-center justify-center border border-[#22c55e]/30">
-                    <Heart className="text-[#22c55e] w-5 h-5 fill-[#22c55e]/20" />
-                 </div>
-                 <div className="text-left">
-                    <h2 className="text-lg font-black text-white tracking-tight uppercase">Favoritos</h2>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{favorites.length} músicas</p>
-                 </div>
+           <button onClick={() => setIsTunerOpen(true)} className="w-full h-full flex flex-col items-center justify-center p-6 bg-[#1c1c1c] rounded-3xl shadow-xl border border-[#22c55e]/30 hover:bg-black transition-all group overflow-hidden relative">
+              <div className="absolute top-0 right-0 p-3">
+                 <div className="w-2 h-2 rounded-full bg-[#00ff66] animate-pulse"></div>
               </div>
-              <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${isFavFolderOpen ? 'rotate-180' : ''}`} />
+              <div className="w-16 h-16 bg-[#22c55e]/10 rounded-2xl flex items-center justify-center border border-[#22c55e]/40 mb-4 group-hover:scale-110 transition-transform">
+                 <Activity className="text-[#00ff66] w-8 h-8" />
+              </div>
+              <h2 className="text-xl font-black text-white tracking-tight uppercase mb-1">Afinador</h2>
+              <p className="text-[9px] font-black text-[#00ff66] uppercase tracking-[0.3em]">Cromático • Live</p>
            </button>
-           {isFavFolderOpen && favorites.length > 0 && (
-             <div className="mt-3 grid grid-cols-1 gap-2 animate-in slide-in-from-top-2 duration-300 origin-top">
+        </div>
+
+        <div className="animate-in fade-in slide-in-from-left-4 duration-500">
+           <button onClick={() => setIsFavFolderOpen(!isFavFolderOpen)} className="w-full h-full flex flex-col p-6 bg-white rounded-3xl shadow-sm border border-gray-100 hover:border-[#22c55e]/30 transition-all group relative">
+              <div className="flex items-center justify-between w-full mb-4">
+                 <div className="w-12 h-12 bg-[#22c55e]/10 rounded-2xl flex items-center justify-center border border-[#22c55e]/20">
+                    <Heart className="text-[#22c55e] w-6 h-6 fill-[#22c55e]/20" />
+                 </div>
+                 <ChevronDown className={`w-5 h-5 text-gray-300 transition-transform duration-300 ${isFavFolderOpen ? 'rotate-180' : ''}`} />
+              </div>
+              <div className="text-left">
+                 <h2 className="text-xl font-black text-gray-900 tracking-tight uppercase">Favoritos</h2>
+                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{favorites.length} músicas salvas</p>
+              </div>
+           </button>
+        </div>
+
+        <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+           <button onClick={() => setIsUserSongsOpen(!isUserSongsOpen)} className="w-full h-full flex flex-col p-6 bg-white rounded-3xl shadow-sm border border-gray-100 hover:border-[#22c55e]/30 transition-all group relative">
+              <div className="flex items-center justify-between w-full mb-4">
+                 <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-100">
+                    <Save className="text-gray-400 w-6 h-6" />
+                 </div>
+                 <ChevronDown className={`w-5 h-5 text-gray-300 transition-transform ${isUserSongsOpen ? 'rotate-180' : ''}`} />
+              </div>
+              <div className="text-left">
+                 <h2 className="text-xl font-black text-gray-900 tracking-tight uppercase">Repertório</h2>
+                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{userSongs.length} músicas enviadas</p>
+              </div>
+           </button>
+        </div>
+
+        <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+           <button onClick={() => setIsCommunityOpen(!isCommunityOpen)} className="w-full h-full flex flex-col p-6 bg-white rounded-3xl shadow-sm border border-gray-100 hover:border-[#22c55e]/30 transition-all group relative">
+              <div className="flex items-center justify-between w-full mb-4">
+                 <div className="w-12 h-12 bg-[#22c55e]/5 rounded-2xl flex items-center justify-center border border-[#22c55e]/10">
+                    <Users className="text-[#22c55e] w-6 h-6" />
+                 </div>
+                 <ChevronDown className={`w-5 h-5 text-gray-300 transition-transform ${isCommunityOpen ? 'rotate-180' : ''}`} />
+              </div>
+              <div className="text-left">
+                 <h2 className="text-xl font-black text-gray-900 tracking-tight uppercase">Feed Geral</h2>
+                 <p className="text-[10px] font-bold text-[#22c55e] uppercase tracking-widest">Recém Adicionadas</p>
+              </div>
+           </button>
+        </div>
+      </div>
+
+      {/* Listas Expansíveis */}
+      <div className="space-y-4 mb-12">
+        {isFavFolderOpen && favorites.length > 0 && (
+          <div className="animate-in slide-in-from-top-4 duration-500">
+             <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-2">Suas Favoritas</h3>
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {favorites.map((song) => (
-                  <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl hover:border-[#22c55e] transition-all cursor-pointer">
+                  <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-4 bg-white border border-gray-100 rounded-2xl hover:border-[#22c55e] hover:shadow-lg transition-all cursor-pointer">
                     <div className="flex-1 min-w-0 pr-3">
-                      <h4 className="font-bold text-gray-800 text-xs truncate group-hover:text-[#22c55e]">{song.title}</h4>
-                      <p className="text-[9px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
+                      <h4 className="font-bold text-gray-800 text-sm truncate group-hover:text-[#22c55e]">{song.title}</h4>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
                     </div>
-                    <Play className="w-3.5 h-3.5 text-gray-300 group-hover:text-[#22c55e]" />
+                    <Play className="w-4 h-4 text-gray-300 group-hover:text-[#22c55e] group-hover:scale-125 transition-all" />
                   </div>
                 ))}
              </div>
-           )}
-        </div>
+          </div>
+        )}
 
-        <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-           <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-[#22c55e]/30 transition-all group overflow-hidden">
-              <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => setIsUserSongsOpen(!isUserSongsOpen)}>
-                <div className="flex items-center gap-4">
-                   <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-100 group-hover:bg-[#22c55e]/10 group-hover:border-[#22c55e]/30 transition-all">
-                      <Save className="text-gray-400 w-5 h-5 group-hover:text-[#22c55e] transition-colors" />
-                   </div>
-                   <div className="text-left">
-                      <h2 className="text-lg font-black text-gray-900 tracking-tight uppercase">Minhas Cifras</h2>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{userSongs.length} enviadas</p>
-                   </div>
-                </div>
-                <ChevronDown className={`w-5 h-5 text-gray-300 transition-transform ${isUserSongsOpen ? 'rotate-180' : ''}`} />
-              </div>
-              {isUserSongsOpen && (
-                <div className="px-4 pb-4 grid grid-cols-1 gap-2 max-h-[250px] overflow-y-auto no-scrollbar">
-                    {userSongs.length > 0 ? userSongs.map((song) => (
-                        <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl hover:border-[#22c55e] transition-all cursor-pointer">
-                          <div className="flex-1 min-w-0 pr-3">
-                            <h4 className="font-bold text-gray-800 text-xs truncate group-hover:text-[#22c55e]">{song.title}</h4>
-                            <div className="flex items-center gap-2">
-                               <p className="text-[9px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
-                               {song.isPublic && <Globe className="w-2.5 h-2.5 text-[#22c55e]" />}
-                            </div>
-                          </div>
-                          <button onClick={(e) => deleteUserSong(song.id, e)} className="p-1.5 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100"><Trash2 className="w-3.5 h-3.5" /></button>
-                        </div>
-                    )) : (
-                      <div className="p-8 border-2 border-dashed border-gray-100 rounded-xl text-center text-[10px] text-gray-400 font-bold uppercase">
-                        Nenhuma música enviada.
+        {isUserSongsOpen && userSongs.length > 0 && (
+          <div className="animate-in slide-in-from-top-4 duration-500">
+             <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-2">Meu Repertório</h3>
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {userSongs.map((song) => (
+                  <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-4 bg-white border border-gray-100 rounded-2xl hover:border-[#22c55e] hover:shadow-lg transition-all cursor-pointer">
+                    <div className="flex-1 min-w-0 pr-3">
+                      <h4 className="font-bold text-gray-800 text-sm truncate group-hover:text-[#22c55e]">{song.title}</h4>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
+                    </div>
+                    <button onClick={(e) => deleteUserSong(song.id, e)} className="p-2 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4" /></button>
+                  </div>
+                ))}
+             </div>
+          </div>
+        )}
+
+        {isCommunityOpen && (
+          <div className="animate-in slide-in-from-top-4 duration-500">
+             <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-2">Destaques da Comunidade</h3>
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {COMMUNITY_SONGS.map((song) => (
+                  <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-4 bg-gray-50/50 border border-gray-100 rounded-2xl hover:border-[#22c55e] hover:bg-white hover:shadow-lg transition-all cursor-pointer">
+                    <div className="flex-1 min-w-0 pr-3">
+                      <h4 className="font-bold text-gray-800 text-sm truncate group-hover:text-[#22c55e]">{song.title}</h4>
+                      <div className="flex items-center gap-2">
+                         <p className="text-[10px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
+                         <span className="text-[8px] text-[#22c55e] font-black uppercase whitespace-nowrap">Por {song.author}</span>
                       </div>
-                    )}
-                </div>
-              )}
-           </div>
-        </div>
-
-        <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-           <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-[#22c55e]/30 transition-all group overflow-hidden">
-              <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => setIsCommunityOpen(!isCommunityOpen)}>
-                <div className="flex items-center gap-4">
-                   <div className="w-10 h-10 bg-[#22c55e]/10 rounded-xl flex items-center justify-center border border-[#22c55e]/20">
-                      <Users className="text-[#22c55e] w-5 h-5" />
-                   </div>
-                   <div className="text-left">
-                      <h2 className="text-lg font-black text-gray-900 tracking-tight uppercase">Comunidade</h2>
-                      <p className="text-[10px] font-bold text-[#22c55e] uppercase tracking-widest">Recém Adicionadas</p>
-                   </div>
-                </div>
-                <ChevronDown className={`w-5 h-5 text-gray-300 transition-transform ${isCommunityOpen ? 'rotate-180' : ''}`} />
-              </div>
-              {isCommunityOpen && (
-                <div className="px-4 pb-4 grid grid-cols-1 gap-2 max-h-[250px] overflow-y-auto no-scrollbar">
-                    {COMMUNITY_SONGS.map((song) => (
-                        <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-3 bg-gray-50/50 border border-gray-100 rounded-xl hover:border-[#22c55e] transition-all cursor-pointer">
-                          <div className="flex-1 min-w-0 pr-3">
-                            <h4 className="font-bold text-gray-800 text-xs truncate group-hover:text-[#22c55e]">{song.title}</h4>
-                            <div className="flex items-center gap-2">
-                               <p className="text-[9px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
-                               <span className="text-[7px] text-[#22c55e] font-black uppercase">Por {song.author}</span>
-                            </div>
-                          </div>
-                          <PlayCircle className="w-4 h-4 text-gray-200 group-hover:text-[#22c55e] transition-colors" />
-                        </div>
-                    ))}
-                </div>
-              )}
-           </div>
-        </div>
+                    </div>
+                    <PlayCircle className="w-5 h-5 text-gray-200 group-hover:text-[#22c55e] transition-colors" />
+                  </div>
+                ))}
+             </div>
+          </div>
+        )}
       </div>
 
-      <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-5">
+      <div className="flex items-center justify-between mb-8 border-b border-gray-200 pb-5">
         <h1 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3"><Disc className="text-[#22c55e] w-7 h-7" /> Gêneros e Estilos</h1>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4 mb-20">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-20">
         {GENRES.map((genre) => (
           <button key={genre} onClick={() => setSelectedGenre(genre)} className="group relative h-28 rounded-2xl overflow-hidden bg-gray-900 shadow-lg border-2 border-transparent hover:border-[#22c55e] transition-all">
             <div className="absolute inset-0 bg-gradient-to-br from-[#22c55e]/20 to-black opacity-60 group-hover:opacity-40 transition-opacity"></div>
