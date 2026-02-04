@@ -4,7 +4,7 @@ import {
   Heart, X, Globe, ChevronDown, Minus, Plus, Guitar, Disc, ArrowLeft, 
   ArrowUpDown, Timer, Activity, Download, PlayCircle, Eye, User, 
   LogOut, ChevronUp, PlusSquare, Save, Trash2, Smartphone, Minimize2, BookOpen,
-  FolderOpen, Music, Search, Play
+  FolderOpen, Music, Search, Play, Lock
 } from 'lucide-react';
 import { ExtendedSong, ZEZE_SONGS, JULIANY_SOUZA_SONGS, RICK_RENNER_SONGS, COMMUNITY_SONGS } from './constants';
 import { findChordsWithAI } from './services/geminiService';
@@ -37,13 +37,17 @@ const App: React.FC = () => {
   
   const [favorites, setFavorites] = useState<ExtendedSong[]>([]);
   const [userSongs, setUserSongs] = useState<ExtendedSong[]>([]);
+  const [userRepoTab, setUserRepoTab] = useState<'private' | 'public'>('private');
+  
   const [communitySongs, setCommunitySongs] = useState<ExtendedSong[]>(() => {
     const saved = localStorage.getItem('cifra_master_public_vault');
     const base = [...COMMUNITY_SONGS, ...ZEZE_SONGS, ...JULIANY_SOUZA_SONGS, ...RICK_RENNER_SONGS];
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        return [...parsed, ...base.filter(b => !parsed.some((p: any) => p.id === b.id))];
+        // Filtra apenas o que é do usuário e combina com a base fixa
+        const userAdded = parsed.filter((p: any) => p.id.startsWith('user-'));
+        return [...userAdded, ...base];
       } catch (e) { return base; }
     }
     return base;
@@ -109,8 +113,9 @@ const App: React.FC = () => {
   }, [userSongs]);
 
   useEffect(() => {
-    const onlyUserSubmittedPublic = communitySongs.filter(s => s.id.startsWith('user-'));
-    localStorage.setItem('cifra_master_public_vault', JSON.stringify(onlyUserSubmittedPublic));
+    // Salva apenas as músicas enviadas pelo usuário que são públicas
+    const userSubmittedPublic = communitySongs.filter(s => s.id.startsWith('user-'));
+    localStorage.setItem('cifra_master_public_vault', JSON.stringify(userSubmittedPublic));
   }, [communitySongs]);
 
   const toggleFavorite = useCallback((song: ExtendedSong) => {
@@ -141,11 +146,12 @@ const App: React.FC = () => {
   const handleSongSubmission = (song: ExtendedSong) => {
     if (song.isPublic) {
       setCommunitySongs(prev => [song, ...prev]);
-      setSelectedGenre(song.genre);
+      setUserRepoTab('public');
     } else {
       setUserSongs(prev => [song, ...prev]);
-      setIsUserSongsOpen(true);
+      setUserRepoTab('private');
     }
+    setIsUserSongsOpen(true);
   };
 
   const deleteUserSong = (id: string, e: React.MouseEvent) => {
@@ -217,11 +223,14 @@ const App: React.FC = () => {
     return communitySongs.filter(s => s.genre === selectedGenre);
   }, [communitySongs, selectedGenre]);
 
+  const userPublicSongs = useMemo(() => {
+    return communitySongs.filter(s => s.id.startsWith('user-'));
+  }, [communitySongs]);
+
   const renderHome = () => (
     <div className="py-2 animate-in fade-in duration-500">
-      {/* Hero Section Ultra Otimizada: Altura reduzida para 220px */}
+      {/* Hero Section Ultra Otimizada */}
       <div className="mb-6 rounded-[2rem] overflow-hidden relative group border border-white/10 shadow-xl h-[220px] flex items-center">
-          {/* Imagem de Fundo */}
           <div 
             className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
             style={{ 
@@ -229,7 +238,6 @@ const App: React.FC = () => {
               filter: 'brightness(0.25) saturate(1.2)' 
             }}
           ></div>
-          {/* Overlay e Gradientes */}
           <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
           
           <div className="relative z-10 p-6 md:p-8 max-w-2xl">
@@ -279,12 +287,12 @@ const App: React.FC = () => {
 
         <button onClick={() => setIsUserSongsOpen(!isUserSongsOpen)} className="p-5 bg-white rounded-[2rem] border border-gray-100 hover:border-[#22c55e]/30 transition-all flex flex-row items-center justify-between shadow-sm">
            <div className="flex flex-col text-left">
-              <h3 className="font-black text-gray-900 uppercase text-[10px]">Repertório</h3>
-              <p className="text-[7px] font-bold text-gray-400 uppercase tracking-widest">Privado</p>
+              <h3 className="font-black text-gray-900 uppercase text-[10px]">Meu Repertório</h3>
+              <p className="text-[7px] font-bold text-gray-400 uppercase tracking-widest">Arquivos</p>
            </div>
            <div className="flex items-center gap-2">
-              <span className="text-lg font-black text-gray-900">{userSongs.length}</span>
-              <Save className={`w-5 h-5 ${userSongs.length > 0 ? 'text-[#22c55e]' : 'text-gray-200'}`} />
+              <span className="text-lg font-black text-gray-900">{userSongs.length + userPublicSongs.length}</span>
+              <Save className={`w-5 h-5 ${userSongs.length + userPublicSongs.length > 0 ? 'text-[#22c55e]' : 'text-gray-200'}`} />
            </div>
         </button>
       </div>
@@ -308,19 +316,44 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {isUserSongsOpen && userSongs.length > 0 && (
-          <div className="bg-white p-5 rounded-[1.5rem] border border-gray-100 animate-in slide-in-from-top-4 shadow-sm">
-             <h3 className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2"><Save className="w-2.5 h-2.5 text-[#22c55e]" /> Privado</h3>
-             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-                {userSongs.map((song) => (
-                  <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-white hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-[#22c55e]/20">
-                    <div className="flex-1 min-w-0 pr-2">
-                      <h4 className="font-bold text-gray-900 text-[11px] truncate group-hover:text-[#22c55e]">{song.title}</h4>
-                      <p className="text-[7px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
+        {isUserSongsOpen && (
+          <div className="bg-white p-6 rounded-[1.5rem] border border-gray-100 animate-in slide-in-from-top-4 shadow-sm">
+             <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                  <Save className="w-2.5 h-2.5 text-[#22c55e]" /> Meu Repertório
+                </h3>
+                <div className="flex bg-gray-50 p-1 rounded-lg border border-gray-100">
+                   <button 
+                    onClick={() => setUserRepoTab('private')}
+                    className={`px-3 py-1 text-[7px] font-black uppercase rounded-md transition-all flex items-center gap-1.5 ${userRepoTab === 'private' ? 'bg-[#22c55e] text-white shadow-sm' : 'text-gray-400'}`}
+                   >
+                     <Lock className="w-2 h-2" /> Privado
+                   </button>
+                   <button 
+                    onClick={() => setUserRepoTab('public')}
+                    className={`px-3 py-1 text-[7px] font-black uppercase rounded-md transition-all flex items-center gap-1.5 ${userRepoTab === 'public' ? 'bg-[#22c55e] text-white shadow-sm' : 'text-gray-400'}`}
+                   >
+                     <Globe className="w-2 h-2" /> Público
+                   </button>
+                </div>
+             </div>
+
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 min-h-[60px]">
+                {(userRepoTab === 'private' ? userSongs : userPublicSongs).length > 0 ? (
+                  (userRepoTab === 'private' ? userSongs : userPublicSongs).map((song) => (
+                    <div key={song.id} onClick={() => handleSongSelect(song)} className="group flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-white hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-[#22c55e]/20">
+                      <div className="flex-1 min-w-0 pr-2">
+                        <h4 className="font-bold text-gray-900 text-[11px] truncate group-hover:text-[#22c55e]">{song.title}</h4>
+                        <p className="text-[7px] text-gray-400 font-bold uppercase truncate">{song.artist}</p>
+                      </div>
+                      <button onClick={(e) => deleteUserSong(song.id, e)} className="p-1.5 text-gray-200 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-3 h-3" /></button>
                     </div>
-                    <button onClick={(e) => deleteUserSong(song.id, e)} className="p-1.5 text-gray-200 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-3 h-3" /></button>
+                  ))
+                ) : (
+                  <div className="col-span-full py-4 text-center text-[8px] font-bold text-gray-300 uppercase">
+                    Nenhuma cifra {userRepoTab === 'private' ? 'privada' : 'pública'} encontrada.
                   </div>
-                ))}
+                )}
              </div>
           </div>
         )}
@@ -338,7 +371,7 @@ const App: React.FC = () => {
         )}
       </div>
 
-      {/* Pastas de Ritmos - Black & Green Theme Compact */}
+      {/* Pastas de Ritmos */}
       {!selectedGenre ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-12 animate-in slide-in-from-bottom-4 duration-500">
           {GENRES.map((genre) => (
